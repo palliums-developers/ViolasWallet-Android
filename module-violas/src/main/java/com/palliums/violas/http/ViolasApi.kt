@@ -2,10 +2,7 @@ package com.palliums.violas.http
 
 import io.reactivex.Observable
 import okhttp3.RequestBody
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 /**
  * Created by elephant on 2019-11-11 15:34.
@@ -21,6 +18,7 @@ interface ViolasApi {
      * @param walletAddress 钱包地址
      */
     @GET("/1.0/violas/balance")
+    @Headers(value = ["chainName:violas"])
     fun getBalance(
         @Query("addr") walletAddress: String
     ): Observable<Response<BalanceDTO>>
@@ -29,6 +27,7 @@ interface ViolasApi {
      * 获取 Violas 钱包支持的代币列表
      */
     @GET("/1.0/violas/currency")
+    @Headers(value = ["chainName:violas"])
     fun getCurrency(): Observable<Response<CurrencysDTO>>
 
     /**
@@ -40,6 +39,7 @@ interface ViolasApi {
      * @param transactionType   交易类型，不填：全部；0：转出；1：转入
      */
     @GET("/1.0/violas/transaction")
+    @Headers(value = ["chainName:violas"])
     fun getTransactionRecords(
         @Query("addr") address: String,
         @Query("currency") tokenId: String?,
@@ -52,17 +52,21 @@ interface ViolasApi {
      * 登录网页端钱包
      */
     @POST("/1.0/violas/singin")
+    @Headers(value = ["chainName:violas"])
     fun loginWeb(@Body body: RequestBody): Observable<Response<Any>>
 
     @POST("/1.0/violas/transaction")
+    @Headers(value = ["chainName:violas"])
     fun pushTx(@Body requestBody: RequestBody): Observable<Response<Any>>
 
     @GET("/1.0/violas/account/info")
+    @Headers(value = ["chainName:violas"])
     fun getAccountState(
         @Query("address") walletAddress: String
     ): Observable<Response<AccountStateDTO>>
 
     @GET("/1.0/violas/mint")
+    @Headers(value = ["chainName:violas"])
     fun activateAccount(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
@@ -74,11 +78,13 @@ interface ViolasApi {
     ): Observable<ListResponse<FiatBalanceDTO>>
 
     @GET("/1.0/violas/value/libra")
+    @Headers(value = ["chainName:diem"])
     fun getLibraChainFiatBalance(
         @Query("address") walletAddress: String
     ): Observable<ListResponse<FiatBalanceDTO>>
 
     @GET("/1.0/violas/value/violas")
+    @Headers(value = ["chainName:violas"])
     fun getViolasChainFiatBalance(
         @Query("address") walletAddress: String
     ): Observable<ListResponse<FiatBalanceDTO>>

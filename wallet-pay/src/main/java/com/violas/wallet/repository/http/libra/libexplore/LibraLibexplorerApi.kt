@@ -1,7 +1,9 @@
 package com.violas.wallet.repository.http.libra.libexplore
 
-import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URL_NAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_LIBEXPLORER
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_KEY_CHAIN_NAME
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_VALUE_DIEM_CHAIN
 import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -22,7 +24,12 @@ interface LibraLibexplorerApi {
      * @param pageSize 分页大小
      * @param pageNumber 页码，从1开始
      */
-    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_LIBEXPLORER}"])
+    @Headers(
+        value = [
+            "${HEADER_KEY_URL_NAME}:${HEADER_VALUE_LIBEXPLORER}",
+            "${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_DIEM_CHAIN}"
+        ]
+    )
     @GET("?module=account&action=txlist&sort=desc")
     fun getTransactionRecords(
         @Query("address") address: String,

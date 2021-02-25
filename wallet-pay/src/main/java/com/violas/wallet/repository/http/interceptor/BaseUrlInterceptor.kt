@@ -16,9 +16,7 @@ import okhttp3.Response
 class BaseUrlInterceptor : Interceptor {
 
     companion object {
-        const val HEADER_KEY_URLNAME = "urlname"
-        const val HEADER_VALUE_VIOLAS_CHAIN = "violas"
-        const val HEADER_VALUE_DIEM_CHAIN = "diem"
+        const val HEADER_KEY_URL_NAME = "urlName"
         const val HEADER_VALUE_LIBEXPLORER = "libexplorer"
         const val HEADER_VALUE_BITMAIN = "bitmain"
         const val HEADER_VALUE_TREZOR = "trezor"
@@ -26,8 +24,6 @@ class BaseUrlInterceptor : Interceptor {
 
     private val baseUrls: Map<String, String> by lazy {
         mutableMapOf<String, String>().apply {
-            this[HEADER_VALUE_VIOLAS_CHAIN] = ApiBaseUrl.VIOLAS_CHAIN_BASE_URL
-            this[HEADER_VALUE_DIEM_CHAIN] = ApiBaseUrl.DIEM_CHAIN_BASE_URL
             this[HEADER_VALUE_LIBEXPLORER] = ApiBaseUrl.LIBEXPLORER_BASE_URL
             this[HEADER_VALUE_BITMAIN] = ApiBaseUrl.BITMAIN_BASE_URL
             this[HEADER_VALUE_TREZOR] = ApiBaseUrl.TREZOR_BASE_URL
@@ -37,7 +33,7 @@ class BaseUrlInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        val urlNameList = originalRequest.headers(HEADER_KEY_URLNAME)
+        val urlNameList = originalRequest.headers(HEADER_KEY_URL_NAME)
         if (urlNameList.isEmpty()) {
             return chain.proceed(originalRequest)
         }
@@ -80,7 +76,7 @@ class BaseUrlInterceptor : Interceptor {
             .build()
 
         val newRequest = originalRequest.newBuilder()
-            .removeHeader(HEADER_KEY_URLNAME)
+            .removeHeader(HEADER_KEY_URL_NAME)
             .url(newUrl)
             .build()
 

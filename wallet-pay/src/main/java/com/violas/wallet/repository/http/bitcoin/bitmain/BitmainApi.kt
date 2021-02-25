@@ -1,6 +1,6 @@
 package com.violas.wallet.repository.http.bitcoin.bitmain
 
-import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URL_NAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_BITMAIN
 import io.reactivex.Observable
 import retrofit2.http.GET
@@ -27,7 +27,7 @@ interface BitmainApi {
      *                等级 2，包含等级 1，交易的输入、输出地址与金额；
      *                等级 3，包含等级 2，交易的输入、输出 script 等信息。
      */
-    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_BITMAIN}"])
+    @Headers(value = ["${HEADER_KEY_URL_NAME}:${HEADER_VALUE_BITMAIN}"])
     @GET("address/{address}/tx")
     fun getTransactionRecords(
         @Path("address") address: String,

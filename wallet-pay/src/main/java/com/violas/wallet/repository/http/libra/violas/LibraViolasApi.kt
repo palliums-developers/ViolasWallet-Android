@@ -4,8 +4,11 @@ import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_KEY_CHAIN_NAME
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_VALUE_DIEM_CHAIN
 import io.reactivex.Observable
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Query
 
 /**
@@ -26,6 +29,7 @@ interface LibraViolasApi {
      * @param transactionType   交易类型，null：全部；0：转出；1：转入
      */
     @GET("/1.0/libra/transaction")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_DIEM_CHAIN}"])
     fun getTransactionRecords(
         @Query("addr") address: String,
         @Query("currency") tokenId: String?,
@@ -38,9 +42,11 @@ interface LibraViolasApi {
      * 获取 Violas 钱包支持的代币列表
      */
     @GET("/1.0/libra/currency")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_DIEM_CHAIN}"])
     fun getCurrency(): Observable<Response<CurrencysDTO>>
 
     @GET("/1.0/libra/mint")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_DIEM_CHAIN}"])
     fun activateAccount(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String

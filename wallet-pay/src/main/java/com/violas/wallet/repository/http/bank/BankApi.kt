@@ -2,6 +2,8 @@ package com.violas.wallet.repository.http.bank
 
 import com.palliums.violas.http.ListResponse
 import com.palliums.violas.http.Response
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_KEY_CHAIN_NAME
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_VALUE_VIOLAS_CHAIN
 import io.reactivex.Observable
 import okhttp3.RequestBody
 import retrofit2.http.*
@@ -19,6 +21,7 @@ interface BankApi {
      * 获取账户信息
      */
     @GET("/1.0/violas/bank/account/info")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getAccountInfo(
         @Query("address") address: String
     ): Observable<Response<AccountInfoDTO>>
@@ -27,6 +30,7 @@ interface BankApi {
      * 获取存款产品列表
      */
     @GET("/1.0/violas/bank/product/deposit")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getDepositProducts(): Observable<ListResponse<DepositProductSummaryDTO>>
 
     /**
@@ -35,6 +39,7 @@ interface BankApi {
      * @param address
      */
     @GET("/1.0/violas/bank/deposit/info")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getDepositProductDetails(
         @Query("id") id: String,
         @Query("address") address: String
@@ -44,6 +49,7 @@ interface BankApi {
      * 分页获取存款信息
      */
     @GET("/1.0/violas/bank/deposit/orders")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getDepositInfos(
         @Query("address") address: String,
         @Query("limit") limit: Int,
@@ -54,6 +60,7 @@ interface BankApi {
      * 获取存款详情
      */
     @GET("/1.0/violas/bank/deposit/withdrawal")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getDepositDetails(
         @Query("id") id: String,
         @Query("address") address: String
@@ -65,6 +72,7 @@ interface BankApi {
      * @param state     不填查全部，0（已存款），1（已提取），-1（提取失败），-2（存款失败）
      */
     @GET("/1.0/violas/bank/deposit/order/list")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getDepositRecords(
         @Query("address") address: String,
         @Query("currency") currency: String?,
@@ -77,6 +85,7 @@ interface BankApi {
      * 获取借贷产品列表
      */
     @GET("/1.0/violas/bank/product/borrow")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getBorrowingProducts(): Observable<ListResponse<BorrowingProductSummaryDTO>>
 
     /**
@@ -85,6 +94,7 @@ interface BankApi {
      * @param address
      */
     @GET("/1.0/violas/bank/borrow/info")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getBorrowProductDetails(
         @Query("id") id: String,
         @Query("address") address: String
@@ -94,6 +104,7 @@ interface BankApi {
      * 分页获取借贷信息
      */
     @GET("/1.0/violas/bank/borrow/orders")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getBorrowingInfos(
         @Query("address") address: String,
         @Query("limit") limit: Int,
@@ -106,6 +117,7 @@ interface BankApi {
      * @param state     不填查全部，0（已借款），1（已还款），2（已清算），-1（借款失败），-2（还款失败）
      */
     @GET("/1.0/violas/bank/borrow/order/list")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getBorrowingRecords(
         @Query("address") address: String,
         @Query("currency") currency: String?,
@@ -118,6 +130,7 @@ interface BankApi {
      * 分页获取借贷产品的借款记录
      */
     @GET("/1.0/violas/bank/borrow/order/detail")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getCoinBorrowingRecords(
         @Query("address") address: String,
         @Query("id") id: String,
@@ -130,6 +143,7 @@ interface BankApi {
      * 分页获取借贷产品的还款记录
      */
     @GET("/1.0/violas/bank/borrow/order/detail")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getCoinRepaymentRecords(
         @Query("address") address: String,
         @Query("id") id: String,
@@ -142,6 +156,7 @@ interface BankApi {
      * 分页获取借贷产品的清算记录
      */
     @GET("/1.0/violas/bank/borrow/order/detail")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getCoinLiquidationRecords(
         @Query("address") address: String,
         @Query("id") id: String,
@@ -154,6 +169,7 @@ interface BankApi {
      * 分页获取借贷明细
      */
     @GET("/1.0/violas/bank/borrow/repayment")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getBorrowingDetails(
         @Query("address") address: String,
         @Query("id") id: String
@@ -163,30 +179,35 @@ interface BankApi {
      * 存款交易上链
      */
     @POST("/1.0/violas/bank/deposit")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun submitDepositTransaction(
-        @Body body:RequestBody
+        @Body body: RequestBody
     ): Observable<Response<Any>>
 
     /**
      * 取款交易上链
      */
     @POST("/1.0/violas/bank/deposit/withdrawal")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun submitRedeemTransaction(
-        @Body body:RequestBody
+        @Body body: RequestBody
     ): Observable<Response<Any>>
 
     /**
      * 借款交易上链
      */
     @POST("/1.0/violas/bank/borrow")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun submitBorrowTransaction(
-        @Body body:RequestBody
+        @Body body: RequestBody
     ): Observable<Response<Any>>
 
     /**
      * 还款交易上链
      */
     @POST("/1.0/violas/bank/borrow/repayment")
-    fun submitRepayBorrowTransaction(@Body body:RequestBody
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
+    fun submitRepayBorrowTransaction(
+        @Body body: RequestBody
     ): Observable<Response<Any>>
 }

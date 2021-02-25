@@ -1,8 +1,11 @@
 package com.violas.wallet.repository.http.mapping
 
 import com.palliums.violas.http.ListResponse
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_KEY_CHAIN_NAME
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor.Companion.HEADER_VALUE_VIOLAS_CHAIN
 import io.reactivex.Observable
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Query
 
 /**
@@ -17,6 +20,7 @@ interface MappingApi {
      * 获取所有映射币种对信息
      */
     @GET("/1.0/mapping/address/info")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getMappingCoinPairs(): Observable<ListResponse<MappingCoinPairDTO>>
 
     /**
@@ -26,6 +30,7 @@ interface MappingApi {
      * @param offset
      */
     @GET("/1.0/mapping/transaction")
+    @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_VIOLAS_CHAIN}"])
     fun getMappingRecords(
         @Query("addresses") walletAddresses: String,
         @Query("limit") pageSize: Int,

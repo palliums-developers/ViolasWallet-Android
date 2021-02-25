@@ -3,6 +3,8 @@ package com.violas.wallet.repository.http.interceptor
 import com.palliums.utils.getHttpUserAgent
 import com.palliums.utils.getUniquePseudoID
 import com.violas.wallet.BuildConfig
+import com.violas.wallet.common.getDiemChainId
+import com.violas.wallet.common.getViolasChainId
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -15,10 +17,20 @@ import okhttp3.Response
  */
 class RequestHeaderInterceptor(private val closeConnection: Boolean = true) : Interceptor {
 
+    companion object {
+        const val HEADER_KEY_CHAIN_NAME = "chainName"
+        const val HEADER_VALUE_VIOLAS_CHAIN = "violas"
+        const val HEADER_VALUE_DIEM_CHAIN = "diem"
+
+        private const val HEADER_KEY_CHAIN_ID = "chainId"
+    }
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
+        val chainId = originalRequest.header(HEADER_KEY_CHAIN_NAME)
         val newRequest = originalRequest.newBuilder()
+            .removeHeader(HEADER_KEY_CHAIN_NAME)
             .header("User-Agent", getHttpUserAgent())
             .header("platform", "android")
             .header("bundleId", BuildConfig.APPLICATION_ID)
@@ -29,6 +41,14 @@ class RequestHeaderInterceptor(private val closeConnection: Boolean = true) : In
             .header("deviceId", getUniquePseudoID()).apply {
                 if (closeConnection) {
                     header("Connection", "close")
+                }
+                when (chainId) {
+                    HEADER_VALUE_VIOLAS_CHAIN -> {
+                        header(HEADER_KEY_CHAIN_ID, getViolasChainId().toString())
+                    }
+                    HEADER_VALUE_DIEM_CHAIN -> {
+                        header(HEADER_KEY_CHAIN_ID, getDiemChainId().toString())
+                    }
                 }
             }
             .build()

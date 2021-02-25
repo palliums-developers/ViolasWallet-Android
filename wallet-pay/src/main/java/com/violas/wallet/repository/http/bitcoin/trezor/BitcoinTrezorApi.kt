@@ -3,7 +3,7 @@ package com.violas.wallet.repository.http.bitcoin.trezor
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.ApiResponse
-import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
+import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URL_NAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_TREZOR
 import io.reactivex.Observable
 import retrofit2.http.*
@@ -24,7 +24,7 @@ interface BitcoinTrezorApi {
      * @param pageNumber 页码，从1开始
      * @param details
      */
-    @Headers(value = ["${HEADER_KEY_URLNAME}:${HEADER_VALUE_TREZOR}"])
+    @Headers(value = ["${HEADER_KEY_URL_NAME}:${HEADER_VALUE_TREZOR}"])
     @GET("v2/address/{address}")
     fun getTransactionRecords(
         @Path("address") address: String,
