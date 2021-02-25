@@ -306,7 +306,7 @@ class ViolasOutputScript {
 
     // 大端顺序 write Int16
     private fun writeInt16(value: Int, output: BitcoinOutputStream) {
-        output.write(OP_VER shr 8 and 0xff)
-        output.write(OP_VER and 0xff)
+        output.write(value shr 8 and 0xff)
+        output.write(value and 0xff)
     }
 }
