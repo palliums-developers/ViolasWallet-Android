@@ -39,7 +39,8 @@ class MoveHandlerTest {
         val rawTransaction = RawTransaction.optionTransaction(
             account.getAddress().toHex(),
             optionPublishTransactionPayload,
-            15
+            15,
+            chainId = 2
         )
         Log.e("===", account.keyPair.getPrivateKey().toHex())
 
@@ -64,7 +65,8 @@ class MoveHandlerTest {
         val rawTransaction = RawTransaction.optionTransaction(
             account.getAddress().toHex(),
             optionPublishTransactionPayload,
-            16
+            16,
+            chainId = 2
         )
         Log.e("===", account.keyPair.getPrivateKey().toHex())
 
@@ -94,7 +96,8 @@ class MoveHandlerTest {
         val rawTransaction = RawTransaction.optionTransaction(
             account.getAddress().toHex(),
             optionTokenTransactionPayload,
-            18
+            18,
+            chainId = 2
         )
         Log.e("===", account.keyPair.getPrivateKey().toHex())
 
@@ -124,7 +127,8 @@ class MoveHandlerTest {
         val rawTransaction = RawTransaction.optionTransaction(
             account.getAddress().toHex(),
             optionTokenTransactionPayload,
-            12
+            12,
+            chainId = 2
         )
         Log.e("===", account.keyPair.getPrivateKey().toHex())
 
