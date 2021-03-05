@@ -59,4 +59,15 @@ public final class BitcoinOutputStream extends ByteArrayOutputStream {
             writeInt64(value);
         }
     }
+
+    // 大端顺序 write Int16
+    public void writeInt16WithBigEndian(int value) {
+        write((value >> 8) & 0xff);
+        write(value & 0xff);
+    }
+
+    // 大端顺序 write Int
+    public void writeWithBigEndian(int value) {
+        write(value & 0xff);
+    }
 }
