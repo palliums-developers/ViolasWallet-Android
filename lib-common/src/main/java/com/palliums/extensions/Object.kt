@@ -10,11 +10,13 @@ import com.palliums.BuildConfig
  * desc:
  */
 
+var logOnlyDebug: Boolean = false
+
 inline fun Any.logVerbose(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.v(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
@@ -26,7 +28,7 @@ inline fun Any.logVerbose(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.v(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
@@ -38,7 +40,7 @@ inline fun Any.logDebug(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.d(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
@@ -50,7 +52,7 @@ inline fun Any.logDebug(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.d(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
@@ -62,7 +64,7 @@ inline fun Any.logInfo(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.i(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
@@ -74,7 +76,7 @@ inline fun Any.logInfo(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.i(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
@@ -86,7 +88,7 @@ inline fun Any.logWarn(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.w(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
@@ -98,7 +100,7 @@ inline fun Any.logWarn(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.w(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
@@ -110,7 +112,7 @@ inline fun Any.logError(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.e(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}"
@@ -122,7 +124,7 @@ inline fun Any.logError(
     tag: String? = null,
     lazyMsg: () -> String
 ) {
-    if (!BuildConfig.DEBUG) return
+    if (logOnlyDebug && !BuildConfig.DEBUG) return
     Log.e(
         tag ?: this.javaClass.simpleName,
         "[${getThreadName()}] ${lazyMsg.invoke()}",
