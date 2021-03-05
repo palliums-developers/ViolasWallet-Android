@@ -14,7 +14,7 @@ import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.getBitcoinCoinType
-import com.violas.wallet.common.getDiemCoinType
+import com.violas.wallet.common.getViolasChainId
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.ui.main.market.bean.*
@@ -207,7 +207,7 @@ class BTCToMappingAssetsProcessor(
 
 class ViolasOutputScript {
     companion object {
-        const val OP_VER: Int = 0x0003
+        const val OP_VER: Int = 0x0004
         val OP_TYPE_START: ByteArray = byteArrayOf(0x30, 0x00)
         val OP_TYPE_END: ByteArray = byteArrayOf(0x30, 0x01)
         val TYPE_CANCEL: ByteArray = byteArrayOf(0x30, 0x02)
@@ -224,9 +224,8 @@ class ViolasOutputScript {
     ): Script {
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
-        //dataStream.writeInt16(OP_VER)
         // 此处非 BTC 小端字节规则，需要注意
-        writeInt16(OP_VER, dataStream)
+        dataStream.writeInt16WithBigEndian(OP_VER)
 
         dataStream.write(type.replace("0x", "").hexToBytes())
         dataStream.write(payeeAddress)
@@ -237,7 +236,8 @@ class ViolasOutputScript {
         dataStream.write(
             ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(0).array()
         )
-        writeInt16(0, dataStream)
+        dataStream.writeInt16WithBigEndian(0)
+        dataStream.writeWithBigEndian(getViolasChainId())
 
         val scriptStream = BitcoinOutputStream()
         scriptStream.write(Script.OP_RETURN.toInt())
@@ -259,9 +259,8 @@ class ViolasOutputScript {
     ): Script {
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
-        //dataStream.writeInt16(OP_VER)
         // 此处非 BTC 小端字节规则，需要注意
-        writeInt16(OP_VER, dataStream)
+        dataStream.writeInt16WithBigEndian(OP_VER)
 
         dataStream.write(lable.replace("0x", "").hexToBytes())
         dataStream.write(payeeAddress)
@@ -272,7 +271,8 @@ class ViolasOutputScript {
         dataStream.write(
             ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(miniOutputAmount).array()
         )
-        writeInt16(10, dataStream)
+        dataStream.writeInt16WithBigEndian(10)
+        dataStream.writeWithBigEndian(getViolasChainId())
 
         val scriptStream = BitcoinOutputStream()
         scriptStream.write(Script.OP_RETURN.toInt())
@@ -287,9 +287,8 @@ class ViolasOutputScript {
     ): Script {
         val dataStream = BitcoinOutputStream()
         dataStream.write("violas".toByteArray())
-        //dataStream.writeInt16(OP_VER)
         // 此处非 BTC 小端字节规则，需要注意
-        writeInt16(OP_VER, dataStream)
+        dataStream.writeInt16WithBigEndian(OP_VER)
 
         dataStream.write(TYPE_CANCEL)
         dataStream.write(lable.replace("0x", "").hexToBytes())
@@ -302,11 +301,5 @@ class ViolasOutputScript {
         scriptStream.write(Script.OP_RETURN.toInt())
         Script.writeBytes(dataStream.toByteArray(), scriptStream)
         return Script(scriptStream.toByteArray())
-    }
-
-    // 大端顺序 write Int16
-    private fun writeInt16(value: Int, output: BitcoinOutputStream) {
-        output.write(value shr 8 and 0xff)
-        output.write(value and 0xff)
     }
 }
