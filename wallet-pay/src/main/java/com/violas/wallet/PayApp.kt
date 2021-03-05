@@ -72,10 +72,10 @@ class PayApp : App() {
             lockscreenVisibility = Notification.VISIBILITY_PRIVATE,
             notificationManager = notificationManager
         )
-        createNotificationChannel(
+        /*createNotificationChannel(
             getString(R.string.notification_channel_id_events),
             getString(R.string.notification_channel_name_events),
-            NotificationManager.IMPORTANCE_DEFAULT,
+            NotificationManager.IMPORTANCE_LOW,
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
             notificationManager = notificationManager
         )
@@ -85,7 +85,7 @@ class PayApp : App() {
             NotificationManager.IMPORTANCE_LOW,
             lockscreenVisibility = Notification.VISIBILITY_PUBLIC,
             notificationManager = notificationManager
-        )
+        )*/
         createNotificationChannel(
             getString(R.string.notification_channel_id_default),
             getString(R.string.notification_channel_name_default),

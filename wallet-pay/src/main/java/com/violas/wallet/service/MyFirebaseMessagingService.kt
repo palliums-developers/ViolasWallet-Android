@@ -104,13 +104,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     NotificationCompat.PRIORITY_HIGH
                 }
 
-                getString(R.string.notification_channel_id_events) -> {
-                    NotificationCompat.PRIORITY_DEFAULT
+                /*getString(R.string.notification_channel_id_events) -> {
+                    NotificationCompat.PRIORITY_LOW
                 }
 
                 getString(R.string.notification_channel_id_update) -> {
                     NotificationCompat.PRIORITY_LOW
-                }
+                }*/
 
                 else -> {
                     NotificationCompat.PRIORITY_LOW
