@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,246 +7,269 @@
     tools:context=".ui.mapping.MappingActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/viewGroupMapping"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="@dimen/dp_436"
-        android:layout_marginHorizontal="@dimen/dp_15"
-        android:layout_marginTop="@dimen/dp_19"
-        android:background="?attr/colorOnPrimary"
-        android:paddingHorizontal="@dimen/dp_15"
-        android:paddingTop="@dimen/dp_30"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/vBalanceIcon"
-            android:layout_width="@dimen/dp_12"
-            android:layout_height="@dimen/dp_12"
-            android:background="?attr/iconAmount"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvBalanceLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_4"
-            android:includeFontPadding="false"
-            android:text="@string/mapping_label_balance"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="@dimen/fs_10"
-            app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
-            app:layout_constraintStart_toEndOf="@id/vBalanceIcon"
-            app:layout_constraintTop_toTopOf="@id/vBalanceIcon" />
-
-        <com.palliums.widget.NumberTextView
-            android:id="@+id/tvBalance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="@dimen/fs_10"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
-            app:layout_constraintStart_toEndOf="@id/tvBalanceLabel"
-            app:layout_constraintTop_toTopOf="@id/vBalanceIcon"
-            tools:text="10 BTC" />
-
-        <com.palliums.widget.NumberEditText
-            android:id="@+id/etFromInputBox"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/viewGroupMapping"
             android:layout_width="@dimen/dp_0"
-            android:layout_height="@dimen/dp_48"
-            android:layout_marginTop="@dimen/dp_16"
-            android:background="@drawable/sel_bg_market_edit_box"
-            android:hint="@string/mapping_hint_mapping_amount"
-            android:includeFontPadding="false"
-            android:inputType="numberDecimal"
-            android:paddingStart="@dimen/dp_16"
-            android:paddingEnd="@dimen/dp_85"
-            android:textSize="@dimen/fs_14"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_15"
+            android:layout_marginTop="@dimen/dp_19"
+            android:background="?attr/colorOnPrimary"
+            android:paddingHorizontal="@dimen/dp_15"
+            android:paddingTop="@dimen/dp_30"
+            android:paddingBottom="@dimen/dp_55"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vBalanceIcon" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/llFromSelectGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_7"
-            android:background="@drawable/sel_bg_btn2_primary"
-            android:paddingHorizontal="@dimen/dp_10"
-            android:paddingVertical="@dimen/dp_5"
-            app:layout_constraintBottom_toBottomOf="@id/etFromInputBox"
-            app:layout_constraintEnd_toEndOf="@id/etFromInputBox"
-            app:layout_constraintTop_toTopOf="@id/etFromInputBox">
+            <View
+                android:id="@+id/vBalanceIcon"
+                android:layout_width="@dimen/dp_12"
+                android:layout_height="@dimen/dp_12"
+                android:background="?attr/iconAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvFromSelectText"
+                android:id="@+id/tvBalanceLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/common_action_select_token"
-                android:textColor="@color/sel_text_color_btn2"
+                android:layout_marginStart="@dimen/dp_4"
+                android:includeFontPadding="false"
+                android:text="@string/mapping_label_balance"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/fs_10"
+                app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
+                app:layout_constraintStart_toEndOf="@id/vBalanceIcon"
+                app:layout_constraintTop_toTopOf="@id/vBalanceIcon" />
+
+            <com.palliums.widget.NumberTextView
+                android:id="@+id/tvBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="@dimen/fs_10"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/vBalanceIcon"
+                app:layout_constraintStart_toEndOf="@id/tvBalanceLabel"
+                app:layout_constraintTop_toTopOf="@id/vBalanceIcon"
+                tools:text="10 BTC" />
+
+            <com.palliums.widget.NumberEditText
+                android:id="@+id/etFromInputBox"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="@dimen/dp_48"
+                android:layout_marginTop="@dimen/dp_16"
+                android:background="@drawable/sel_bg_market_edit_box"
+                android:hint="@string/mapping_hint_mapping_amount"
+                android:includeFontPadding="false"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/dp_16"
+                android:paddingEnd="@dimen/dp_85"
+                android:textSize="@dimen/fs_14"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/vBalanceIcon" />
+
+            <LinearLayout
+                android:id="@+id/llFromSelectGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_7"
+                android:background="@drawable/sel_bg_btn2_primary"
+                android:paddingHorizontal="@dimen/dp_10"
+                android:paddingVertical="@dimen/dp_5"
+                app:layout_constraintBottom_toBottomOf="@id/etFromInputBox"
+                app:layout_constraintEnd_toEndOf="@id/etFromInputBox"
+                app:layout_constraintTop_toTopOf="@id/etFromInputBox">
+
+                <TextView
+                    android:id="@+id/tvFromSelectText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/common_action_select_token"
+                    android:textColor="@color/sel_text_color_btn2"
+                    android:textSize="@dimen/fs_12" />
+
+                <ImageView
+                    android:layout_width="@dimen/dp_10"
+                    android:layout_height="@dimen/dp_6"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/dp_2"
+                    android:background="@drawable/sel_market_downward" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/vMiddleIcon"
+                android:layout_width="@dimen/dp_12"
+                android:layout_height="@dimen/dp_12"
+                android:layout_marginTop="@dimen/dp_12"
+                android:background="?attr/iconDownArrow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etFromInputBox" />
+
+            <com.palliums.widget.NumberEditText
+                android:id="@+id/etToInputBox"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="@dimen/dp_48"
+                android:layout_marginTop="@dimen/dp_12"
+                android:background="@drawable/bg_mapping_output"
+                android:enabled="false"
+                android:includeFontPadding="false"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/dp_16"
+                android:paddingEnd="@dimen/dp_85"
+                android:text="0"
+                android:textSize="@dimen/fs_14"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/vMiddleIcon" />
+
+            <TextView
+                android:id="@+id/tvToCoinName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/fs_14"
+                app:layout_constraintBottom_toBottomOf="@id/etToInputBox"
+                app:layout_constraintEnd_toEndOf="@id/etToInputBox"
+                app:layout_constraintTop_toTopOf="@id/etToInputBox"
+                tools:text="vBTC" />
+
+            <EditText
+                android:id="@+id/etAddress"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="@dimen/dp_48"
+                android:layout_marginTop="@dimen/dp_16"
+                android:background="@drawable/sel_bg_market_edit_box"
+                android:hint="@string/mapping_hint_mapping_ethereum_address"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="@dimen/dp_16"
+                android:textSize="@dimen/fs_14"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etToInputBox"
+                tools:visibility="visible" />
+
+            <View
+                android:id="@+id/vDivider"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="@dimen/dp_2"
+                android:layout_marginHorizontal="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_30"
+                android:background="?attr/mappingDividerIcon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etAddress" />
+
+            <TextView
+                android:id="@+id/tvExchangeRateLabel"
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_30"
+                android:includeFontPadding="false"
+                android:text="@string/mapping_label_exchange_rate"
+                android:textColor="?android:attr/textColorTertiary"
+                android:textSize="@dimen/fs_10"
+                app:layout_constraintStart_toStartOf="@id/vDivider"
+                app:layout_constraintTop_toBottomOf="@id/vDivider" />
+
+            <com.palliums.widget.NumberTextView
+                android:id="@+id/tvExchangeRate"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_2"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/fs_10"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvExchangeRateLabel"
+                app:layout_constraintEnd_toEndOf="@id/vDivider"
+                app:layout_constraintStart_toEndOf="@id/tvExchangeRateLabel"
+                tools:text="1 BTC = 1 vBTC" />
+
+            <TextView
+                android:id="@+id/tvMinerFeesLabel"
+                android:layout_width="@dimen/dp_80"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_10"
+                android:includeFontPadding="false"
+                android:text="@string/mapping_label_gas_fee"
+                android:textColor="?android:attr/textColorTertiary"
+                android:textSize="@dimen/fs_10"
+                app:layout_constraintStart_toStartOf="@id/vDivider"
+                app:layout_constraintTop_toBottomOf="@id/tvExchangeRateLabel" />
+
+            <com.palliums.widget.NumberTextView
+                android:id="@+id/tvMinerFees"
+                android:layout_width="@dimen/dp_0"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_2"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/fs_10"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvMinerFeesLabel"
+                app:layout_constraintEnd_toEndOf="@id/vDivider"
+                app:layout_constraintStart_toEndOf="@id/tvMinerFeesLabel"
+                tools:text="0.11 BTC" />
+
+            <Button
+                android:id="@+id/btnMapping"
+                style="@style/BaseButtonPrimary"
+                android:layout_marginTop="@dimen/dp_31"
+                android:text="@string/mapping_action_mapping"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvMinerFeesLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_30"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/viewGroupMapping">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mapping_ethereum_tokens_title"
+                android:textColor="?android:attr/textColorTertiary"
+                android:textSize="@dimen/fs_14" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_15"
+                android:text="@string/mapping_ethereum_tokens_desc"
                 android:textSize="@dimen/fs_12" />
 
+            <TextView
+                android:id="@+id/tvDappUrl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_4"
+                android:drawableEnd="@drawable/ic_url_copy"
+                android:drawablePadding="@dimen/dp_8"
+                android:textColor="?attr/colorSecondaryVariant"
+                android:textSize="@dimen/fs_12"
+                tools:text="https://wallet.violas.io/violasMapping" />
+
             <ImageView
-                android:layout_width="@dimen/dp_10"
-                android:layout_height="@dimen/dp_6"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/dp_2"
-                android:background="@drawable/sel_market_downward" />
-
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_16"
+                android:src="@drawable/ic_wallet_supper_eth_wallet" />
         </LinearLayout>
-
-        <View
-            android:id="@+id/vMiddleIcon"
-            android:layout_width="@dimen/dp_12"
-            android:layout_height="@dimen/dp_12"
-            android:layout_marginTop="@dimen/dp_12"
-            android:background="?attr/iconDownArrow"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etFromInputBox" />
-
-        <com.palliums.widget.NumberEditText
-            android:id="@+id/etToInputBox"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="@dimen/dp_48"
-            android:layout_marginTop="@dimen/dp_12"
-            android:background="@drawable/bg_mapping_output"
-            android:enabled="false"
-            android:includeFontPadding="false"
-            android:inputType="numberDecimal"
-            android:paddingStart="@dimen/dp_16"
-            android:paddingEnd="@dimen/dp_85"
-            android:text="0"
-            android:textSize="@dimen/fs_14"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vMiddleIcon" />
-
-        <TextView
-            android:id="@+id/tvToCoinName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:includeFontPadding="false"
-            android:textSize="@dimen/fs_14"
-            app:layout_constraintBottom_toBottomOf="@id/etToInputBox"
-            app:layout_constraintEnd_toEndOf="@id/etToInputBox"
-            app:layout_constraintTop_toTopOf="@id/etToInputBox"
-            tools:text="vBTC" />
-
-        <View
-            android:id="@+id/vDivider"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="@dimen/dp_2"
-            android:layout_marginHorizontal="@dimen/dp_16"
-            android:layout_marginTop="@dimen/dp_30"
-            android:background="?attr/mappingDividerIcon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etToInputBox" />
-
-        <TextView
-            android:id="@+id/tvExchangeRateLabel"
-            android:layout_width="@dimen/dp_80"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_30"
-            android:includeFontPadding="false"
-            android:text="@string/mapping_label_exchange_rate"
-            android:textColor="?android:attr/textColorTertiary"
-            android:textSize="@dimen/fs_10"
-            app:layout_constraintStart_toStartOf="@id/vDivider"
-            app:layout_constraintTop_toBottomOf="@id/vDivider" />
-
-        <com.palliums.widget.NumberTextView
-            android:id="@+id/tvExchangeRate"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_2"
-            android:includeFontPadding="false"
-            android:textSize="@dimen/fs_10"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvExchangeRateLabel"
-            app:layout_constraintEnd_toEndOf="@id/vDivider"
-            app:layout_constraintStart_toEndOf="@id/tvExchangeRateLabel"
-            tools:text="1 BTC = 1 vBTC" />
-
-        <TextView
-            android:id="@+id/tvMinerFeesLabel"
-            android:layout_width="@dimen/dp_80"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_10"
-            android:includeFontPadding="false"
-            android:text="@string/mapping_label_gas_fee"
-            android:textColor="?android:attr/textColorTertiary"
-            android:textSize="@dimen/fs_10"
-            app:layout_constraintStart_toStartOf="@id/vDivider"
-            app:layout_constraintTop_toBottomOf="@id/tvExchangeRateLabel" />
-
-        <com.palliums.widget.NumberTextView
-            android:id="@+id/tvMinerFees"
-            android:layout_width="@dimen/dp_0"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_2"
-            android:includeFontPadding="false"
-            android:textSize="@dimen/fs_10"
-            app:layout_constraintBaseline_toBaselineOf="@id/tvMinerFeesLabel"
-            app:layout_constraintEnd_toEndOf="@id/vDivider"
-            app:layout_constraintStart_toEndOf="@id/tvMinerFeesLabel"
-            tools:text="0.11 BTC" />
-
-        <Button
-            android:id="@+id/btnMapping"
-            style="@style/BaseButtonPrimary"
-            android:layout_marginTop="@dimen/dp_31"
-            android:text="@string/mapping_action_mapping"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvMinerFeesLabel" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dp_30"
-        android:layout_marginTop="@dimen/dp_30"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewGroupMapping">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/mapping_eth_tokens_title"
-            android:textColor="?android:attr/textColorTertiary"
-            android:textSize="@dimen/fs_14" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_15"
-            android:text="@string/mapping_eth_tokens_desc"
-            android:textSize="@dimen/fs_12" />
-
-        <TextView
-            android:id="@+id/tvDappUrl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_4"
-            android:drawableEnd="@drawable/ic_url_copy"
-            android:drawablePadding="@dimen/dp_8"
-            android:textColor="?attr/colorSecondaryVariant"
-            android:textSize="@dimen/fs_12"
-            tools:text="https://wallet.violas.io/violasMapping" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_16"
-            android:src="@drawable/ic_wallet_supper_eth_wallet" />
-    </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

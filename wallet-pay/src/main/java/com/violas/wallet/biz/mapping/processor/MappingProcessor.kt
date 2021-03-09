@@ -15,7 +15,8 @@ interface MappingProcessor {
 
     suspend fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         amount: Long,

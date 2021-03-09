@@ -13,6 +13,7 @@ import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
+import com.violas.wallet.common.getEthereumCoinType
 import com.violas.wallet.repository.http.mapping.MappingRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.str2CoinType
@@ -123,8 +124,35 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
                         } ${it.outputCoinDisplayName}"
                     }
 
-                itemView.tvMinerFees.text =
-                    getString(R.string.mapping_records_label_gas_fee_format, getString(R.string.common_desc_value_null))
+                itemView.tvMinerFees.text = getString(
+                    R.string.mapping_records_label_gas_fee_format,
+                    getString(R.string.common_desc_value_null)
+                )
+
+                if (str2CoinType(it.outputChainName) == getEthereumCoinType()) {
+                    itemView.tvOutputAddress.visibility = View.VISIBLE
+                    itemView.tvOutputAddress.text = getString(
+                        R.string.mapping_records_label_ethereum_address_format,
+                        when {
+                            it.outputAddress.isNullOrBlank() -> {
+                                getString(R.string.common_desc_value_null)
+                            }
+                            it.outputAddress.length > 14 -> {
+                                "${it.outputAddress.substring(0, 8)}...${
+                                    it.outputAddress.substring(
+                                        it.outputAddress.length - 6,
+                                        it.outputAddress.length
+                                    )
+                                }"
+                            }
+                            else -> {
+                                it.outputAddress
+                            }
+                        }
+                    )
+                } else {
+                    itemView.tvOutputAddress.visibility = View.GONE
+                }
 
                 when {
                     it.state?.equals("end", true) == true -> {

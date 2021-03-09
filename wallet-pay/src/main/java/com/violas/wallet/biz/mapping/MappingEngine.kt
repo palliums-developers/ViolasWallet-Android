@@ -37,7 +37,8 @@ internal class MappingEngine {
 
     suspend fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         amount: Long,
@@ -47,6 +48,7 @@ internal class MappingEngine {
             if (it.hasMappable(coinPair)) {
                 return it.mapping(
                     checkPayeeAccount,
+                    payeeAddress,
                     payeeAccountDO,
                     payerAccountDO,
                     password,

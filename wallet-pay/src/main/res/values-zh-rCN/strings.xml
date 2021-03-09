@@ -204,18 +204,22 @@
     <string name="mapping_label_balance">可用余额 ：</string>
     <string name="mapping_label_exchange_rate">汇率</string>
     <string name="mapping_hint_mapping_amount">转出数量</string>
+    <string name="mapping_hint_mapping_ethereum_address">请输入转出Ethereum地址</string>
     <string name="mapping_action_mapping">确定映射</string>
     <string name="mapping_label_gas_fee">矿工费用</string>
-    <string name="mapping_eth_tokens_title">如何映射 ETH 代币？</string>
-    <string name="mapping_eth_tokens_desc">将链接复制到以下钱包，即可将ETH代币映射至violas钱包</string>
+    <string name="mapping_ethereum_tokens_title">如何映射 Ethereum 代币？</string>
+    <string name="mapping_ethereum_tokens_desc">将链接复制到以下钱包，即可将Ethereum代币映射至Violas钱包</string>
     <string name="mapping_tips_token_empty">请选择币种</string>
     <string name="mapping_tips_mapping_amount_empty">请输入转出数量</string>
+    <string name="mapping_tips_mapping_ethereum_address_empty">@string/mapping_hint_mapping_ethereum_address</string>
+    <string name="mapping_tips_mapping_ethereum_address_error">Ethereum地址不正确</string>
     <string name="mapping_tips_unsupported_token">不支持该币种映射</string>
     <string name="mapping_tips_mapping_success">映射交易广播成功</string>
     <string name="mapping_tips_mapping_failure">映射失败，请稍后重试</string>
     <!--映射记录-->
     <string name="mapping_records_title">映射记录</string>
     <string name="mapping_records_label_gas_fee_format">矿工费用：%1$s</string>
+    <string name="mapping_records_label_ethereum_address_format">Ethereum地址：%1$s</string>
     <string name="mapping_txn_state_processing">映射中</string>
     <string name="mapping_txn_state_succeeded">映射成功</string>
     <string name="mapping_txn_state_failed">映射失败</string>

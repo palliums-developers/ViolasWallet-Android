@@ -41,7 +41,8 @@ class LibraToMappingCoinProcessor(
 
     override suspend fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         amount: Long,
@@ -49,9 +50,8 @@ class LibraToMappingCoinProcessor(
     ): String {
         if (checkPayeeAccount) {
             // 检查收款账户激活状态
-            val payeeAccountState =
-                violasRpcService.getAccountState(payeeAccountDO.address)
-                    ?: throw AccountPayeeNotFindException()
+            val payeeAccountState = violasRpcService.getAccountState(payeeAccountDO!!.address)
+                ?: throw AccountPayeeNotFindException()
 
             // 检查收款账户 Token 注册状态
             var isPublishToken = false
@@ -85,7 +85,7 @@ class LibraToMappingCoinProcessor(
         subMappingDate.put("type", coinPair.mappingType)
         subMappingDate.put(
             "to_address",
-            "00000000000000000000000000000000${payeeAccountDO.address}"
+            "00000000000000000000000000000000${payeeAccountDO!!.address}"
         )
         subMappingDate.put("state", "start")
         subMappingDate.put("times", 0)

@@ -236,7 +236,8 @@ class MappingViewModel : BaseViewModel() {
     // <editor-fold defaultState="collapsed" desc="映射及publish操作方法">
     suspend fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         amountStr: String
@@ -244,6 +245,7 @@ class MappingViewModel : BaseViewModel() {
         val coinPair = currMappingCoinPairLiveData.value!!
         mappingManager.mapping(
             checkPayeeAccount,
+            payeeAddress,
             payeeAccountDO,
             payerAccountDO,
             password,

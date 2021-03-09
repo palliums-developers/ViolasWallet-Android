@@ -36,7 +36,8 @@ class MappingManager {
 
     suspend fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         amount: Long,
@@ -44,6 +45,7 @@ class MappingManager {
     ): String {
         return engine.mapping(
             checkPayeeAccount,
+            payeeAddress,
             payeeAccountDO,
             payerAccountDO,
             password,

@@ -11,8 +11,7 @@
         android:id="@+id/tvState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_8"
-        android:layout_marginTop="@dimen/dp_12"
+        android:layout_marginTop="@dimen/dp_10"
         android:includeFontPadding="false"
         android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,10 +23,10 @@
         android:id="@+id/tvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_13"
         android:includeFontPadding="false"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_12"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvState"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="01.18 15:42" />
@@ -36,9 +35,8 @@
         android:id="@+id/tvInputCoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_12"
+        android:layout_marginTop="@dimen/dp_10"
         android:includeFontPadding="false"
-        android:textColor="?colorOnSurface"
         android:textSize="@dimen/fs_14"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvState"
@@ -60,7 +58,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_8"
         android:includeFontPadding="false"
-        android:textColor="?colorOnSurface"
         android:textSize="@dimen/fs_14"
         app:layout_constraintBaseline_toBaselineOf="@id/tvInputCoin"
         app:layout_constraintStart_toEndOf="@id/ivIcon"
@@ -73,19 +70,34 @@
         android:layout_marginTop="@dimen/dp_10"
         android:includeFontPadding="false"
         android:text="@string/market_swap_label_gas_fee_format"
-        android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/fs_10"
+        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="@id/tvState"
         app:layout_constraintTop_toBottomOf="@id/tvInputCoin" />
+
+    <TextView
+        android:id="@+id/tvOutputAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:ellipsize="middle"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:text="@string/mapping_records_label_ethereum_address_format"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_12"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/tvState"
+        app:layout_constraintTop_toBottomOf="@id/tvMinerFees"
+        tools:visibility="visible" />
 
     <View
         android:layout_width="@dimen/dp_0"
         android:layout_height="?attr/dividerThickness"
-        android:layout_marginTop="@dimen/dp_12"
+        android:layout_marginTop="@dimen/dp_10"
         android:background="?attr/colorDivider"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvMinerFees" />
+        app:layout_constraintTop_toBottomOf="@id/tvOutputAddress" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

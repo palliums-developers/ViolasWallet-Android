@@ -32,14 +32,17 @@ class ViolasToOriginalCoinProcessor(
     private val violasService by lazy { DataRepository.getViolasChainRpcService() }
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
-        val toCoinType = str2CoinType(coinPair.toCoin.chainName)
-        return str2CoinType(coinPair.fromCoin.chainName) == getViolasCoinType()
-                && (toCoinType == getBitcoinCoinType() || toCoinType == getDiemCoinType())
+        return str2CoinType(coinPair.fromCoin.chainName) == getViolasCoinType() &&
+                when (str2CoinType(coinPair.toCoin.chainName)) {
+                    getBitcoinCoinType(), getDiemCoinType(), getEthereumCoinType() -> true
+                    else -> false
+                }
     }
 
     override suspend fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         amount: Long,
@@ -47,9 +50,8 @@ class ViolasToOriginalCoinProcessor(
     ): String {
         if (checkPayeeAccount && str2CoinType(coinPair.toCoin.chainName) == getDiemCoinType()) {
             // 检查收款账户激活状态
-            val payeeAccountState =
-                libraRpcService.getAccountState(payeeAccountDO.address)
-                    ?: throw AccountPayeeNotFindException()
+            val payeeAccountState = libraRpcService.getAccountState(payeeAccountDO!!.address)
+                ?: throw AccountPayeeNotFindException()
 
             // 检查收款账户 Token 注册状态
             var isPublishToken = false
@@ -83,10 +85,14 @@ class ViolasToOriginalCoinProcessor(
         subMappingDate.put("type", coinPair.mappingType)
         subMappingDate.put(
             "to_address",
-            if (str2CoinType(coinPair.toCoin.chainName) == getBitcoinCoinType())
-                payeeAccountDO.address
-            else
-                "00000000000000000000000000000000${payeeAccountDO.address}"
+            when (str2CoinType(coinPair.toCoin.chainName)) {
+                getBitcoinCoinType() ->
+                    payeeAccountDO!!.address
+                getEthereumCoinType() ->
+                    payeeAddress!!
+                else ->
+                    "00000000000000000000000000000000${payeeAccountDO!!.address}"
+            }
         )
         subMappingDate.put("state", "start")
         subMappingDate.put("times", 0)

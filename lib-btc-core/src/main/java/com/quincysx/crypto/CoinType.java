@@ -12,7 +12,8 @@ public enum CoinType {
     Violas(-4, "VLS", "VLS", "Violas"),
     ViolasTest(-2, "VLS", "VLS", "Violas"),
     Diem(-3, "LBR", "LBR", "Libra"),
-    DiemTest(-1, "LBR", "LBR", "Libra");
+    DiemTest(-1, "LBR", "LBR", "Libra"),
+    Ethereum(-5, "ETH", "ETH", "Ethereum");
 
     private final int coinNumber;
     private final String coinName;

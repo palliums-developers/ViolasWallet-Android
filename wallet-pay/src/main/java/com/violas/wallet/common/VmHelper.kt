@@ -52,3 +52,7 @@ fun getViolasChainId(): Int {
 fun getViolasNetworkPrefix(): org.palliums.violascore.wallet.AccountIdentifier.NetworkPrefix {
     return VmConfigs.VIOLAS_NETWORK_PREFIX
 }
+
+fun getEthereumCoinType(): CoinType {
+    return CoinType.Ethereum
+}

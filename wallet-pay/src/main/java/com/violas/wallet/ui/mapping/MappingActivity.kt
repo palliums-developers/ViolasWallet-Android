@@ -22,6 +22,7 @@ import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
 import com.violas.wallet.biz.mapping.UnsupportedMappingCoinPairException
 import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getEthereumCoinType
 import com.violas.wallet.common.getViolasDappUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
@@ -99,9 +100,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         }
 
         btnMapping.setOnClickListener {
-            clearInputBoxFocusAndHideSoftInput()
-            if (mappingPreconditionsInvalid()) return@setOnClickListener
-            authenticateAccount()
+            onClickMapping()
         }
 
         tvDappUrl.text = getViolasDappUrl()
@@ -110,7 +109,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         }
 
         // 数据观察
-        mappingViewModel.getCurrMappingCoinPairLiveData().observe(this, Observer {
+        mappingViewModel.getCurrMappingCoinPairLiveData().observe(this) {
             if (it == null) {
                 reset()
                 coinBalanceSubscriber.changeSubscriber(null)
@@ -119,6 +118,12 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                     "1 ${it.fromCoin.assets.displayName} = 1 ${it.toCoin.assets.displayName}"
                 tvFromSelectText.text = it.fromCoin.assets.displayName
                 tvToCoinName.text = it.toCoin.assets.displayName
+                etAddress.setText("")
+                etAddress.visibility =
+                    if (str2CoinType(it.toCoin.chainName) == getEthereumCoinType())
+                        View.VISIBLE
+                    else
+                        View.GONE
 
                 val coinType = str2CoinType(it.fromCoin.chainName)
                 val assetsMark =
@@ -136,7 +141,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
             }
 
             adjustInputBoxPaddingEnd()
-        })
+        }
 
         mappingViewModel.loadState.observe(this, Observer {
             when (it.peekData().status) {
@@ -268,52 +273,84 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
     // </editor-fold>
 
     // <editor-fold defaultState="collapsed" desc="映射相关逻辑">
-    private fun mappingPreconditionsInvalid(): Boolean {
-        // 未选择币种判断
-        val coinPair = mappingViewModel.getCurrMappingCoinPairLiveData().value
-        if (coinPair == null) {
-            showToast(R.string.mapping_tips_token_empty)
-            return true
-        }
+    private fun onClickMapping() {
+        clearInputBoxFocusAndHideSoftInput()
 
-        // 未输入判断
-        val inputAmountStr = etFromInputBox.text.toString().trim()
-        if (inputAmountStr.isEmpty()) {
-            showToast(R.string.mapping_tips_mapping_amount_empty)
-            return true
-        }
-
-        // 输入为0判断, 当作未输入判断
-        val inputAmount =
-            convertDisplayAmountToAmount(inputAmountStr, str2CoinType(coinPair.fromCoin.chainName))
-        if (inputAmount <= BigDecimal.ZERO) {
-            showToast(R.string.mapping_tips_mapping_amount_empty)
-            return true
-        }
-
-        // 余额不足判断
-        if (inputAmount > coinBalance) {
-            showToast(R.string.common_tips_insufficient_available_balance)
-            return true
-        }
-
-        return false
-    }
-
-    private fun authenticateAccount() {
         launch {
+            // 未选择币种判断
+            val coinPair = mappingViewModel.getCurrMappingCoinPairLiveData().value
+            if (coinPair == null) {
+                showToast(R.string.mapping_tips_token_empty)
+                return@launch
+            }
+
+            // 未输入判断
+            val inputAmountStr = etFromInputBox.text.toString().trim()
+            if (inputAmountStr.isEmpty()) {
+                showToast(R.string.mapping_tips_mapping_amount_empty)
+                return@launch
+            }
+
+            // 输入为0判断, 当作未输入判断
+            val inputAmount = convertDisplayAmountToAmount(
+                inputAmountStr,
+                str2CoinType(coinPair.fromCoin.chainName)
+            )
+            if (inputAmount <= BigDecimal.ZERO) {
+                showToast(R.string.mapping_tips_mapping_amount_empty)
+                return@launch
+            }
+
+            // 余额不足判断
+            if (inputAmount > coinBalance) {
+                showToast(R.string.common_tips_insufficient_available_balance)
+                return@launch
+            }
+
+            // 付款账户判断
             val payerAccountDO = withContext(Dispatchers.IO) {
                 mappingViewModel.getAccount(true)
-            } ?: return@launch
-            val payeeAccountDO = withContext(Dispatchers.IO) {
-                mappingViewModel.getAccount(false)
-            } ?: return@launch
+            }
+            if (payerAccountDO == null) {
+                showToast(R.string.common_tips_account_error)
+                return@launch
+            }
+
+            // 收款账户判断
+            var payeeAddress: String? = null
+            var payeeAccountDO: AccountDO? = null
+            if (str2CoinType(coinPair.toCoin.chainName) == getEthereumCoinType()) {
+                payeeAddress = etAddress.text.toString().trim()
+                if (payeeAddress.isNullOrBlank()) {
+                    showToast(R.string.mapping_tips_mapping_ethereum_address_empty)
+                    return@launch
+                }
+
+                if (payeeAddress.length != 42) {
+                    showToast(R.string.mapping_tips_mapping_ethereum_address_error)
+                    return@launch
+                }
+            } else {
+                payeeAccountDO = withContext(Dispatchers.IO) {
+                    mappingViewModel.getAccount(false)
+                }
+                if (payeeAccountDO == null) {
+                    showToast(R.string.common_tips_account_error)
+                    return@launch
+                }
+            }
 
             authenticateAccount(
                 payerAccountDO,
                 mappingViewModel.accountManager,
                 passwordCallback = {
-                    mapping(true, payeeAccountDO, payerAccountDO, it.toByteArray())
+                    mapping(
+                        true,
+                        payeeAddress,
+                        payeeAccountDO,
+                        payerAccountDO,
+                        it.toByteArray()
+                    )
                 }
             )
         }
@@ -321,7 +358,8 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
     private fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray
     ) {
@@ -330,6 +368,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
             try {
                 mappingViewModel.mapping(
                     checkPayeeAccount,
+                    payeeAddress,
                     payeeAccountDO,
                     payerAccountDO,
                     password,
@@ -353,7 +392,13 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                     }
 
                     is PayeeAccountCoinNotActiveException -> {
-                        showPublishTokenDialog(payeeAccountDO, payerAccountDO, password, e)
+                        showPublishTokenDialog(
+                            payeeAddress,
+                            payeeAccountDO,
+                            payerAccountDO,
+                            password,
+                            e
+                        )
                     }
 
                     else -> {
@@ -366,7 +411,8 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
     }
 
     private fun showPublishTokenDialog(
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         exception: PayeeAccountCoinNotActiveException
@@ -386,7 +432,13 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                                 exception.assets
                             )
                         ) {
-                            mapping(false, payeeAccountDO, payerAccountDO, password)
+                            mapping(
+                                false,
+                                payeeAddress,
+                                payeeAccountDO,
+                                payerAccountDO,
+                                password
+                            )
                         } else {
                             showToast(R.string.txn_details_state_add_currency_failure)
                         }
@@ -417,6 +469,8 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         tvToCoinName.text = ""
         etFromInputBox.setText("")
         etToInputBox.setText("0")
+        etAddress.setText("")
+        etAddress.visibility = View.GONE
         coinBalance = BigDecimal.ZERO
     }
 

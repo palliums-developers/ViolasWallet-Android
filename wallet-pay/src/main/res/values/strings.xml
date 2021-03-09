@@ -203,19 +203,23 @@
     <string name="mapping_title">Mapping</string>
     <string name="mapping_label_balance">Balance : </string>
     <string name="mapping_hint_mapping_amount">Transfer Amount</string>
+    <string name="mapping_hint_mapping_ethereum_address">Please enter the outgoing Ethereum address</string>
     <string name="mapping_action_mapping">Confirm</string>
     <string name="mapping_label_exchange_rate">Exchange rate</string>
     <string name="mapping_label_gas_fee">Gas fee</string>
-    <string name="mapping_eth_tokens_title">How to map ETH ERC20 token?</string>
-    <string name="mapping_eth_tokens_desc">Copy &amp; paste the link to the wallet then map the ETH ERC20 token to Violas wallet</string>
+    <string name="mapping_ethereum_tokens_title">How to map Ethereum ERC20 token?</string>
+    <string name="mapping_ethereum_tokens_desc">Copy &amp; paste the link to the wallet then map the Ethereum ERC20 token to Violas wallet</string>
     <string name="mapping_tips_token_empty">Please select currency</string>
     <string name="mapping_tips_mapping_amount_empty">Please enter the map amount</string>
+    <string name="mapping_tips_mapping_ethereum_address_empty">@string/mapping_hint_mapping_ethereum_address</string>
+    <string name="mapping_tips_mapping_ethereum_address_error">Ethereum address is incorrect</string>
     <string name="mapping_tips_unsupported_token">The currency mapping is not supported</string>
     <string name="mapping_tips_mapping_success">Successful broadcast of mapping transaction</string>
     <string name="mapping_tips_mapping_failure">Mapping failed, please try again later</string>
     <!--映射记录-->
     <string name="mapping_records_title">Mapping Records</string>
     <string name="mapping_records_label_gas_fee_format">Gas fee: %1$s</string>
+    <string name="mapping_records_label_ethereum_address_format">Ethereum address: %1$s</string>
     <string name="mapping_txn_state_processing">Mapping Processing</string>
     <string name="mapping_txn_state_succeeded">Mapping Successful</string>
     <string name="mapping_txn_state_failed">Mapping Failed</string>

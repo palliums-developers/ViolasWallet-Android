@@ -61,6 +61,8 @@ data class MappingRecordDTO(
     val outputChainName: String?,
     @SerializedName(value = "out_show_name")
     val outputCoinDisplayName: String?,
+    @SerializedName(value = "to_address")
+    val outputAddress: String?,
 
     @SerializedName(value = "version")
     val version: String?,

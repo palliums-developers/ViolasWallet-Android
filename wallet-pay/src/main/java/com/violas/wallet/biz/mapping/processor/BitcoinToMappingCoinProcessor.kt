@@ -36,7 +36,8 @@ class BitcoinToMappingCoinProcessor(
 
     override suspend fun mapping(
         checkPayeeAccount: Boolean,
-        payeeAccountDO: AccountDO,
+        payeeAddress: String?,
+        payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
         amount: Long,
@@ -44,9 +45,8 @@ class BitcoinToMappingCoinProcessor(
     ): String {
         if (checkPayeeAccount) {
             // 检查收款账户激活状态
-            val payeeAccountState =
-                violasRpcService.getAccountState(payeeAccountDO.address)
-                    ?: throw AccountPayeeNotFindException()
+            val payeeAccountState = violasRpcService.getAccountState(payeeAccountDO!!.address)
+                ?: throw AccountPayeeNotFindException()
 
             // 检查收款账户 Token 注册状态
             var isPublishToken = false
@@ -66,8 +66,7 @@ class BitcoinToMappingCoinProcessor(
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, payerAccountDO.privateKey)!!
 
-        val transactionManager: TransactionManager =
-            TransactionManager(arrayListOf(payerAccountDO.address))
+        val transactionManager = TransactionManager(arrayListOf(payerAccountDO.address))
         val checkBalance =
             transactionManager.checkBalance(amount / 100000000.0, 3)
         if (!checkBalance) {
@@ -82,7 +81,7 @@ class BitcoinToMappingCoinProcessor(
             payerAccountDO.address,
             ViolasOutputScript().requestMapping(
                 coinPair.mappingType,
-                payeeAccountDO.address.hexStringToByteArray(),
+                payeeAccountDO!!.address.hexStringToByteArray(),
                 contractAddress.hexStringToByteArray()
             )
         ).flatMap {
