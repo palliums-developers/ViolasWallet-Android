@@ -218,17 +218,18 @@ class TokenManager {
         when (coinType.coinNumber()) {
             getViolasCoinType().coinNumber() -> {
                 val violasChainRpcService = DataRepository.getViolasChainRpcService()
-                val addCurrency = violasChainRpcService
-                    .addCurrency(
-                        ContextProvider.getContext(),
-                        Account(
-                            KeyPair.fromSecretKey(privateKey)
-                        ),
-                        tokenMark.address,
-                        tokenMark.module,
-                        tokenMark.name,
-                        getViolasChainId()
-                    )
+
+                val addCurrency = violasChainRpcService.addCurrency(
+                    ContextProvider.getContext(),
+                    Account(
+                        KeyPair.fromSecretKey(privateKey)
+                    ),
+                    tokenMark.address,
+                    tokenMark.module,
+                    tokenMark.name,
+                    chainId = getViolasChainId()
+                )
+
                 for (item in 1 until 4) {
                     delay(item * 1000L)
                     val transaction = violasChainRpcService.getTransaction(
@@ -240,19 +241,21 @@ class TokenManager {
                     }
                 }
             }
+
             getDiemCoinType().coinNumber() -> {
                 val libraService = DataRepository.getLibraRpcService()
-                val addCurrency = libraService
-                    .addCurrency(
-                        ContextProvider.getContext(),
-                        org.palliums.libracore.wallet.Account(
-                            org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
-                        ),
-                        tokenMark.address,
-                        tokenMark.module,
-                        tokenMark.name,
-                        getDiemChainId()
-                    )
+
+                val addCurrency = libraService.addCurrency(
+                    ContextProvider.getContext(),
+                    org.palliums.libracore.wallet.Account(
+                        org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
+                    ),
+                    tokenMark.address,
+                    tokenMark.module,
+                    tokenMark.name,
+                    chainId = getDiemChainId()
+                )
+
                 for (item in 1 until 4) {
                     delay(item * 1000L)
                     val transaction = libraService.getTransaction(
@@ -264,6 +267,7 @@ class TokenManager {
                     }
                 }
             }
+
             else -> throw RuntimeException("error")
         }
         return false

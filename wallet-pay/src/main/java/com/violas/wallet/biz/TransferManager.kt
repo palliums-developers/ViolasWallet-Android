@@ -236,7 +236,7 @@ class TransferManager {
             val metadataSignature = transactionMetadata?.signatureMessage ?: byteArrayOf()
 
             DataRepository.getLibraRpcService().sendTransaction(
-                payload = TransactionPayload.optionTransactionPayload(
+                TransactionPayload.optionTransactionPayload(
                     context,
                     address,
                     (amount * 1000000L).toLong(),
@@ -251,7 +251,7 @@ class TransferManager {
                         )
                     )
                 ),
-                account = Account(Ed25519KeyPair(decryptPrivateKey)),
+                Account(Ed25519KeyPair(decryptPrivateKey)),
                 gasCurrencyCode = token.module,
                 chainId = getDiemChainId()
             )
@@ -292,7 +292,7 @@ class TransferManager {
                         arrayListOf()
                     )
                 ),
-                token.module,
+                gasCurrencyCode = token.module,
                 chainId = getViolasChainId()
             )
             success.invoke("")

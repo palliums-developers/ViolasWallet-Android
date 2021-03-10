@@ -44,11 +44,11 @@ class ViolasSendTransactionMessageHandler : IMessageHandler<JsonArray> {
             tx.from
         ) ?: throw InvalidParameterErrorMessage(requestID, "Account does not exist.")
 
-        val gasUnitPrice = tx.gasUnitPrice ?: 0
-        val maxGasAmount = tx.maxGasAmount ?: 1_000_000
-        val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
-        val gasCurrencyCode = tx.gasCurrencyCode ?: CURRENCY_DEFAULT_CODE
         val sequenceNumber = tx.sequenceNumber ?: -1
+        val gasCurrencyCode = tx.gasCurrencyCode ?: CURRENCY_DEFAULT_CODE
+        val maxGasAmount = tx.maxGasAmount ?: 1_000_000
+        val gasUnitPrice = tx.gasUnitPrice ?: 1
+        val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
         val chainId = tx.chainId
 
         val payload = TransactionPayload.Script(

@@ -42,7 +42,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         sequenceNumber: Long = -1L,
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
-        gasUnitPrice: Long = 0,
+        gasUnitPrice: Long = 1,
         delayed: Long = 600,
         chainId: Int
     ): TransactionResult {
@@ -55,7 +55,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 maxGasAmount,
                 gasUnitPrice,
                 delayed,
-                chainId = chainId
+                chainId
             )
         sendTransaction(signedTxn)
         return TransactionResult(sender, newSequenceNumber)
@@ -92,7 +92,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         sequenceNumber: Long = -1L,
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
-        gasUnitPrice: Long = 0,
+        gasUnitPrice: Long = 1,
         delayed: Long = 600,
         chainId: Int
     ): GenerateTransactionResult {
@@ -118,7 +118,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             maxGasAmount,
             gasUnitPrice,
             delayed,
-            chainId = chainId
+            chainId
         )
         return GenerateTransactionResult(
             generateTransaction(
@@ -135,7 +135,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         sequenceNumber: Long = -1L,
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
         maxGasAmount: Long = 1_000_000,
-        gasUnitPrice: Long = 0,
+        gasUnitPrice: Long = 1,
         delayed: Long = 600,
         chainId: Int
     ): RawTransaction {
@@ -204,6 +204,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         amount: Long,
         typeTag: TypeTag = newDefaultStructTypeTag(),
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
+        maxGasAmount: Long = 1_000_000,
+        gasUnitPrice: Long = 1,
+        delayed: Long = 600,
         chainId: Int
     ) {
         val transactionPayload =
@@ -214,6 +217,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
             transactionPayload,
             account,
             gasCurrencyCode = gasCurrencyCode,
+            maxGasAmount = maxGasAmount,
+            gasUnitPrice = gasUnitPrice,
+            delayed = delayed,
             chainId = chainId
         )
     }
