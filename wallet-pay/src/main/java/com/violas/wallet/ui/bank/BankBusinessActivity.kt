@@ -55,6 +55,10 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         }
     }
 
+    override fun getTitleStyle(): Int {
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_NAV_BAR
+    }
+
     override fun getLayoutResId() = R.layout.activity_bank_business
 
     open fun onCoinAmountNotice(assetsVo: AssetsVo?) {}
