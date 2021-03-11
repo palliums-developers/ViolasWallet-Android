@@ -74,17 +74,18 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             return
         }
 
+        syncPushDeviceInfo(true)
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful) {
                 val pushToken = it.result
                 logDebug(TAG) { "get push token successful, token = $pushToken" }
                 if (!pushToken.isNullOrBlank()) {
                     setPushToken(pushToken)
+                    syncPushDeviceInfo()
                 }
             } else {
                 logError(TAG) { "get push token failed, ${it.exception?.toString()}" }
             }
-            syncPushDeviceInfo(true)
         }
     }
 
