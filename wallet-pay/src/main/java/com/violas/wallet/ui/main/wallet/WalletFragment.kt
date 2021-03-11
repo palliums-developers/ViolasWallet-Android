@@ -255,6 +255,7 @@ class WalletFragment : BaseFragment() {
         })
         refreshLayout.setOnRefreshListener {
             CommandActuator.post(RefreshAssetsAllListCommand())
+            MessageViewModel.getInstance().syncUnreadMsgNum()
             mWalletViewModel.loadReceiveIncentiveRewardsState()
         }
     }
