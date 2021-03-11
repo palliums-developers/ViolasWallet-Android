@@ -225,7 +225,7 @@ class ExchangeManager {
 
         mViolasRPCService.sendTransaction(
             payload = withdrawRewardTransactionPayload,
-            account = Account(KeyPair.fromSecretKey(privateKey)),
+            payerAccount = Account(KeyPair.fromSecretKey(privateKey)),
             chainId = getViolasChainId()
         )
     }

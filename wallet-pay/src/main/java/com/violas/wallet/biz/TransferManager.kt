@@ -31,7 +31,9 @@ class ForcedStopException : RuntimeException("")
 class ToTheirException : RuntimeException(getString(R.string.transfer_tips_address_is_myself))
 class WrongPasswordException : RuntimeException(getString(R.string.auth_pwd_hint_pwd_error))
 class AddressFaultException : RuntimeException(getString(R.string.transfer_tips_address_error))
-class TransferUnknownException : RuntimeException(getString(R.string.transfer_tips_transfer_failure))
+class TransferUnknownException :
+    RuntimeException(getString(R.string.transfer_tips_transfer_failure))
+
 class LackOfBalanceException :
     RuntimeException(getString(R.string.transfer_tips_insufficient_balance_or_assets_unconfirmed))
 
@@ -277,21 +279,16 @@ class TransferManager {
                 error.invoke(LibraException.CurrencyNotExistException())
                 return
             }
-            DataRepository.getViolasChainRpcService().sendViolasToken(
+            DataRepository.getViolasChainRpcService().sendCurrency(
                 context,
-                org.palliums.violascore.wallet.Account(
+                payerAccount = org.palliums.violascore.wallet.Account(
                     org.palliums.violascore.crypto.Ed25519KeyPair(decryptPrivateKey)
                 ),
-                address,
-                (amount * 1000000L).toLong(),
-                org.palliums.violascore.transaction.storage.TypeTag.newStructTag(
-                    org.palliums.violascore.transaction.storage.StructTag(
-                        org.palliums.violascore.transaction.AccountAddress(token.address.hexStringToByteArray()),
-                        token.module,
-                        token.name,
-                        arrayListOf()
-                    )
-                ),
+                payeeAddress = address,
+                transferAmount = (amount * 1000000L).toLong(),
+                currencyAddress = token.address,
+                currencyModule = token.module,
+                currencyName = token.name,
                 gasCurrencyCode = token.module,
                 chainId = getViolasChainId()
             )

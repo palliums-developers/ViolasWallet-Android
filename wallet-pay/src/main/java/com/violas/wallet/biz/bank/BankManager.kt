@@ -56,7 +56,7 @@ class BankManager {
             chainId = getViolasChainId()
         )
         mBankService.submitBorrowTransaction(
-            generateTransaction.sender,
+            generateTransaction.payerAddress,
             productId,
             amount,
             generateTransaction.signTxn
@@ -100,7 +100,7 @@ class BankManager {
             chainId = getViolasChainId()
         )
         mBankService.submitRepayBorrowTransaction(
-            generateTransaction.sender,
+            generateTransaction.payerAddress,
             productId,
             amount,
             generateTransaction.signTxn
@@ -144,7 +144,7 @@ class BankManager {
             chainId = getViolasChainId()
         )
         mBankService.submitDepositTransaction(
-            generateTransaction.sender,
+            generateTransaction.payerAddress,
             productId,
             amount,
             generateTransaction.signTxn
@@ -188,7 +188,7 @@ class BankManager {
             chainId = getViolasChainId()
         )
         mBankService.submitRedeemTransaction(
-            generateTransaction.sender,
+            generateTransaction.payerAddress,
             productId,
             amount,
             generateTransaction.signTxn
@@ -208,7 +208,7 @@ class BankManager {
 
         mViolasRPCService.sendTransaction(
             payload = withdrawRewardTransactionPayload,
-            account = Account(KeyPair.fromSecretKey(privateKey)),
+            payerAccount = Account(KeyPair.fromSecretKey(privateKey)),
             chainId = getViolasChainId()
         )
     }

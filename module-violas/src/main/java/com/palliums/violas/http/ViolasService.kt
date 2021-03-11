@@ -2,12 +2,15 @@ package com.palliums.violas.http
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.IntRange
 import com.palliums.violas.error.ViolasException
 import org.palliums.violascore.BuildConfig
-import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
+import org.palliums.violascore.common.*
 import org.palliums.violascore.crypto.*
+import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
 import org.palliums.violascore.transaction.*
+import org.palliums.violascore.transaction.storage.StructTag
 import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
@@ -15,13 +18,13 @@ import java.math.RoundingMode
 
 class ViolasService(private val mViolasRepository: ViolasRepository) {
     data class GenerateTransactionResult(
-        val signTxn: String,
-        val sender: String,
+        val signedTxn: String,
+        val payerAddress: String,
         val sequenceNumber: Long
     )
 
     data class TransactionResult(
-        val sender: String,
+        val payerAddress: String,
         val sequenceNumber: Long
     )
 
@@ -38,18 +41,21 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
     @Throws(ViolasException::class)
     suspend fun sendTransaction(
         payload: TransactionPayload,
-        account: Account,
-        sequenceNumber: Long = -1L,
+        payerAccount: Account,
+        sequenceNumber: Long = SEQUENCE_NUMBER_UNKNOWN,
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
-        maxGasAmount: Long = 1_000_000,
-        gasUnitPrice: Long = 1,
-        delayed: Long = 600,
+        @IntRange(from = MAX_GAS_AMOUNT_MIN, to = MAX_GAS_AMOUNT_MAX)
+        maxGasAmount: Long = MAX_GAS_AMOUNT_DEFAULT,
+        @IntRange(from = GAS_UNIT_PRICE_MIN, to = GAS_UNIT_PRICE_MAX)
+        gasUnitPrice: Long = GAS_UNIT_PRICE_DEFAULT,
+        @IntRange(from = 0)
+        delayed: Long = EXPIRATION_DELAYED_DEFAULT,
         chainId: Int
     ): TransactionResult {
-        val (signedTxn, sender, newSequenceNumber) =
+        val (signedTxn, payerAddress, newSequenceNumber) =
             generateTransaction(
                 payload,
-                account,
+                payerAccount,
                 sequenceNumber,
                 gasCurrencyCode,
                 maxGasAmount,
@@ -58,7 +64,7 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
                 chainId
             )
         sendTransaction(signedTxn)
-        return TransactionResult(sender, newSequenceNumber)
+        return TransactionResult(payerAddress, newSequenceNumber)
     }
 
     /**
@@ -76,9 +82,9 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         publicKey: KeyPair.PublicKey,
         signature: Signature
     ) {
-        val generateTransaction =
+        val hexSignedTransaction =
             generateTransaction(rawTransactionHex, publicKey, signature)
-        sendTransaction(generateTransaction)
+        sendTransaction(hexSignedTransaction)
     }
 
     @Throws(ViolasException::class)
@@ -88,32 +94,34 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
 
     suspend fun generateTransaction(
         payload: TransactionPayload,
-        account: Account,
-        sequenceNumber: Long = -1L,
+        payerAccount: Account,
+        sequenceNumber: Long = SEQUENCE_NUMBER_UNKNOWN,
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
-        maxGasAmount: Long = 1_000_000,
-        gasUnitPrice: Long = 1,
-        delayed: Long = 600,
+        @IntRange(from = MAX_GAS_AMOUNT_MIN, to = MAX_GAS_AMOUNT_MAX)
+        maxGasAmount: Long = MAX_GAS_AMOUNT_DEFAULT,
+        @IntRange(from = GAS_UNIT_PRICE_MIN, to = GAS_UNIT_PRICE_MAX)
+        gasUnitPrice: Long = GAS_UNIT_PRICE_DEFAULT,
+        @IntRange(from = 0)
+        delayed: Long = EXPIRATION_DELAYED_DEFAULT,
         chainId: Int
     ): GenerateTransactionResult {
-        var sequenceNumber = sequenceNumber
-        val keyPair = account.keyPair
-        val senderAddress = account.getAddress()
-        val accountState = getAccountState(senderAddress.toHex())
-            ?: throw ViolasException.AccountNoActivation()
+        val payerAddress = payerAccount.getAddress().toHex()
 
-        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
-            throw ViolasException.AccountNoControl()
-        }
+        var actualSequenceNumber = sequenceNumber
+        if (actualSequenceNumber == SEQUENCE_NUMBER_UNKNOWN) {
+            val accountState = getAccountState(payerAddress)
+                ?: throw org.palliums.violascore.http.ViolasException.AccountNoActivation()
+            if (accountState.authenticationKey != payerAccount.getAuthenticationKey().toHex()) {
+                throw org.palliums.violascore.http.ViolasException.AccountNoControl()
+            }
 
-        if (sequenceNumber == -1L) {
-            sequenceNumber = accountState.sequenceNumber
+            actualSequenceNumber = accountState.sequenceNumber
         }
 
         val rawTransaction = RawTransaction.optionTransaction(
-            senderAddress.toHex(),
+            payerAddress,
             payload,
-            sequenceNumber,
+            actualSequenceNumber,
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
@@ -123,44 +131,47 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         return GenerateTransactionResult(
             generateTransaction(
                 rawTransaction.toByteArray().toHex(),
-                keyPair.getPublicKey(),
-                keyPair.signMessage(rawTransaction.toHashByteArray())
-            ), senderAddress.toHex(), sequenceNumber
+                payerAccount.keyPair.getPublicKey(),
+                payerAccount.keyPair.signMessage(rawTransaction.toHashByteArray())
+            ),
+            payerAddress,
+            actualSequenceNumber
         )
     }
 
     suspend fun generateRawTransaction(
         payload: TransactionPayload,
-        senderAddress: String,
-        sequenceNumber: Long = -1L,
+        payerAddress: String,
+        sequenceNumber: Long = EXPIRATION_DELAYED_DEFAULT,
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
-        maxGasAmount: Long = 1_000_000,
-        gasUnitPrice: Long = 1,
-        delayed: Long = 600,
+        @IntRange(from = MAX_GAS_AMOUNT_MIN, to = MAX_GAS_AMOUNT_MAX)
+        maxGasAmount: Long = MAX_GAS_AMOUNT_DEFAULT,
+        @IntRange(from = GAS_UNIT_PRICE_MIN, to = GAS_UNIT_PRICE_MAX)
+        gasUnitPrice: Long = GAS_UNIT_PRICE_DEFAULT,
+        @IntRange(from = 0)
+        delayed: Long = EXPIRATION_DELAYED_DEFAULT,
         chainId: Int
     ): RawTransaction {
-        var sequenceNumber = sequenceNumber
-
-//        if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
-//            throw ViolasException.AccountNoControl()
-//        }
-
-        if (sequenceNumber == -1L) {
-            val accountState = getAccountState(senderAddress)
+        var actualSequenceNumber = sequenceNumber
+        if (actualSequenceNumber == -1L) {
+            val accountState = getAccountState(payerAddress)
                 ?: throw ViolasException.AccountNoActivation()
+//            if (accountState.authenticationKey != account.getAuthenticationKey().toHex()) {
+//                throw ViolasException.AccountNoControl()
+//            }
 
-            sequenceNumber = accountState.sequenceNumber
+            actualSequenceNumber = accountState.sequenceNumber
         }
 
         return RawTransaction.optionTransaction(
-            senderAddress,
+            payerAddress,
             payload,
-            sequenceNumber,
+            actualSequenceNumber,
             gasCurrencyCode,
             maxGasAmount,
             gasUnitPrice,
             delayed,
-            chainId = chainId
+            chainId
         )
     }
 
@@ -197,25 +208,40 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
         return hexSignedTransaction
     }
 
-    suspend fun sendViolasToken(
+    suspend fun sendCurrency(
         context: Context,
-        account: Account,
-        address: String,
-        amount: Long,
-        typeTag: TypeTag = newDefaultStructTypeTag(),
+        payerAccount: Account,
+        payeeAddress: String,
+        transferAmount: Long,
+        currencyAddress: String,
+        currencyModule: String,
+        currencyName: String,
+        sequenceNumber: Long = SEQUENCE_NUMBER_UNKNOWN,
         gasCurrencyCode: String = CURRENCY_DEFAULT_CODE,
-        maxGasAmount: Long = 1_000_000,
-        gasUnitPrice: Long = 1,
-        delayed: Long = 600,
+        @IntRange(from = MAX_GAS_AMOUNT_MIN, to = MAX_GAS_AMOUNT_MAX)
+        maxGasAmount: Long = MAX_GAS_AMOUNT_DEFAULT,
+        @IntRange(from = GAS_UNIT_PRICE_MIN, to = GAS_UNIT_PRICE_MAX)
+        gasUnitPrice: Long = GAS_UNIT_PRICE_DEFAULT,
+        @IntRange(from = 0)
+        delayed: Long = EXPIRATION_DELAYED_DEFAULT,
         chainId: Int
-    ) {
-        val transactionPayload =
-            TransactionPayload.optionTransactionPayload(
-                context, address, amount, typeTag = typeTag
+    ): TransactionResult {
+        val transactionPayload = TransactionPayload.optionTransactionPayload(
+            context,
+            payeeAddress,
+            transferAmount,
+            typeTag = TypeTag.newStructTag(
+                StructTag(
+                    AccountAddress(currencyAddress.hexToBytes()), currencyModule, currencyName,
+                    arrayListOf()
+                )
             )
-        sendTransaction(
+        )
+
+        return sendTransaction(
             transactionPayload,
-            account,
+            payerAccount,
+            sequenceNumber = sequenceNumber,
             gasCurrencyCode = gasCurrencyCode,
             maxGasAmount = maxGasAmount,
             gasUnitPrice = gasUnitPrice,

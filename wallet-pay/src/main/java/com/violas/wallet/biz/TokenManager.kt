@@ -219,7 +219,7 @@ class TokenManager {
             getViolasCoinType().coinNumber() -> {
                 val violasChainRpcService = DataRepository.getViolasChainRpcService()
 
-                val addCurrency = violasChainRpcService.addCurrency(
+                val transactionResult = violasChainRpcService.addCurrency(
                     ContextProvider.getContext(),
                     Account(
                         KeyPair.fromSecretKey(privateKey)
@@ -233,8 +233,8 @@ class TokenManager {
                 for (item in 1 until 4) {
                     delay(item * 1000L)
                     val transaction = violasChainRpcService.getTransaction(
-                        addCurrency.sender,
-                        addCurrency.sequenceNumber
+                        transactionResult.payerAddress,
+                        transactionResult.sequenceNumber
                     )
                     if (transaction?.isSuccessExecuted() == true) {
                         return true
@@ -245,7 +245,7 @@ class TokenManager {
             getDiemCoinType().coinNumber() -> {
                 val libraService = DataRepository.getLibraRpcService()
 
-                val addCurrency = libraService.addCurrency(
+                val transactionResult = libraService.addCurrency(
                     ContextProvider.getContext(),
                     org.palliums.libracore.wallet.Account(
                         org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
@@ -259,8 +259,8 @@ class TokenManager {
                 for (item in 1 until 4) {
                     delay(item * 1000L)
                     val transaction = libraService.getTransaction(
-                        addCurrency.sender,
-                        addCurrency.sequenceNumber
+                        transactionResult.payerAddress,
+                        transactionResult.sequenceNumber
                     )
                     if (transaction?.isSuccessExecuted() == true) {
                         return true

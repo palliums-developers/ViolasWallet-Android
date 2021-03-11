@@ -87,13 +87,13 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     override fun lazyInitListingViewAdapter(): ListingViewAdapter<AssertOriginateToken> {
         return ViewAdapter { checkbox, checked, assertToken ->
-            mChange = true
             if (checked) {
                 openToken(checkbox, checked, assertToken)
             } else {
-                assertToken.enable = false
                 launch(Dispatchers.IO) {
+                    assertToken.enable = false
                     mTokenManager.insert(checked, assertToken)
+                    mChange = true
                 }
             }
         }
@@ -143,8 +143,9 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
         launch(Dispatchers.IO) {
             try {
                 if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
-                    mTokenManager.insert(checked, assertOriginateToken)
                     assertOriginateToken.enable = true
+                    mTokenManager.insert(checked, assertOriginateToken)
+                    mChange = true
                     dismissProgress()
                 } else {
                     val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
@@ -188,15 +189,15 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
         ) {
             launch(Dispatchers.IO) {
                 try {
-                    mChange = true
                     val hasSuccess = mTokenManager.publishToken(
                         assertOriginateToken.account_id,
                         it,
                         assertOriginateToken.tokenMark!!
                     )
                     if (hasSuccess) {
-                        mTokenManager.insert(checked, assertOriginateToken)
                         assertOriginateToken.enable = true
+                        mTokenManager.insert(checked, assertOriginateToken)
+                        mChange = true
                     } else {
                         withContext(Dispatchers.Main) {
                             checkbox.setCheckedNoEvent(false)
