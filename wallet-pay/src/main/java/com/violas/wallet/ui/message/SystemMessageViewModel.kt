@@ -23,11 +23,12 @@ class SystemMessageViewModel : PagingViewModel<SystemMessageDTO>() {
         pageKey: Any?,
         onSuccess: (List<SystemMessageDTO>, Any?) -> Unit
     ) {
+        val token = MessageViewModel.getInstance().fetchToken()
+
         if (pageNumber == 1) {
             MessageViewModel.getInstance().syncUnreadMsgNum()
         }
 
-        val token = MessageViewModel.getInstance().fetchToken()
         val messages = messageService.getSystemMessages(
             token,
             pageSize,

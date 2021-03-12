@@ -2,7 +2,6 @@ package com.violas.wallet.repository.http.message
 
 import com.google.gson.Gson
 import com.palliums.net.await
-import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -16,30 +15,34 @@ class MessageRepository(private val api: MessageApi) {
 
     suspend fun registerPushDeviceInfo(
         address: String?,
-        pushToken: String?
+        pushToken: String?,
+        language: String
     ) =
         Gson().toJson(
             PushDeviceInfoDTO(
                 token = null,
                 address = address,
                 pushToken = pushToken,
-                language = MultiLanguageUtility.getInstance().localTag.toLowerCase(),
+                language = language,
                 platform = "android"
             )
         ).toRequestBody("application/json".toMediaTypeOrNull())
-            .let { api.registerPushDeviceInfo(it).await(dataNullableOnSuccess = false).data!!.token }
+            .let {
+                api.registerPushDeviceInfo(it).await(dataNullableOnSuccess = false).data!!.token
+            }
 
     suspend fun modifyPushDeviceInfo(
         token: String,
         address: String?,
-        pushToken: String?
+        pushToken: String?,
+        language: String
     ) =
         Gson().toJson(
             PushDeviceInfoDTO(
                 token = token,
                 address = address,
                 pushToken = pushToken,
-                language = MultiLanguageUtility.getInstance().localTag.toLowerCase(),
+                language = language,
                 platform = "android"
             )
         ).toRequestBody("application/json".toMediaTypeOrNull())

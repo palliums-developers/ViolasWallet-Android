@@ -32,7 +32,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // sendRegistrationToServer(token);
         if (token.isNotBlank()) {
             MessageViewModel.getInstance().setPushToken(token)
-            MessageViewModel.getInstance().syncPushDeviceInfo()
+            MessageViewModel.getInstance().syncPushDeviceInfo(false)
         }
     }
 

@@ -8,6 +8,7 @@ import com.palliums.content.App
 import com.palliums.content.ContextProvider
 import com.palliums.extensions.logDebug
 import com.palliums.extensions.logError
+import com.palliums.extensions.logInfo
 import com.palliums.utils.CustomMainScope
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.ChangeLanguageEvent
@@ -15,6 +16,7 @@ import com.violas.wallet.event.ClearUnreadMessagesEvent
 import com.violas.wallet.event.ReadOneSystemMsgEvent
 import com.violas.wallet.event.ReadOneTransactionMsgEvent
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -57,7 +59,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 if (!it) {
                     onDeleteWallet()
                 }
-                getPushTokenAndSyncPushDeviceInfo()
+                getPushTokenAndSyncPushDeviceInfo(true)
             }
         }
     }
@@ -67,21 +69,17 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         EventBus.getDefault().unregister(this)
     }
 
-    private fun getPushTokenAndSyncPushDeviceInfo() {
-        val cachedPushToken = getPushToken()
-        if (!cachedPushToken.isNullOrBlank()) {
-            syncPushDeviceInfo(true)
-            return
-        }
+    private fun getPushTokenAndSyncPushDeviceInfo(syncUnreadMsgNum: Boolean) {
+        syncPushDeviceInfo(true, syncUnreadMsgNum)
 
-        syncPushDeviceInfo(true)
+        if (!getPushToken().isNullOrBlank()) return
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful) {
                 val pushToken = it.result
                 logDebug(TAG) { "get push token successful, token = $pushToken" }
                 if (!pushToken.isNullOrBlank()) {
                     setPushToken(pushToken)
-                    syncPushDeviceInfo()
+                    syncPushDeviceInfo(delayStart = false, syncUnreadMsgNum = false)
                 }
             } else {
                 logError(TAG) { "get push token failed, ${it.exception?.toString()}" }
@@ -107,20 +105,21 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             return cachedToken
         }
 
-        val violasAccount =
-            accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
         val token = messageService.registerPushDeviceInfo(
-            address = violasAccount?.address ?: "",
-            pushToken = getPushToken()
+            address = accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address,
+            pushToken = getPushToken(),
+            language = MultiLanguageUtility.getInstance().localTag.toLowerCase()
         )
         setToken(token)
-        return token
+        return getToken()!!
     }
 
     private fun setToken(token: String) {
         synchronized(lock) {
-            this.token = token
-            accountManager.setToken(token)
+            if (this.token.isNullOrBlank()) {
+                this.token = token
+                accountManager.setToken(token)
+            }
         }
     }
 
@@ -130,28 +129,38 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         }
     }
 
-    fun syncPushDeviceInfo(first: Boolean = false) {
+    fun syncPushDeviceInfo(delayStart: Boolean, syncUnreadMsgNum: Boolean = false) {
         synchronized(lock) {
             if (syncPushDeviceInfoJob != null) return
         }
 
         syncPushDeviceInfoJob = launch(Dispatchers.IO) {
-            if (first)
-                delay(1500)
+            if (delayStart)
+                delay(1000)
 
             val result = run {
                 try {
-                    val violasAccount =
-                        accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
+                    val violasAddress =
+                        accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+                    val language = MultiLanguageUtility.getInstance().localTag.toLowerCase()
+                    val pushToken = getPushToken()
                     val cachedToken = getToken()
+
                     if (cachedToken.isNullOrBlank()) {
                         return@run try {
                             val token = messageService.registerPushDeviceInfo(
-                                address = violasAccount?.address ?: "",
-                                pushToken = getPushToken()
+                                address = violasAddress,
+                                pushToken = pushToken,
+                                language = language
                             )
                             setToken(token)
-                            0
+
+                            if (isDeviceInfoChange(violasAddress, pushToken, language)) {
+                                logInfo(TAG) { "The registered push device info changes and needs to be updated" }
+                                0
+                            } else {
+                                1
+                            }
                         } catch (e: Exception) {
                             logError(TAG) { "register push device info failed, ${e.message}" }
                             -1
@@ -161,10 +170,17 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                     return@run try {
                         messageService.modifyPushDeviceInfo(
                             token = cachedToken,
-                            address = violasAccount?.address ?: "",
-                            pushToken = getPushToken()
+                            address = violasAddress,
+                            pushToken = pushToken,
+                            language = language
                         )
-                        0
+
+                        if (isDeviceInfoChange(violasAddress, pushToken, language)) {
+                            logInfo(TAG) { "The modified push device info changes and needs to be updated" }
+                            0
+                        } else {
+                            1
+                        }
                     } catch (e: Exception) {
                         logError(TAG) { "modify push device info failed, ${e.message}" }
                         -2
@@ -175,19 +191,33 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
                 }
             }
 
-            if (result != -1) {
-                syncUnreadMsgNum()
-            }
-
             synchronized(lock) {
                 syncPushDeviceInfoJob = null
             }
 
-            if (result < 0) {
-                delay(1000 * 60 * 10)
-                syncPushDeviceInfo()
+            if (syncUnreadMsgNum && result != -1) {
+                syncUnreadMsgNum()
+            }
+
+            if (result <= 0) {
+                if (result < 0)
+                    delay(1000 * 60 * 3)
+                syncPushDeviceInfo(delayStart = false, syncUnreadMsgNum = false)
             }
         }
+    }
+
+    private fun isDeviceInfoChange(
+        address: String?,
+        pushToken: String?,
+        language: String
+    ): Boolean {
+        val nowAddress =
+            accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+        val nowPushToken = getPushToken()
+        val nowLanguage =
+            MultiLanguageUtility.getInstance().localTag.toLowerCase()
+        return address != nowAddress || pushToken != nowPushToken || language != nowLanguage
     }
 
     fun syncUnreadMsgNum() {
@@ -195,32 +225,40 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             if (syncUnreadMsgNumJob != null) return
         }
 
-        syncUnreadMsgNumJob = launch {
-            delay(500)
+        syncUnreadMsgNumJob = launch(Dispatchers.IO) {
+            val violasAddress =
+                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
 
-            val unreadMsgNumber = withContext(Dispatchers.IO) {
-                try {
-                    val token = fetchToken()
-                    messageService.getUnreadMsgNumber(token)
-                } catch (e: Exception) {
-                    logError(TAG) { "get unread message number failed, ${e.message}" }
-                    null
-                }
+            val unreadMsgNumber = try {
+                val token = fetchToken()
+                messageService.getUnreadMsgNumber(token)
+            } catch (e: Exception) {
+                logError(TAG) { "get unread message number failed, ${e.message}" }
+                null
             }
 
-            synchronized(lock) {
-                unreadMsgNumber?.let {
-                    if (WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
-                        unreadMsgNumLiveData.value = it.txn + it.sys
-                        unreadTxnMsgNumLiveData.value = it.txn
-                    } else {
-                        unreadMsgNumLiveData.value = it.sys
-                        unreadTxnMsgNumLiveData.value = 0
+            val nowViolasAddress =
+                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+
+            withContext(Dispatchers.Main) {
+                synchronized(lock) {
+                    if (violasAddress == nowViolasAddress && unreadMsgNumber != null) {
+                        if (WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
+                            unreadMsgNumLiveData.value = unreadMsgNumber.txn + unreadMsgNumber.sys
+                            unreadTxnMsgNumLiveData.value = unreadMsgNumber.txn
+                        } else {
+                            unreadMsgNumLiveData.value = unreadMsgNumber.sys
+                            unreadTxnMsgNumLiveData.value = 0
+                        }
+                        unreadSysMsgNumLiveData.value = unreadMsgNumber.sys
                     }
-                    unreadSysMsgNumLiveData.value = it.sys
+
+                    syncUnreadMsgNumJob = null
                 }
 
-                syncUnreadMsgNumJob = null
+                if (violasAddress != nowViolasAddress) {
+                    syncUnreadMsgNum()
+                }
             }
         }
     }
@@ -298,6 +336,6 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
 
     @Subscribe
     fun onChangeLanguageEvent(event: ChangeLanguageEvent) {
-        getPushTokenAndSyncPushDeviceInfo()
+        getPushTokenAndSyncPushDeviceInfo(false)
     }
 }
