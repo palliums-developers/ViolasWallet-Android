@@ -50,11 +50,10 @@ class MappingViewModel : BaseViewModel() {
     private val coinsLiveData = MediatorLiveData<List<ITokenVo>>()
 
     private val mappingService by lazy { DataRepository.getMappingService() }
-    private val appViewModel by lazy { WalletAppViewModel.getViewModelInstance() }
+    private val appViewModel by lazy { WalletAppViewModel.getInstance() }
     private val mappingManager by lazy { MappingManager() }
     private val tokenManager by lazy { TokenManager() }
 
-    val accountManager by lazy { AccountManager() }
     val coinsLoadState by lazy { EnhancedMutableLiveData<LoadState>() }
     val coinsTipsMessage by lazy { EnhancedMutableLiveData<String>() }
 
@@ -104,7 +103,7 @@ class MappingViewModel : BaseViewModel() {
     fun getAccount(fromCoin: Boolean): AccountDO? {
         val coinPairs =
             currMappingCoinPairLiveData.value ?: return null
-        return accountManager.getIdentityByCoinType(
+        return AccountManager.getAccountByCoinNumber(
             str2CoinType(
                 if (fromCoin) coinPairs.fromCoin.chainName else coinPairs.toCoin.chainName
             ).coinNumber()

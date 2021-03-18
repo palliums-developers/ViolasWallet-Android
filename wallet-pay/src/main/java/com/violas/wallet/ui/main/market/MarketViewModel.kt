@@ -29,7 +29,7 @@ class MarketViewModel : BaseViewModel() {
         ExchangeManager()
     }
     private val appViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance()
+        WalletAppViewModel.getInstance()
     }
 
     private var marketCoinsLiveData = MediatorLiveData<List<ITokenVo>>()

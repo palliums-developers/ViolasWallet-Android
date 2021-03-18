@@ -243,7 +243,7 @@ class SwapViewModel() : BaseViewModel() {
         assetsMark: ITokenVo
     ): Boolean {
         val identityByCoinType =
-            AccountManager().getIdentityByCoinType(coinType.coinNumber()) ?: throw RuntimeException()
+            AccountManager.getAccountByCoinNumber(coinType.coinNumber()) ?: throw RuntimeException()
 
         assetsMark as StableTokenVo
         val tokenManager = TokenManager()

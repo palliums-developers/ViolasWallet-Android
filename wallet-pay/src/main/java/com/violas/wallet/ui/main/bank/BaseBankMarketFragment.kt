@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.layout_list.*
 abstract class BaseBankMarketFragment<VO> : BaseFragment() {
 
     private val appViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(requireContext())
+        WalletAppViewModel.getInstance()
     }
 
     private val viewAdapter by lazy {

@@ -19,6 +19,7 @@ import com.palliums.utils.*
 import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.palliums.widget.loading.LoadingDialog
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.*
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.MarketPageType
@@ -69,7 +70,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     }
 
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this)
+        WalletAppViewModel.getInstance()
     }
 
     private var mCoinNumber = Int.MIN_VALUE
@@ -152,8 +153,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
             launch {
                 val accountDO = withContext(Dispatchers.IO) {
                     try {
-                        mWalletAppViewModel.mAccountManager
-                            .getAccountById(mAssetsVo.getAccountId())
+                            AccountManager.getAccountById(mAssetsVo.getAccountId())
                     } catch (e: Exception) {
                         null
                     }

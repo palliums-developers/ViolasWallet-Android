@@ -65,7 +65,7 @@
             android:name=".ui.managerAssert.ManagerAssertActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.transfer.LibraTransferActivity"
+            android:name=".ui.transfer.DiemTransferActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.transfer.BTCTransferActivity"

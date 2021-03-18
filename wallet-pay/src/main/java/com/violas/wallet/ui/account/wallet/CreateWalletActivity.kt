@@ -35,10 +35,7 @@ class CreateWalletActivity : BaseAppActivity() {
         }
     }
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-    private lateinit var mGenerateWalletMnemonic: ArrayList<String>
+    private lateinit var mMnemonicWords: ArrayList<String>
     private lateinit var mCurrentCoinType: CoinType
     override fun getLayoutResId() = R.layout.activity_create_wallet
 
@@ -86,13 +83,13 @@ class CreateWalletActivity : BaseAppActivity() {
                 }
                 showProgress()
                 launch(Dispatchers.IO) {
-                    mGenerateWalletMnemonic = mAccountManager.generateWalletMnemonic()
+                    mMnemonicWords = AccountManager.generateMnemonicWords()
 
                     dismissProgress()
 
                     BackupPromptActivity.start(
                         this@CreateWalletActivity,
-                        mGenerateWalletMnemonic,
+                        mMnemonicWords,
                         BackupMnemonicFrom.CREATE_OTHER_WALLET,
                         REQUEST_BACK_MNEMONIC
                     )
@@ -116,14 +113,13 @@ class CreateWalletActivity : BaseAppActivity() {
         val password = editPassword.text.toString().trim().toByteArray()
         showProgress()
         launch(Dispatchers.IO) {
-            val newWallet = AccountManager().importWallet(
+            val newWallet = AccountManager.importNonIdentityWallet(
                 mCurrentCoinType,
-                this@CreateWalletActivity,
-                mGenerateWalletMnemonic,
-                walletName,
-                password
+                mMnemonicWords,
+                password,
+                walletName
             )
-            mAccountManager.switchCurrentAccount(newWallet)
+            AccountManager.switchCurrentAccount(newWallet)
             withContext(Dispatchers.Main) {
                 dismissProgress()
                 EventBus.getDefault().post(SwitchAccountEvent())

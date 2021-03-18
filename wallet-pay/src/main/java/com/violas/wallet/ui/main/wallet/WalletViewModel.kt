@@ -4,6 +4,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.ReceiveIncentiveRewardsEvent
 import com.violas.wallet.repository.DataRepository
@@ -94,10 +95,8 @@ class WalletViewModel : ViewModel() {
 
             val newState = withContext(Dispatchers.IO) {
                 try {
-                    val accountManager =
-                        WalletAppViewModel.getViewModelInstance().mAccountManager
                     val violasAccount =
-                        accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
+                        AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
 
                     incentiveService.getReceiveIncentiveRewardsState(violasAccount!!.address)
                 } catch (e: Exception) {

@@ -27,10 +27,10 @@ class LibraViolasRepository(private val api: LibraViolasApi) {
         ).await()
 
     @Throws(RequestException::class)
-    suspend fun activateAccount(
+    suspend fun activateWallet(
         address: String, authKeyPrefix: String
     ) =
-        api.activateAccount(
+        api.activateWallet(
             address, authKeyPrefix
         ).await()
 

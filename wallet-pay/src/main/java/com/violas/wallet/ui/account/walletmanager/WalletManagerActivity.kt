@@ -24,7 +24,6 @@ import com.violas.wallet.ui.biometric.CustomFingerprintDialog
 import com.violas.wallet.ui.biometric.UnableBiometricPromptDialog
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.authenticateAccountByPassword
-import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.walletconnect.WalletConnect
 import kotlinx.android.synthetic.main.activity_wallet_manager.*
 import kotlinx.coroutines.Dispatchers
@@ -45,12 +44,6 @@ class WalletManagerActivity : BaseAppActivity() {
     }
 
     private lateinit var mAccountDO: AccountDO
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-    private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this)
-    }
     private val mBiometricCompat by lazy {
         BiometricCompat.Builder(this).build()
     }
@@ -67,7 +60,7 @@ class WalletManagerActivity : BaseAppActivity() {
 
         launch {
             try {
-                mAccountDO = mAccountManager.getDefaultAccount()
+                mAccountDO = AccountManager.getDefaultAccount()
                 initView()
                 initEvent()
             } catch (e: Exception) {
@@ -78,7 +71,7 @@ class WalletManagerActivity : BaseAppActivity() {
 
     private fun initView() {
         swtBtnBiometric.setCheckedImmediatelyNoEvent(
-            !mAccountManager.getSecurityPassword().isNullOrBlank()
+            !AccountManager.getSecurityPassword().isNullOrBlank()
         )
     }
 
@@ -86,7 +79,6 @@ class WalletManagerActivity : BaseAppActivity() {
         clExportMnemonics.setOnClickListener {
             authenticateAccount(
                 mAccountDO,
-                mAccountManager,
                 dismissLoadingWhenDecryptEnd = true,
                 mnemonicCallback = {
                     exportMnemonics(it)
@@ -96,7 +88,7 @@ class WalletManagerActivity : BaseAppActivity() {
 
         btnDeleteWallet.setOnClickListener {
             DeleteWalletPromptDialog().setCallback {
-                authenticateAccount(mAccountDO, mAccountManager) {
+                authenticateAccount(mAccountDO) {
                     deleteWallet()
                 }
             }.show(supportFragmentManager)
@@ -168,7 +160,7 @@ class WalletManagerActivity : BaseAppActivity() {
             if (it.type == BiometricCompat.Type.INFO) return@encrypt
 
             if (it.type == BiometricCompat.Type.SUCCESS) {
-                mAccountManager.updateSecurityPassword(it.value!!)
+                AccountManager.updateSecurityPassword(it.value!!)
                 return@encrypt
             }
 
@@ -186,7 +178,7 @@ class WalletManagerActivity : BaseAppActivity() {
         CloseBiometricsDialog()
             .setCallback(
                 confirmCallback = {
-                    mAccountManager.updateSecurityPassword("")
+                    AccountManager.updateSecurityPassword("")
                 },
                 cancelCallback = {
                     swtBtnBiometric.setCheckedNoEvent(true)
@@ -206,12 +198,12 @@ class WalletManagerActivity : BaseAppActivity() {
         launch {
             withContext(Dispatchers.IO) {
                 // 删除本地所有的account和token
-                mAccountManager.deleteAllAccount()
+                AccountManager.deleteAllAccount()
                 TokenManager().deleteAllToken()
                 // 清除 WalletConnect 链接状态
                 WalletConnect.getInstance(this@WalletManagerActivity).disconnect()
                 // 清除本地配置
-                mAccountManager.clearLocalConfig()
+                AccountManager.clearUserConfig()
             }
 
             // 发送删除钱包事件，通知钱包首页刷新UI

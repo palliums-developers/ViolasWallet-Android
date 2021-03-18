@@ -47,7 +47,7 @@ interface LibraViolasApi {
 
     @GET("/1.0/libra/mint")
     @Headers(value = ["${HEADER_KEY_CHAIN_NAME}:${HEADER_VALUE_DIEM_CHAIN}"])
-    fun activateAccount(
+    fun activateWallet(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
     ): Observable<Response<Any>>

@@ -56,7 +56,7 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
     private suspend fun initData(): Boolean {
         val accountDO = withContext(Dispatchers.IO) {
             try {
-                AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+                AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
             } catch (e: Exception) {
                 null
             }

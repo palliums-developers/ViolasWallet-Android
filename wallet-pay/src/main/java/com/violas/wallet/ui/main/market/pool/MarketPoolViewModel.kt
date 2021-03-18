@@ -307,7 +307,7 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
             }
 
             val violasAccount = withContext(Dispatchers.IO) {
-                AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+                AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
             } ?: return@launch
 
             violasAccountDO = violasAccount
@@ -318,9 +318,6 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
         return violasAccountDO
     }
 
-    fun getAccountManager(): AccountManager {
-        return exchangeManager.mAccountManager
-    }
     // </editor-fold>
 
     // <editor-fold defaultState="collapsed" desc="输入金额联动相关方法及逻辑">

@@ -91,9 +91,6 @@ class WalletConnectActivity : BaseAppActivity() {
     private val mWalletConnect by lazy {
         WalletConnect.getInstance(this)
     }
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
 
     // 是否处理了请求
     private var mRequestHandle = false
@@ -310,7 +307,7 @@ class WalletConnectActivity : BaseAppActivity() {
 
     private suspend fun showPasswordSignTx(account: AccountDO) =
         suspendCancellableCoroutine<ByteArray?> { cont ->
-            authenticateAccount(account, mAccountManager) {
+            authenticateAccount(account) {
                 showProgress()
                 launch(Dispatchers.IO) {
                     val decryptPrivateKey = it

@@ -55,7 +55,7 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
 
         setTitle(R.string.pool_records_title)
         getPagingHandler().init()
-        WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
+        WalletAppViewModel.getInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
                     initNotLoginView()
@@ -203,9 +203,8 @@ class PoolRecordViewModel : PagingViewModel<PoolRecordDTO>() {
     private lateinit var address: String
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
-        val violasAccount =
-            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
-                ?: return@withContext false
+        val violasAccount = AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
+            ?: return@withContext false
 
         address = violasAccount.address
         return@withContext true

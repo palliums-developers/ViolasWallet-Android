@@ -59,10 +59,6 @@ class BorrowActivity : BankBusinessActivity() {
         }
     }
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
     private val mBankManager by lazy {
         BankManager()
     }
@@ -72,7 +68,7 @@ class BorrowActivity : BankBusinessActivity() {
     }
 
     private val mAccountDO by lazy {
-        AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+        AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
     }
 
     private var mBorrowProductDetails: BorrowProductDetailsDTO? = null
@@ -245,7 +241,7 @@ class BorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
-            val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
+            val account = AccountManager.getAccountByCoinNumber(assets.getCoinNumber())
             if (account == null) {
                 showToast(getString(R.string.common_tips_account_error))
                 return@launch
@@ -313,7 +309,7 @@ class BorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
-            authenticateAccount(account, mAccountManager, passwordCallback = {
+            authenticateAccount(account, passwordCallback = {
                 sendTransfer(account, market, it, amount)
             })
         }

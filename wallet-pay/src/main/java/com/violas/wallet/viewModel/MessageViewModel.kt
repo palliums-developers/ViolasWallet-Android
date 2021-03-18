@@ -10,6 +10,7 @@ import com.palliums.extensions.logDebug
 import com.palliums.extensions.logError
 import com.palliums.extensions.logInfo
 import com.palliums.utils.CustomMainScope
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.ChangeLanguageEvent
 import com.violas.wallet.event.ClearUnreadMessagesEvent
@@ -42,7 +43,6 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     val unreadSysMsgNumLiveData = MutableLiveData<Long>()
     val unreadTxnMsgNumLiveData = MutableLiveData<Long>()
 
-    private val accountManager by lazy { WalletAppViewModel.getViewModelInstance().mAccountManager }
     private val messageService by lazy { DataRepository.getMessageService() }
     private val lock by lazy { Any() }
 
@@ -54,8 +54,8 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
     init {
         EventBus.getDefault().register(this)
         launch {
-            token = accountManager.getToken()
-            WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData.observeForever {
+            token = AccountManager.getAppToken()
+            WalletAppViewModel.getInstance().mExistsAccountLiveData.observeForever {
                 if (!it) {
                     onDeleteWallet()
                 }
@@ -106,7 +106,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         }
 
         val token = messageService.registerPushDeviceInfo(
-            address = accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address,
+            address = AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())?.address,
             pushToken = getPushToken(),
             language = MultiLanguageUtility.getInstance().localTag.toLowerCase()
         )
@@ -118,7 +118,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         synchronized(lock) {
             if (this.token.isNullOrBlank()) {
                 this.token = token
-                accountManager.setToken(token)
+                AccountManager.setAppToken(token)
             }
         }
     }
@@ -141,7 +141,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             val result = run {
                 try {
                     val violasAddress =
-                        accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+                        AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())?.address
                     val language = MultiLanguageUtility.getInstance().localTag.toLowerCase()
                     val pushToken = getPushToken()
                     val cachedToken = getToken()
@@ -213,7 +213,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         language: String
     ): Boolean {
         val nowAddress =
-            accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+            AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())?.address
         val nowPushToken = getPushToken()
         val nowLanguage =
             MultiLanguageUtility.getInstance().localTag.toLowerCase()
@@ -227,7 +227,7 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
 
         syncUnreadMsgNumJob = launch(Dispatchers.IO) {
             val violasAddress =
-                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+                AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())?.address
 
             val unreadMsgNumber = try {
                 val token = fetchToken()
@@ -238,12 +238,12 @@ class MessageViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
             }
 
             val nowViolasAddress =
-                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+                AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())?.address
 
             withContext(Dispatchers.Main) {
                 synchronized(lock) {
                     if (violasAddress == nowViolasAddress && unreadMsgNumber != null) {
-                        if (WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
+                        if (WalletAppViewModel.getInstance().isExistsAccount()) {
                             unreadMsgNumLiveData.value = unreadMsgNumber.txn + unreadMsgNumber.sys
                             unreadTxnMsgNumLiveData.value = unreadMsgNumber.txn
                         } else {

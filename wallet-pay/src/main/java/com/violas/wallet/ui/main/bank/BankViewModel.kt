@@ -94,7 +94,7 @@ class BankViewModel : BaseViewModel() {
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         synchronized(lock) {
             val violasAccount =
-                AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+                AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
             val lastAddress = address
             address = violasAccount?.address
 

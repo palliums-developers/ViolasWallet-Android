@@ -61,7 +61,7 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
 
         setTitle(R.string.swap_records_title)
         getPagingHandler().init()
-        WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
+        WalletAppViewModel.getInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
                     initNotLoginView()
@@ -205,7 +205,7 @@ class SwapRecordViewModel : PagingViewModel<ViolasSwapRecordDTO>() {
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
                 ?: return@withContext false
 
         violasWalletAddress = violasAccount.address

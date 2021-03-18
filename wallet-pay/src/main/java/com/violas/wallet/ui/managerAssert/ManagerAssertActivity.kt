@@ -60,16 +60,12 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     private var mChange = false
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
     private val mTokenManager by lazy {
         TokenManager()
     }
 
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this)
+        WalletAppViewModel.getInstance()
     }
 
     override fun lazyInitListingViewModel(): ListingViewModel<AssertOriginateToken> {
@@ -148,7 +144,7 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
                     mChange = true
                     dismissProgress()
                 } else {
-                    val account = mAccountManager.getAccountById(assertOriginateToken.account_id)
+                    val account = AccountManager.getAccountById(assertOriginateToken.account_id)
                     dismissProgress()
                     withContext(Dispatchers.Main) {
                         PublishTokenDialog()
@@ -182,7 +178,6 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
     ) {
         authenticateAccount(
             account,
-            mAccountManager,
             cancelCallback = {
                 checkbox.setCheckedNoEvent(false)
             }

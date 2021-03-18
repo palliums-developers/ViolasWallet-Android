@@ -32,10 +32,6 @@ class ExchangeManager {
         DataRepository.getExchangeService()
     }
 
-    val mAccountManager by lazy {
-        AccountManager()
-    }
-
     private val mViolasRPCService by lazy {
         DataRepository.getViolasChainRpcService()
     }

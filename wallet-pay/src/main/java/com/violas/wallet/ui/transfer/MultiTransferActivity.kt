@@ -86,11 +86,10 @@ class MultiTransferActivity : BaseAppActivity(),
     private var transferAmount = 0L
     private var toAddress: String? = ""
     private var toSubAddress: String? = ""
-    private val mAccountManager by lazy { AccountManager() }
     private var mCurrAssetsAmount = BigDecimal("0")
 
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this@MultiTransferActivity)
+        WalletAppViewModel.getInstance()
     }
     private val mMultiTransferViewModel by lazy {
         ViewModelProvider(this).get(MultiTransferViewModel::class.java)
@@ -252,7 +251,7 @@ class MultiTransferActivity : BaseAppActivity(),
         launch(Dispatchers.IO) {
             try {
                 showProgress()
-                val account = mAccountManager.getIdentityByCoinType(assets.getCoinNumber())
+                val account = AccountManager.getAccountByCoinNumber(assets.getCoinNumber())
                 if (account == null) {
                     showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
                     return@launch
@@ -270,7 +269,7 @@ class MultiTransferActivity : BaseAppActivity(),
     }
 
     private fun showPasswordAndSend(account: AccountDO) {
-        authenticateAccount(account, mAccountManager, passwordCallback = {
+        authenticateAccount(account, passwordCallback = {
             launch(Dispatchers.IO) {
                 try {
                     showProgress()

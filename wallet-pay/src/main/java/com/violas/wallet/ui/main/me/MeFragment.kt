@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class MeFragment : BaseFragment() {
 
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(requireContext())
+        WalletAppViewModel.getInstance()
     }
 
     override fun getLayoutResId(): Int {

@@ -74,19 +74,14 @@ class WalletFragment : BaseFragment() {
     }
 
     private val mWalletAppViewModel by lazy {
-        context?.let { WalletAppViewModel.getViewModelInstance(it) }
+         WalletAppViewModel.getInstance()
     }
     private val mWalletConnectViewModel by lazy {
-        context?.let { WalletConnectViewModel.getViewModelInstance(it) }
+        WalletConnectViewModel.getInstance()
     }
     private val mWalletViewModel by lazy {
         ViewModelProvider(this).get(WalletViewModel::class.java)
     }
-
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
 
     private val mAssertAdapter by lazy {
         AssertAdapter {
@@ -137,12 +132,12 @@ class WalletFragment : BaseFragment() {
             }
         })
 
-        mWalletAppViewModel?.mDataRefreshingLiveData?.observe(viewLifecycleOwner) {
+        mWalletAppViewModel.mDataRefreshingLiveData.observe(viewLifecycleOwner) {
             if (!it) {
                 refreshLayout.finishRefresh()
             }
         }
-        mWalletAppViewModel?.mAssetsListLiveData?.observe(viewLifecycleOwner) {
+        mWalletAppViewModel.mAssetsListLiveData.observe(viewLifecycleOwner) {
             val filter = it.filter { asset ->
                 when (asset) {
                     is HiddenTokenVo -> false
@@ -153,7 +148,7 @@ class WalletFragment : BaseFragment() {
             mAssertAdapter.submitList(filter)
             mWalletViewModel.calculateFiat(filter)
         }
-        mWalletAppViewModel?.mExistsAccountLiveData?.observe(viewLifecycleOwner) {
+        mWalletAppViewModel.mExistsAccountLiveData.observe(viewLifecycleOwner) {
             if (it) {
                 groupHaveAccount.visibility = View.VISIBLE
                 groupNoAccount.visibility = View.GONE
@@ -193,7 +188,7 @@ class WalletFragment : BaseFragment() {
                 clReceiveIncentiveRewardsGroup.visibility = View.GONE
             }
         }
-        mWalletConnectViewModel?.mWalletConnectStatusLiveData?.observe(viewLifecycleOwner) {
+        mWalletConnectViewModel.mWalletConnectStatusLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 WalletConnectStatus.Login -> {
                     llWalletConnectGroup.visibility = View.VISIBLE
@@ -284,14 +279,14 @@ class WalletFragment : BaseFragment() {
             return
         }
 
-        if (!mAccountManager.isIdentityMnemonicBackup()) {
+        if (!AccountManager.isIdentityMnemonicBackup()) {
             btnConfirm.setOnClickListener(this)
             layoutBackupNow.visibility = View.VISIBLE
         }
     }
 
     private fun handleDialogShow(existsAccount: Boolean) {
-        if (mAccountManager.isFastIntoWallet()) {
+        if (AccountManager.isFastIntoWallet()) {
             FastIntoWalletDialog()
                 .setConfirmCallback {
                     handleOpenBiometricsPrompt(existsAccount)
@@ -303,12 +298,12 @@ class WalletFragment : BaseFragment() {
     }
 
     private fun handleOpenBiometricsPrompt(existsAccount: Boolean) {
-        if (!existsAccount || mAccountManager.isOpenBiometricsPrompted()) return
+        if (!existsAccount || AccountManager.isOpenBiometricsPrompted()) return
 
         val biometricCompat = BiometricCompat.Builder(requireContext()).build()
         if (biometricCompat.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) return
 
-        mAccountManager.setOpenBiometricsPrompted()
+        AccountManager.setOpenBiometricsPrompted()
         OpenBiometricsPromptDialog()
             .setCallback {
                 WalletManagerActivity.start(requireContext())
@@ -331,7 +326,7 @@ class WalletFragment : BaseFragment() {
 
             R.id.ivScan -> {
                 activity?.let { it1 ->
-                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                    if (mWalletAppViewModel.isExistsAccount()) {
                         ScanActivity.start(it1)
                     } else {
                         showToast(R.string.common_tips_account_empty)
@@ -349,7 +344,7 @@ class WalletFragment : BaseFragment() {
 
             R.id.llTransferGroup -> {
                 activity?.let {
-                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                    if (mWalletAppViewModel.isExistsAccount()) {
                         context?.let { it1 -> MultiTransferActivity.start(it1) }
                     } else {
                         showToast(R.string.common_tips_account_empty)
@@ -359,7 +354,7 @@ class WalletFragment : BaseFragment() {
 
             R.id.llCollectionGroup -> {
                 activity?.let {
-                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                    if (mWalletAppViewModel.isExistsAccount()) {
                         context?.let { it1 -> MultiCollectionActivity.start(it1) }
                     } else {
                         showToast(R.string.common_tips_account_empty)
@@ -369,7 +364,7 @@ class WalletFragment : BaseFragment() {
 
             R.id.llMappingGroup -> {
                 activity?.let {
-                    if (mWalletAppViewModel?.isExistsAccount() == true) {
+                    if (mWalletAppViewModel.isExistsAccount()) {
                         MappingActivity.start(it)
                     } else {
                         showToast(R.string.common_tips_account_empty)
@@ -404,10 +399,8 @@ class WalletFragment : BaseFragment() {
     private fun backupWallet() {
         launch {
             try {
-                val accountDO = mAccountManager.getDefaultAccount()
                 authenticateAccount(
-                    accountDO,
-                    mAccountManager,
+                    AccountManager.getDefaultAccount(),
                     dismissLoadingWhenDecryptEnd = true,
                     mnemonicCallback = {
                         BackupPromptActivity.start(
@@ -432,7 +425,7 @@ class WalletFragment : BaseFragment() {
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    mWalletAppViewModel?.refreshAssetsList(true)
+                    mWalletAppViewModel.refreshAssetsList(true)
                 }
             }
         }

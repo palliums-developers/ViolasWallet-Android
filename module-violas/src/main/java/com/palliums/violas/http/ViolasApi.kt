@@ -67,7 +67,7 @@ interface ViolasApi {
 
     @GET("/1.0/violas/mint")
     @Headers(value = ["chainName:violas"])
-    fun activateAccount(
+    fun activateWallet(
         @Query("address") address: String,
         @Query("auth_key_perfix") authKeyPrefix: String
     ): Observable<Response<Any>>

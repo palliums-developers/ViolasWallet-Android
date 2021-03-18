@@ -32,9 +32,6 @@ class BTCToMappingAssetsProcessor(
     private val supportMappingPair: HashMap<String, MappingInfo>
 ) : IProcessor {
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
     private val mViolasRpcService by lazy {
         DataRepository.getViolasChainRpcService()
     }
@@ -57,12 +54,12 @@ class BTCToMappingAssetsProcessor(
     ): String {
         tokenTo as StableTokenVo
 
-        val sendAccount = mAccountManager.getIdentityByCoinType(tokenFrom.coinNumber)
+        val sendAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
             ?: throw AccountNotFindAddressException()
 
         // 开始检查 Violas 账户的基本信息
         val payeeAddress =
-            payee ?: mAccountManager.getIdentityByCoinType(tokenTo.coinNumber)?.address
+            payee ?: AccountManager.getAccountByCoinNumber(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
         // 检查收款地址激活状态
@@ -87,7 +84,7 @@ class BTCToMappingAssetsProcessor(
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = mAccountManager.getIdentityByCoinType(tokenFrom.coinNumber)
+        val fromAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")
@@ -153,13 +150,13 @@ class BTCToMappingAssetsProcessor(
     ): String {
         toIAssetsMark as LibraTokenAssetsMark
 
-        val sendAccount = mAccountManager.getIdentityByCoinType(fromIAssetsMark.coinNumber())
+        val sendAccount = AccountManager.getAccountByCoinNumber(fromIAssetsMark.coinNumber())
             ?: throw AccountNotFindAddressException()
 
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = mAccountManager.getIdentityByCoinType(fromIAssetsMark.coinNumber())
+        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetsMark.coinNumber())
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")

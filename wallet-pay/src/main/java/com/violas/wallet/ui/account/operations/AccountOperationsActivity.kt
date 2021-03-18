@@ -74,7 +74,6 @@ class AccountOperationsActivity : BaseAppActivity() {
         }
     }
 
-    private val accountManager by lazy { AccountManager() }
     private val accountDao by lazy { DataRepository.getAccountStorage() }
 
     private var accountType: Int = AccountType.ALL
@@ -169,7 +168,7 @@ class AccountOperationsActivity : BaseAppActivity() {
         launch(Dispatchers.IO) {
             //val data = fakeAccounts(AccountType.ALL)
             val data = loadAccounts(
-                accountType, accountManager, accountDao, true
+                accountType, accountDao, true
             )
             withContext(Dispatchers.Main) {
                 vAccountList.setData(data)

@@ -34,7 +34,7 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
     private var mAssetsMap = mapOf<String, AssetsVo>()
 
     init {
-        WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.observe(this, Observer {
+        WalletAppViewModel.getInstance().mAssetsListLiveData.observe(this, Observer {
             launch {
                 mAssetsMap = it.toMap { assets ->
                     when (assets) {

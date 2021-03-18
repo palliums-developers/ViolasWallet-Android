@@ -58,7 +58,7 @@ abstract class TransferActivity : BaseAppActivity() {
                 }
                 else -> {
                     isToken = true
-                    Intent(context, LibraTransferActivity::class.java)
+                    Intent(context, DiemTransferActivity::class.java)
                 }
             }.apply {
                 putExtra(EXT_ADDRESS, address)
@@ -78,10 +78,6 @@ abstract class TransferActivity : BaseAppActivity() {
     var toAddress: String? = ""
     var toSubAddress: String? = ""
     var account: AccountDO? = null
-
-    val mAccountManager by lazy {
-        AccountManager()
-    }
 
     val mTransferManager by lazy {
         TransferManager()

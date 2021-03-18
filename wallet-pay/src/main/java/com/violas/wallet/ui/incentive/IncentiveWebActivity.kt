@@ -16,6 +16,7 @@ import com.palliums.utils.start
 import com.palliums.utils.toBitmap
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseBridgeWebActivity
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
@@ -74,9 +75,8 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         }
 
         private suspend fun getViolasAddress(): String? = withContext(Dispatchers.IO) {
-            val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
             return@withContext try {
-                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())?.address
+                AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())?.address
             } catch (e: Exception) {
                 null
             }
@@ -221,9 +221,8 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         callbackFunction: CallBackFunction,
         bankMining: Boolean
     ) {
-        val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
         val violasAccount = withContext(Dispatchers.IO) {
-            accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
         }
         if (violasAccount == null) {
             callbackFunction.onCallBack(
@@ -235,7 +234,6 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
 
         authenticateAccount(
             violasAccount,
-            accountManager,
             cancelCallback = {
                 callbackFunction.onCallBack(
                     Response.error(request.id, -1, "User canceled").toJson()
@@ -323,9 +321,8 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
         request: Request,
         callbackFunction: CallBackFunction
     ) {
-        val accountManager = WalletAppViewModel.getViewModelInstance().mAccountManager
         val violasAccount = withContext(Dispatchers.IO) {
-            accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
         }
         if (violasAccount == null) {
             callbackFunction.onCallBack(

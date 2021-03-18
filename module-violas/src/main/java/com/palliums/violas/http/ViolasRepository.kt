@@ -61,11 +61,11 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
     /**
      * 激活账户
      */
-    suspend fun activateAccount(
+    suspend fun activateWallet(
         address: String,
         authKeyPrefix: String
     ) =
-        mViolasApi.activateAccount(address, authKeyPrefix).await()
+        mViolasApi.activateWallet(address, authKeyPrefix).await()
 
     /**
      * 登录网页端钱包

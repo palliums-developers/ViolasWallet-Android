@@ -24,46 +24,34 @@ import com.violas.wallet.repository.database.entity.TokenDo
 import com.violas.wallet.utils.*
 import com.violas.wallet.viewModel.bean.*
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
-import org.palliums.libracore.crypto.KeyFactory
-import org.palliums.libracore.crypto.Seed
-import org.palliums.libracore.mnemonic.Mnemonic
-import org.palliums.libracore.mnemonic.WordCount
-import org.palliums.libracore.transaction.AccountAddress
-import org.palliums.libracore.wallet.Account
 import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
+import org.palliums.violascore.crypto.KeyFactory
+import org.palliums.violascore.crypto.Seed
+import org.palliums.violascore.mnemonic.Mnemonic
+import org.palliums.violascore.mnemonic.WordCount
 import org.palliums.violascore.serialization.toHex
+import org.palliums.violascore.transaction.AccountAddress
+import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
-import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class MnemonicException : RuntimeException()
 class AccountNotExistsException : RuntimeException()
+class UnsupportedWalletException : RuntimeException()
 
-class AccountManager {
-    companion object {
-        private const val CURRENT_ACCOUNT = "key_0"
-        private const val KEY_FAST_INTO_WALLET = "key_1"
-        private const val KEY_IDENTITY_MNEMONIC_BACKUP = "key_2"
-        private const val KEY_PROMPT_OPEN_BIOMETRICS = "key_3"
-        private const val KEY_SECURITY_PASSWORD = "key_4"
-        private const val KEY_TOKEN = "key_5"
+object AccountManager {
 
-        /**
-         * 获取生物识别加解密所用的key
-         */
-        fun getBiometricKey(): String {
-            return KEY_SECURITY_PASSWORD
-        }
-    }
-
-    private val mExecutor by lazy { Executors.newFixedThreadPool(4) }
+    private const val CURRENT_ACCOUNT = "key_0"
+    private const val KEY_FAST_INTO_WALLET = "key_1"
+    private const val KEY_IDENTITY_MNEMONIC_BACKUP = "key_2"
+    private const val KEY_PROMPT_OPEN_BIOMETRICS = "key_3"
+    private const val KEY_SECURITY_PASSWORD = "key_4"
+    private const val KEY_APP_TOKEN = "key_5"
 
     private val mConfigSharedPreferences by lazy {
         getContext().getSharedPreferences("config", Context.MODE_PRIVATE)
@@ -77,90 +65,26 @@ class AccountManager {
         DataRepository.getTokenStorage()
     }
 
+    // <editor-fold defaultState="collapsed" desc="配置相关">
+    /**
+     * 获取生物识别加解密所用的key
+     */
+    fun getBiometricKey(): String {
+        return KEY_SECURITY_PASSWORD
+    }
+
+    /**
+     * 更新安全密码
+     */
     fun updateSecurityPassword(securityPassword: String) {
         mConfigSharedPreferences.edit().putString(KEY_SECURITY_PASSWORD, securityPassword).apply()
     }
 
+    /**
+     * 获取安全密码
+     */
     fun getSecurityPassword(): String? {
         return mConfigSharedPreferences.getString(KEY_SECURITY_PASSWORD, null)
-    }
-
-    /**
-     * 获取当前账户账户
-     */
-    @Deprecated("功能删除")
-    @Throws(AccountNotExistsException::class)
-    fun currentAccount(): AccountDO {
-        val currentWallet = mConfigSharedPreferences.getLong(CURRENT_ACCOUNT, 1)
-        return mAccountStorage.findById(currentWallet) ?: throw AccountNotExistsException()
-    }
-
-    /**
-     * 获取当前账户账户
-     */
-    @Throws(AccountNotExistsException::class)
-    fun getAccountById(accountId: Long = 1): AccountDO {
-        return mAccountStorage.findById(accountId) ?: throw AccountNotExistsException()
-    }
-
-    /**
-     * 获取当前账户账户
-     */
-    @Throws(AccountNotExistsException::class)
-    suspend fun getDefaultAccount(): AccountDO = withContext(Dispatchers.IO) {
-        val accounts = mAccountStorage.loadAll()
-        if (accounts.isEmpty()) {
-            throw AccountNotExistsException()
-        }
-        return@withContext accounts[0]
-    }
-
-    /**
-     * 是否存在账户
-     */
-    @Deprecated("功能删除")
-    fun existsWalletAccount(): Boolean {
-        if (mAccountStorage.loadByWalletType() == null) {
-            return false
-        }
-        return true
-    }
-
-    private fun getDefWallet(): Long {
-        return mAccountStorage.loadByWalletType()?.id ?: 1L
-    }
-
-    fun removeWallet(accountId: AccountDO) {
-        mAccountStorage.delete(accountId)
-    }
-
-    @WorkerThread
-    fun deleteAllAccount() {
-        mAccountStorage.deleteAll()
-    }
-
-    fun clearLocalConfig() {
-        mConfigSharedPreferences.edit()
-            .putBoolean(KEY_IDENTITY_MNEMONIC_BACKUP, false)
-            .putBoolean(KEY_PROMPT_OPEN_BIOMETRICS, false)
-            .putString(KEY_SECURITY_PASSWORD, "")
-            .apply()
-    }
-
-    fun getIdentityByCoinType(coinType: Int): AccountDO? {
-        return mAccountStorage.findByCoinType(coinType)
-    }
-
-    fun getIdentityAccount(): AccountDO {
-        return mAccountStorage.loadByWalletType()!!
-    }
-
-    /**
-     * 切换当前钱包账户
-     */
-    @Deprecated("功能删除")
-    fun switchCurrentAccount(currentAccountID: Long = getDefWallet()) {
-        mConfigSharedPreferences.edit().putLong(CURRENT_ACCOUNT, currentAccountID).apply()
     }
 
     /**
@@ -177,6 +101,9 @@ class AccountManager {
         mConfigSharedPreferences.edit().putBoolean(KEY_IDENTITY_MNEMONIC_BACKUP, true).apply()
     }
 
+    /**
+     * 是否第一次进入钱包
+     */
     fun isFastIntoWallet(): Boolean {
         val fastInto = mConfigSharedPreferences.getBoolean(KEY_FAST_INTO_WALLET, true)
         if (fastInto) {
@@ -199,240 +126,180 @@ class AccountManager {
         return mConfigSharedPreferences.getBoolean(KEY_PROMPT_OPEN_BIOMETRICS, false)
     }
 
-    fun getToken(): String? {
-        return mConfigSharedPreferences.getString(KEY_TOKEN, null)
-    }
-
-    fun setToken(token: String) {
-        mConfigSharedPreferences.edit().putString(KEY_TOKEN, token).apply()
+    /**
+     * 获取App Token
+     */
+    fun getAppToken(): String? {
+        return mConfigSharedPreferences.getString(KEY_APP_TOKEN, null)
     }
 
     /**
-     * 获取身份钱包的助记词
+     * 设置App Token
      */
-    fun getIdentityWalletMnemonic(context: Context, password: ByteArray): ArrayList<String>? {
-        val account = mAccountStorage.loadByWalletType()!!
-        val security = SimpleSecurity.instance(context)
-        val bytes = security.decrypt(password, account.mnemonic) ?: return null
-        val mnemonic = String(bytes)
-        return mnemonic.substring(1, mnemonic.length - 1)
-            .split(",")
-            .map { it.trim() }
-            .toMutableList() as ArrayList
+    fun setAppToken(appToken: String) {
+        mConfigSharedPreferences.edit().putString(KEY_APP_TOKEN, appToken).apply()
     }
 
+    /**
+     * 清除用户配置
+     */
+    fun clearUserConfig() {
+        mConfigSharedPreferences.edit()
+            .putBoolean(KEY_IDENTITY_MNEMONIC_BACKUP, false)
+            .putBoolean(KEY_PROMPT_OPEN_BIOMETRICS, false)
+            .putString(KEY_SECURITY_PASSWORD, "")
+            .apply()
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultState="collapsed" desc="账户操作相关">
+    /**
+     * 获取一个默认账户
+     */
+    @Throws(AccountNotExistsException::class)
+    @WorkerThread
+    fun getDefaultAccount(): AccountDO {
+        val accounts = mAccountStorage.loadAll()
+        if (accounts.isEmpty()) {
+            throw AccountNotExistsException()
+        }
+        return accounts[0]
+    }
+
+    /**
+     * 根据account id获取账户
+     */
+    @Throws(AccountNotExistsException::class)
+    @WorkerThread
+    fun getAccountById(accountId: Long = 1): AccountDO {
+        return mAccountStorage.findById(accountId) ?: throw AccountNotExistsException()
+    }
+
+    /**
+     * 根据coin number获取账户
+     */
+    @WorkerThread
+    fun getAccountByCoinNumber(coinType: Int): AccountDO? {
+        return mAccountStorage.findByCoinType(coinType)
+    }
+
+    /**
+     * 更新账户
+     */
+    @WorkerThread
+    fun updateAccount(account: AccountDO) {
+        mAccountStorage.update(account)
+    }
+
+    /**
+     * 删除账户
+     */
+    @WorkerThread
+    fun deleteAccount(account: AccountDO) {
+        mAccountStorage.delete(account)
+    }
+
+    /**
+     * 删除所有账户
+     */
+    @WorkerThread
+    fun deleteAllAccount() {
+        mAccountStorage.deleteAll()
+    }
+
+    /**
+     * 获取当前账户账户
+     */
+    @Deprecated("功能删除")
+    @Throws(AccountNotExistsException::class)
+    fun currentAccount(): AccountDO {
+        val currentWallet = mConfigSharedPreferences.getLong(CURRENT_ACCOUNT, 1)
+        return mAccountStorage.findById(currentWallet) ?: throw AccountNotExistsException()
+    }
+
+    /**
+     * 切换当前钱包账户
+     */
+    @Deprecated("功能删除")
+    fun switchCurrentAccount(currentAccountID: Long = getDefaultAccountId()) {
+        mConfigSharedPreferences.edit().putLong(CURRENT_ACCOUNT, currentAccountID).apply()
+    }
+
+    private fun getDefaultAccountId(): Long {
+        return mAccountStorage.loadByWalletType()?.id ?: 1L
+    }
+    // </editor-fold>
+
+    // <editor-fold defaultState="collapsed" desc="钱包操作相关">
     /**
      * 生成助记词
      */
-    fun generateWalletMnemonic(words: WordCount = WordCount.TWELVE): ArrayList<String> {
+    fun generateMnemonicWords(words: WordCount = WordCount.TWELVE): ArrayList<String> {
         return Mnemonic.English().generate(words)
     }
 
     /**
-     * 导入钱包
-     */
-    @Throws(MnemonicException::class, ArrayIndexOutOfBoundsException::class)
-    fun importWallet(
-        coinType: CoinType,
-        context: Context,
-        wordList: List<String>,
-        walletName: String,
-        password: ByteArray
-    ): Long {
-        checkMnemonicCount(wordList)
-        return when (coinType) {
-            getDiemCoinType() -> {
-                AccountManager().importLibraWallet(
-                    context,
-                    wordList,
-                    walletName,
-                    password
-                )
-            }
-            getViolasCoinType() -> {
-                AccountManager().importViolasWallet(
-                    context,
-                    wordList,
-                    walletName,
-                    password
-                )
-            }
-            else -> {
-                AccountManager().importBtcWallet(
-                    context,
-                    wordList,
-                    walletName,
-                    password
-                )
-            }
-        }
-    }
-
-    /**
-     * 导入Violas钱包（非身份钱包）
-     */
-    private fun importViolasWallet(
-        context: Context,
-        wordList: List<String>,
-        walletName: String,
-        password: ByteArray
-    ): Long {
-        val deriveLibra = deriveViolas(wordList)
-        val security = SimpleSecurity.instance(context)
-
-        return mAccountStorage.insert(
-            AccountDO(
-                privateKey = security.encrypt(
-                    password,
-                    deriveLibra.keyPair.getPrivateKey().toByteArray()
-                ),
-                publicKey = deriveLibra.getPublicKey(),
-                authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
-                address = deriveLibra.getAddress().toHex(),
-                coinNumber = getViolasCoinType().coinNumber(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
-            )
-        )
-    }
-
-    /**
-     * 导入Libra钱包（非身份钱包）
-     */
-    private fun importLibraWallet(
-        context: Context,
-        wordList: List<String>,
-        walletName: String,
-        password: ByteArray
-    ): Long {
-        val deriveLibra = deriveLibra(wordList)
-        val security = SimpleSecurity.instance(context)
-
-        return mAccountStorage.insert(
-            AccountDO(
-                privateKey = security.encrypt(
-                    password,
-                    deriveLibra.keyPair.getPrivateKey().toByteArray()
-                ),
-                publicKey = deriveLibra.getPublicKey(),
-                authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
-                address = deriveLibra.getAddress().toHex(),
-                coinNumber = getDiemCoinType().coinNumber(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
-            )
-        )
-    }
-
-    /**
-     * 导入BTC钱包（非身份钱包）
+     * 导入身份钱包
      */
     @Throws(MnemonicException::class)
-    private fun importBtcWallet(
-        context: Context,
-        wordList: List<String>,
-        walletName: String,
-        password: ByteArray
-    ): Long {
-        val seed = SeedCalculator()
-            .withWordsFromWordList(English.INSTANCE)
-            .calculateSeed(wordList, "") ?: throw MnemonicException()
-
-        val deriveBitcoin = deriveBitcoin(seed)
-        val security = SimpleSecurity.instance(context)
-
-        return mAccountStorage.insert(
-            AccountDO(
-                privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
-                publicKey = deriveBitcoin.publicKey,
-                address = deriveBitcoin.address,
-                coinNumber = getBitcoinCoinType().coinNumber(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray())
-            )
-        )
-    }
-
-    /**
-     * 创建身份
-     */
-    fun createIdentity(context: Context, password: ByteArray): List<String> {
-        val generate = Mnemonic.English().generate()
-        importIdentity(context, generate, password)
-        return generate
-    }
-
-    private fun checkMnemonicCount(wordList: List<String>) {
-        if (!(wordList.size == 12 ||
-                    wordList.size == 15 ||
-                    wordList.size == 18 ||
-                    wordList.size == 21 ||
-                    wordList.size == 24)
-        ) {
-            throw MnemonicException()
-        }
-    }
-
-    /**
-     * 导入身份
-     */
-    @Throws(MnemonicException::class)
-    fun importIdentity(
-        context: Context,
-        wordList: List<String>,
+    fun importIdentityWallet(
+        mnemonicWords: List<String>,
         password: ByteArray
     ) {
-        checkMnemonicCount(wordList)
+        checkMnemonicCount(mnemonicWords)
 
+        val violasAccount = deriveViolas(mnemonicWords)
+        val diemAccount = deriveDiem(mnemonicWords)
         val seed = SeedCalculator()
             .withWordsFromWordList(English.INSTANCE)
-            .calculateSeed(wordList, "") ?: throw MnemonicException()
+            .calculateSeed(mnemonicWords, "") ?: throw MnemonicException()
+        val bitcoinKeyPair = deriveBitcoin(seed)
+        val security = SimpleSecurity.instance(getContext())
 
-        val deriveBitcoin = deriveBitcoin(seed)
-        val deriveLibra = deriveLibra(wordList)
-        val deriveViolas = deriveViolas(wordList)
-
-        val security = SimpleSecurity.instance(context)
-
-        val insertIds = mAccountStorage.insert(
+        val accountIds = mAccountStorage.insert(
             AccountDO(
                 privateKey = security.encrypt(
                     password,
-                    deriveViolas.keyPair.getPrivateKey().toByteArray()
+                    violasAccount.keyPair.getPrivateKey().toByteArray()
                 ),
-                publicKey = deriveViolas.getPublicKey(),
-                authKeyPrefix = deriveViolas.getAuthenticationKey().prefix().toHex(),
-                address = deriveViolas.getAddress().toHex(),
+                publicKey = violasAccount.getPublicKey(),
+                authKeyPrefix = violasAccount.getAuthenticationKey().prefix().toHex(),
+                address = violasAccount.getAddress().toHex(),
                 coinNumber = getViolasCoinType().coinNumber(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                mnemonic = security.encrypt(password, mnemonicWords.toString().toByteArray()),
                 accountType = AccountType.NoDollars
             ),
             AccountDO(
                 privateKey = security.encrypt(
                     password,
-                    deriveLibra.keyPair.getPrivateKey().toByteArray()
+                    diemAccount.keyPair.getPrivateKey().toByteArray()
                 ),
-                publicKey = deriveLibra.getPublicKey(),
-                authKeyPrefix = deriveLibra.getAuthenticationKey().prefix().toHex(),
-                address = deriveLibra.getAddress().toHex(),
+                publicKey = diemAccount.getPublicKey(),
+                authKeyPrefix = diemAccount.getAuthenticationKey().prefix().toHex(),
+                address = diemAccount.getAddress().toHex(),
                 coinNumber = getDiemCoinType().coinNumber(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                mnemonic = security.encrypt(password, mnemonicWords.toString().toByteArray()),
                 accountType = AccountType.NoDollars
             ),
             AccountDO(
-                privateKey = security.encrypt(password, deriveBitcoin.rawPrivateKey),
-                publicKey = deriveBitcoin.publicKey,
-                address = deriveBitcoin.address,
+                privateKey = security.encrypt(password, bitcoinKeyPair.rawPrivateKey),
+                publicKey = bitcoinKeyPair.publicKey,
+                address = bitcoinKeyPair.address,
                 coinNumber = getBitcoinCoinType().coinNumber(),
-                mnemonic = security.encrypt(password, wordList.toString().toByteArray()),
+                mnemonic = security.encrypt(password, mnemonicWords.toString().toByteArray()),
                 logo = "file:///android_asset/logo/ic_bitcoin_logo.png"
             )
         )
-        if (insertIds.isNotEmpty()) {
-            switchCurrentAccount(insertIds[0])
+
+        if (accountIds.isNotEmpty()) {
+            switchCurrentAccount(accountIds[0])
             CommandActuator.post(RefreshAssetsAllListCommand(true))
         }
-        if (insertIds.size > 1) {
+
+        if (accountIds.size > 1) {
             mAccountTokenStorage.insert(
                 TokenDo(
-                    account_id = insertIds[0],
+                    account_id = accountIds[0],
                     assetsName = CURRENCY_DEFAULT_CODE,
                     module = CURRENCY_DEFAULT_CODE,
                     name = CURRENCY_DEFAULT_CODE,
@@ -441,7 +308,7 @@ class AccountManager {
                     logo = "file:///android_asset/logo/ic_violas_logo.png"
                 ),
                 TokenDo(
-                    account_id = insertIds[1],
+                    account_id = accountIds[1],
                     assetsName = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
                     module = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
                     name = org.palliums.libracore.common.CURRENCY_DEFAULT_CODE,
@@ -453,18 +320,117 @@ class AccountManager {
         }
     }
 
-    private fun deriveViolas(wordList: List<String>): org.palliums.violascore.wallet.Account {
-        val keyFactory = org.palliums.violascore.crypto.KeyFactory(
-            org.palliums.violascore.crypto.Seed.fromMnemonic(wordList)
-        )
-        return org.palliums.violascore.wallet.Account(keyFactory.generateKey(0))
+    /**
+     * 导入非身份钱包
+     */
+    @Throws(
+        MnemonicException::class,
+        ArrayIndexOutOfBoundsException::class,
+        UnsupportedWalletException::class
+    )
+    @WorkerThread
+    fun importNonIdentityWallet(
+        coinType: CoinType,
+        mnemonicWords: List<String>,
+        password: ByteArray,
+        walletName: String
+    ): Long {
+        checkMnemonicCount(mnemonicWords)
+
+        val security = SimpleSecurity.instance(getContext())
+
+        return when (coinType) {
+            getViolasCoinType() -> {
+                val violasAccount = deriveViolas(mnemonicWords)
+
+                mAccountStorage.insert(
+                    AccountDO(
+                        privateKey = security.encrypt(
+                            password,
+                            violasAccount.keyPair.getPrivateKey().toByteArray()
+                        ),
+                        publicKey = violasAccount.getPublicKey(),
+                        authKeyPrefix = violasAccount.getAuthenticationKey().prefix().toHex(),
+                        address = violasAccount.getAddress().toHex(),
+                        coinNumber = getViolasCoinType().coinNumber(),
+                        mnemonic = security.encrypt(
+                            password,
+                            mnemonicWords.toString().toByteArray()
+                        )
+                    )
+                )
+            }
+
+            getDiemCoinType() -> {
+                val diemAccount = deriveDiem(mnemonicWords)
+
+                mAccountStorage.insert(
+                    AccountDO(
+                        privateKey = security.encrypt(
+                            password,
+                            diemAccount.keyPair.getPrivateKey().toByteArray()
+                        ),
+                        publicKey = diemAccount.getPublicKey(),
+                        authKeyPrefix = diemAccount.getAuthenticationKey().prefix().toHex(),
+                        address = diemAccount.getAddress().toHex(),
+                        coinNumber = getDiemCoinType().coinNumber(),
+                        mnemonic = security.encrypt(
+                            password,
+                            mnemonicWords.toString().toByteArray()
+                        )
+                    )
+                )
+            }
+
+            getBitcoinCoinType() -> {
+                val seed = SeedCalculator()
+                    .withWordsFromWordList(English.INSTANCE)
+                    .calculateSeed(mnemonicWords, "") ?: throw MnemonicException()
+                val bitcoinKeyPair = deriveBitcoin(seed)
+
+                mAccountStorage.insert(
+                    AccountDO(
+                        privateKey = security.encrypt(password, bitcoinKeyPair.rawPrivateKey),
+                        publicKey = bitcoinKeyPair.publicKey,
+                        address = bitcoinKeyPair.address,
+                        coinNumber = getBitcoinCoinType().coinNumber(),
+                        mnemonic = security.encrypt(
+                            password,
+                            mnemonicWords.toString().toByteArray()
+                        )
+                    )
+                )
+            }
+
+            else -> {
+                throw UnsupportedWalletException()
+            }
+        }
     }
 
-    private fun deriveLibra(wordList: List<String>): Account {
+    private fun checkMnemonicCount(mnemonicWords: List<String>) {
+        if (mnemonicWords.size != 12 &&
+            mnemonicWords.size != 15 &&
+            mnemonicWords.size != 18 &&
+            mnemonicWords.size != 21 &&
+            mnemonicWords.size != 24
+        ) {
+            throw MnemonicException()
+        }
+    }
+
+    private fun deriveViolas(mnemonicWords: List<String>): Account {
         val keyFactory = KeyFactory(
-            Seed.fromMnemonic(wordList)
+            Seed.fromMnemonic(mnemonicWords)
         )
         return Account(keyFactory.generateKey(0))
+    }
+
+    private fun deriveDiem(mnemonicWords: List<String>): org.palliums.libracore.wallet.Account {
+        val keyFactory = org.palliums.libracore.crypto.KeyFactory(
+            org.palliums.libracore.crypto.Seed.fromMnemonic(mnemonicWords)
+        )
+        return org.palliums.libracore.wallet.Account(keyFactory.generateKey(0))
     }
 
     private fun deriveBitcoin(seed: ByteArray): BitCoinECKeyPair {
@@ -475,11 +441,41 @@ class AccountManager {
         return derive as BitCoinECKeyPair
     }
 
-    fun updateAccount(account: AccountDO) {
-        mExecutor.submit {
-            mAccountStorage.update(account)
+    /**
+     * 激活钱包（Violas链和Diem链的钱包需要激活才能使用）
+     */
+    suspend fun activateWallet(assets: AssetsLibraCoinVo): Boolean {
+        return when (assets.getCoinNumber()) {
+            getViolasCoinType().coinNumber() -> {
+                if (assets.authKey == null || isWalletActivated(assets.authKey!!)) {
+                    false
+                } else {
+                    DataRepository.getViolasService()
+                        .activateWallet(assets.address, assets.authKeyPrefix)
+                    true
+                }
+            }
+
+            getDiemCoinType().coinNumber() -> {
+                if (assets.authKey == null || isWalletActivated(assets.authKey!!)) {
+                    false
+                } else {
+                    DataRepository.getLibraBizService()
+                        .activateWallet(assets.address, assets.authKeyPrefix)
+                    true
+                }
+            }
+
+            else -> {
+                false
+            }
         }
     }
+
+    private fun isWalletActivated(authKey: String): Boolean {
+        return authKey.length > 32 && authKey.substring(0, 32) != "00000000000000000000000000000000"
+    }
+    // </editor-fold>
 
     suspend fun getBalance(account: AccountDO): Long {
         return when (account.coinNumber) {
@@ -511,43 +507,6 @@ class AccountManager {
                 }
             }
         }
-    }
-
-    suspend fun activateAccount(assets: AssetsLibraCoinVo): Boolean {
-        return when (assets.getCoinNumber()) {
-            getViolasCoinType().coinNumber() -> {
-                if (assets.authKey == null || isActivate(assets.authKey!!)) {
-                    false
-                } else {
-                    DataRepository.getViolasService()
-                        .activateAccount(assets.address, assets.authKeyPrefix)
-                    true
-                }
-            }
-
-            getDiemCoinType().coinNumber() -> {
-                if (assets.authKey == null || isActivate(assets.authKey!!)) {
-                    false
-                } else {
-                    DataRepository.getLibraBizService()
-                        .activateAccount(assets.address, assets.authKeyPrefix)
-                    true
-                }
-            }
-
-            else -> {
-                false
-            }
-        }
-    }
-
-    private fun isActivate(authKey: String): Boolean {
-        if (authKey.length < 32
-            || authKey.substring(0, 32) == "00000000000000000000000000000000"
-        ) {
-            return false
-        }
-        return true
     }
 
     fun getLocalAssets(): MutableList<AssetsVo> {
@@ -677,7 +636,7 @@ class AccountManager {
     suspend fun refreshAssetsAmount(localAssets: MutableList<AssetsVo>): MutableList<AssetsVo> {
         val assets = localAssets.toMutableList()
         val exceptionAsync = GlobalScope.exceptionAsync { queryBTCBalance(assets) }
-        val exceptionAsync1 = GlobalScope.exceptionAsync { queryLibraBalance(assets) }
+        val exceptionAsync1 = GlobalScope.exceptionAsync { queryDiemBalance(assets) }
         val exceptionAsync2 = GlobalScope.exceptionAsync { queryViolasBalance(assets) }
 
         exceptionAsync.await()
@@ -707,7 +666,7 @@ class AccountManager {
             }
     }
 
-    private suspend fun queryLibraBalance(localAssets: MutableList<AssetsVo>) {
+    private suspend fun queryDiemBalance(localAssets: MutableList<AssetsVo>) {
         val assetsFiatBalanceSharedPreferences = getContext().getSharedPreferences(
             SaveAssetsFiatBalanceCommand.sharedPreferencesFileName(),
             Context.MODE_PRIVATE

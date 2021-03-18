@@ -328,7 +328,7 @@ class BankFragment : BaseFragment() {
             }
         })
 
-        WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData.observe(
+        WalletAppViewModel.getInstance().mExistsAccountLiveData.observe(
             viewLifecycleOwner,
             Observer {
                 launch {

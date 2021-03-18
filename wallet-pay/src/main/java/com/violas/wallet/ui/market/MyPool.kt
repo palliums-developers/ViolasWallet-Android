@@ -93,7 +93,7 @@ class MyPoolActivity : BaseListingActivity<PoolLiquidityDTO>() {
         }
 
         getListingHandler().init()
-        WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
+        WalletAppViewModel.getInstance().mExistsAccountLiveData
             .observe(this, Observer {
                 if (!it) {
                     initNotLoginView()
@@ -177,9 +177,8 @@ class MyPoolViewModel : ListingViewModel<PoolLiquidityDTO>() {
     }
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
-        val violasAccount =
-            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
-                ?: return@withContext false
+        val violasAccount = AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
+            ?: return@withContext false
 
         address = violasAccount.address
         return@withContext true

@@ -342,7 +342,6 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
             authenticateAccount(
                 payerAccountDO,
-                mappingViewModel.accountManager,
                 passwordCallback = {
                     mapping(
                         true,

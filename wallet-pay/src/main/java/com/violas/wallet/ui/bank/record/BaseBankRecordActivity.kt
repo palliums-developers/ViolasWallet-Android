@@ -206,7 +206,7 @@ abstract class BaseBankRecordActivity<VO> : BasePagingActivity<VO>() {
 
     private fun onChangeFilter(coinFilter: Boolean, filter: Pair<Int, String>?) {
         getCurrFilterLiveData(coinFilter).value = filter
-        if (WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
+        if (WalletAppViewModel.getInstance().isExistsAccount()) {
             getPagingHandler().restart()
         } else {
             statusLayout.showStatus(IStatusLayout.Status.STATUS_EMPTY)

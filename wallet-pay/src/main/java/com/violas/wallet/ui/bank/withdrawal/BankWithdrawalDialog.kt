@@ -65,7 +65,6 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
     private lateinit var productId: String
     private lateinit var depositDetails: DepositDetailsDTO
 
-    private val accountManager by lazy { AccountManager() }
     private val bankManager by lazy { BankManager() }
 
     override fun onCreateView(
@@ -168,14 +167,14 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
 
         launch {
             val accountDO = withContext(Dispatchers.IO) {
-                accountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
+                AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
             }
             if (accountDO == null) {
                 showToast(getString(R.string.common_tips_account_error))
                 return@launch
             }
 
-            authenticateAccount(accountDO, accountManager, passwordCallback = {
+            authenticateAccount(accountDO, passwordCallback = {
                 sendTransfer(
                     accountDO,
                     LibraTokenAssetsMark(

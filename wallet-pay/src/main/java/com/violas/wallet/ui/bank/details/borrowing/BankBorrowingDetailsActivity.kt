@@ -106,7 +106,7 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
         }
 
         val accountDO = withContext(Dispatchers.IO) {
-            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
         }
 
         return if (accountDO != null) {

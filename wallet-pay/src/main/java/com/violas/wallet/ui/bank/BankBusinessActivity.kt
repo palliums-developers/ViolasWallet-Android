@@ -46,7 +46,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
     }
 
     protected val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this)
+        WalletAppViewModel.getInstance()
     }
 
     protected val mCurrentAssertsAmountSubscriber = object : BalanceSubscriber(null) {

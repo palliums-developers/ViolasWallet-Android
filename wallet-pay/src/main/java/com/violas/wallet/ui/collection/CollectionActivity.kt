@@ -82,7 +82,7 @@ class CollectionActivity : BaseAppActivity() {
         }
 
         launch(Dispatchers.IO) {
-            val currentAccount = AccountManager().getAccountById(mAccountId)
+            val currentAccount = AccountManager.getAccountById(mAccountId)
 
             withContext(Dispatchers.Main) {
                 tvAddress.text = currentAccount.address

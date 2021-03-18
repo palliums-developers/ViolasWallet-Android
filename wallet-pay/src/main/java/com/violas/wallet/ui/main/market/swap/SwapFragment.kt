@@ -59,9 +59,6 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
     private val marketViewModel by lazy {
         ViewModelProvider(requireParentFragment()).get(MarketViewModel::class.java)
     }
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
     private var mCurrFromAssetsAmount = BigDecimal("0")
     private val mReserveManager by lazy {
         ReserveManager()
@@ -166,7 +163,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
             clearInputBoxFocusAndHideSoftInput()
 
             // 没有钱包账户
-            if (!WalletAppViewModel.getViewModelInstance().isExistsAccount()) {
+            if (!WalletAppViewModel.getInstance().isExistsAccount()) {
                 showToast(R.string.common_tips_account_empty)
                 return@setOnClickListener
             }
@@ -230,9 +227,9 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
             showProgress()
             launch(Dispatchers.IO) {
                 try {
-                    val defaultAccount = mAccountManager.getDefaultAccount()
+                    val defaultAccount = AccountManager.getDefaultAccount()
                     dismissProgress()
-                    authenticateAccount(defaultAccount, mAccountManager, passwordCallback = {
+                    authenticateAccount(defaultAccount, passwordCallback = {
                         swap(it.toByteArray())
                     })
                 } catch (e: Exception) {

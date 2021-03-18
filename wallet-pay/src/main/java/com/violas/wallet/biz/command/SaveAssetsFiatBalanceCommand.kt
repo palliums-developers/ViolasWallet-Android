@@ -35,7 +35,7 @@ class SaveAssetsFiatBalanceCommand() : ISingleCommand {
             .getSharedPreferences(sharedPreferencesFileName(), Context.MODE_PRIVATE)
     }
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(ContextProvider.getContext())
+        WalletAppViewModel.getInstance()
     }
 
     override fun getIdentity() = "SaveAssetsFiatBalance"

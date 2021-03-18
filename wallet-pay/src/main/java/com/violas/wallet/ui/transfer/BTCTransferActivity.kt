@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
@@ -37,7 +38,7 @@ class BTCTransferActivity : TransferActivity() {
     override fun getLayoutResId() = R.layout.activity_transfer_btc
 
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this@BTCTransferActivity)
+        WalletAppViewModel.getInstance()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -73,7 +74,7 @@ class BTCTransferActivity : TransferActivity() {
 
             launch(Dispatchers.IO) {
                 try {
-                    account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
+                    account = AccountManager.getAccountById(mAssetsVo.getAccountId())
 
                     val coinType = CoinType.parseCoinNumber(account!!.coinNumber)
                     withContext(Dispatchers.Main) {
@@ -185,7 +186,7 @@ class BTCTransferActivity : TransferActivity() {
 
     private fun showPasswordSend(amount: String, address: String) {
         if (account == null) return
-        authenticateAccount(account!!, mAccountManager) {
+        authenticateAccount(account!!) {
             launch(Dispatchers.IO) {
                 mTransferManager.transferBtc(
                     mTransactionManager,

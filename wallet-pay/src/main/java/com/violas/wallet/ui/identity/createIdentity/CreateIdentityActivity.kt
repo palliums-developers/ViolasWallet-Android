@@ -76,10 +76,12 @@ class CreateIdentityActivity : BaseAppActivity() {
             launch {
                 showProgress()
                 val mnemonicWords = withContext(Dispatchers.IO) {
-                    AccountManager().createIdentity(
-                        this@CreateIdentityActivity,
+                    val mnemonicWords = AccountManager.generateMnemonicWords()
+                    AccountManager.importIdentityWallet(
+                        mnemonicWords,
                         password.toByteArray()
                     )
+                    mnemonicWords
                 }
                 dismissProgress()
 

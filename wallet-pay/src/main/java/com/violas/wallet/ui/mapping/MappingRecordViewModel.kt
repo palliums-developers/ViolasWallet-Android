@@ -26,13 +26,13 @@ class MappingRecordViewModel : PagingViewModel<MappingRecordDTO>() {
 
     suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
                 ?: return@withContext false
         val libraAccount =
-            AccountManager().getIdentityByCoinType(getDiemCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getDiemCoinType().coinNumber())
                 ?: return@withContext false
         val bitcoinAccount =
-            AccountManager().getIdentityByCoinType(getBitcoinCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getBitcoinCoinType().coinNumber())
                 ?: return@withContext false
 
         violasWalletAddress = violasAccount.address

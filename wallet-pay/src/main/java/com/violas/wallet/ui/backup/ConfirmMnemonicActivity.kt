@@ -87,9 +87,8 @@ class ConfirmMnemonicActivity : BaseBackupMnemonicActivity() {
                 if (checkMnemonic()) {
                     if (mnemonicFrom != BackupMnemonicFrom.CREATE_OTHER_WALLET) {
                         // 如果是身份钱包，需要存储备份结果到本地
-                        val accountManager = AccountManager()
-                        if (!accountManager.isIdentityMnemonicBackup()) {
-                            accountManager.setIdentityMnemonicBackup()
+                        if (!AccountManager.isIdentityMnemonicBackup()) {
+                            AccountManager.setIdentityMnemonicBackup()
 
                             // 如果是来自备份身份钱包的助记词，需要通知钱包首页关闭安全设置视图
                             if (mnemonicFrom == BackupMnemonicFrom.BACKUP_IDENTITY_WALLET) {

@@ -1,6 +1,5 @@
 package com.violas.wallet.viewModel
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,9 +12,12 @@ import com.violas.wallet.walletconnect.WalletConnectStatus
 import kotlinx.coroutines.CoroutineScope
 
 class WalletConnectViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
+
     companion object {
-        fun getViewModelInstance(context: Context): WalletConnectViewModel {
-            return ViewModelProvider(context.applicationContext as App).get(WalletConnectViewModel::class.java)
+
+        fun getInstance(): WalletConnectViewModel {
+            val context = ContextProvider.getContext().applicationContext
+            return ViewModelProvider(context as App).get(WalletConnectViewModel::class.java)
         }
     }
 

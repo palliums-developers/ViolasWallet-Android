@@ -1,6 +1,5 @@
 package com.violas.wallet.biz.command
 
-import com.palliums.content.ContextProvider
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountType
@@ -12,7 +11,7 @@ import java.math.BigDecimal
 
 class SaveAssetsAllBalanceCommand() : ISingleCommand {
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(ContextProvider.getContext())
+        WalletAppViewModel.getInstance()
     }
 
     override fun getIdentity() = "SaveAssetsAllBalance"

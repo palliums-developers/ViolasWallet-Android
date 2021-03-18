@@ -98,7 +98,7 @@ class TransactionRecordActivity : BaseAppActivity() {
         }
 
         return try {
-            val accountDO = AccountManager().getAccountById(mAccountId)
+            val accountDO = AccountManager.getAccountById(mAccountId)
             mCoinType = CoinType.parseCoinNumber(accountDO.coinNumber)
             mWalletAddress = accountDO.address
             true

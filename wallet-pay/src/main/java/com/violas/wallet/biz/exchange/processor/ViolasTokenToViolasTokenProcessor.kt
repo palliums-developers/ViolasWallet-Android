@@ -28,10 +28,6 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         DataRepository.getViolasChainRpcService()
     }
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
     private val mViolasExchangeContract by lazy {
         ViolasExchangeContract(isViolasTestNet())
     }
@@ -61,7 +57,7 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
         tokenFrom as StableTokenVo
         tokenTo as StableTokenVo
 
-        val accountDo = mAccountManager.getIdentityByCoinType(getViolasCoinType().coinNumber())
+        val accountDo = AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
             ?: throw AccountNotFindAddressException()
 
         val payeeAddress = payee ?: accountDo.address

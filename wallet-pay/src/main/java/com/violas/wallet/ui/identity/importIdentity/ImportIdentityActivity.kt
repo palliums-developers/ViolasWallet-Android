@@ -48,16 +48,14 @@ class ImportIdentityActivity : BaseAppActivity() {
             showProgress()
             launch(Dispatchers.IO) {
                 try {
-                    val accountManager = AccountManager()
                     val wordList = mnemonic.trim().split(" ")
                         .map { it.trim() }
                         .toList()
-                    accountManager.importIdentity(
-                        this@ImportIdentityActivity,
+                    AccountManager.importIdentityWallet(
                         wordList,
                         password.toByteArray()
                     )
-                    accountManager.setIdentityMnemonicBackup()
+                    AccountManager.setIdentityMnemonicBackup()
                     withContext(Dispatchers.Main) {
                         dismissProgress()
                         finish()

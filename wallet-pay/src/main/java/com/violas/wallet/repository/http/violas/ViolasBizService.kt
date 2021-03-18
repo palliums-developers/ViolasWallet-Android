@@ -25,7 +25,7 @@ class ViolasBizService(
 ) : TransactionRecordService {
 
     private val violasTokens by lazy {
-        WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.value
+        WalletAppViewModel.getInstance().mAssetsListLiveData.value
             ?.filter { it is AssetsTokenVo && it.getCoinNumber() == getViolasCoinType().coinNumber() }
             ?.associate { (it as AssetsTokenVo).module to it.getAssetsName() }
             ?: emptyMap()

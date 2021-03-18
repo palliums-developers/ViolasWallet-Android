@@ -44,7 +44,7 @@ class PayApp : App() {
     }
 
     private fun initAccountAndAssets() {
-        WalletAppViewModel.getViewModelInstance()
+        WalletAppViewModel.getInstance()
     }
 
     private fun initMessagePush() {
@@ -53,7 +53,7 @@ class PayApp : App() {
 
     private fun initWalletConnect() {
         // 暂时不考虑多进程
-        WalletConnectViewModel.getViewModelInstance(this)
+        WalletConnectViewModel.getInstance()
     }
 
     private fun initXPopup() {

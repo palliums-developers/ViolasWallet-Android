@@ -28,7 +28,7 @@ class MultiTransferViewModel : ViewModel() {
     }
 
     private val mTransactionManager by lazy {
-        val identityByCoinType = AccountManager().getIdentityByCoinType(
+        val identityByCoinType = AccountManager.getAccountByCoinNumber(
             getBitcoinCoinType().coinNumber()
         )
         val addressList = if (identityByCoinType == null) {

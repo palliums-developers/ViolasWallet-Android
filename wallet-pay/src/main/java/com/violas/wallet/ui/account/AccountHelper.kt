@@ -23,13 +23,12 @@ import com.violas.wallet.repository.database.entity.AccountDO
  */
 fun loadAccounts(
     @AccountType accountType: Int,
-    accountManager: AccountManager = AccountManager(),
     accountDao: AccountDao = DataRepository.getAccountStorage(),
     differentiateIdentityIfNotAllAccountType: Boolean = false // 不是AccountType.ALL时，区分身份钱包和创建导入钱包
 ): MutableMap<String, List<AccountVo>> {
     val data = mutableMapOf<String, List<AccountVo>>()
 
-    val currentAccount = accountManager.currentAccount()
+    val currentAccount = AccountManager.currentAccount()
     if (accountType == AccountType.ALL) {
 
         val identityAccountLabel = getString(R.string.wallet_account_label_identity)

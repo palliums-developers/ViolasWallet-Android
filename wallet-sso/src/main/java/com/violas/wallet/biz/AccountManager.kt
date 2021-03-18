@@ -462,7 +462,7 @@ class AccountManager {
                     DataRepository.getViolasService().getAccountState(account.address)
                 if (!isActivate(accountState?.authenticationKey)) {
                     DataRepository.getViolasService()
-                        .activateAccount(account.address, account.authKeyPrefix)
+                        .activateWallet(account.address, account.authKeyPrefix)
                 }
             }
 

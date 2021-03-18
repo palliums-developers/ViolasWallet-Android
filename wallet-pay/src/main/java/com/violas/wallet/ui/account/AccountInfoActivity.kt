@@ -25,10 +25,6 @@ class AccountInfoActivity : BaseAppActivity() {
         }
     }
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
     override fun getLayoutResId(): Int {
         return R.layout.activity_account_info
     }
@@ -40,7 +36,7 @@ class AccountInfoActivity : BaseAppActivity() {
         launch(Dispatchers.IO) {
             try {
                 val account =
-                    mAccountManager.getAccountById(intent.getLongExtra(EXT_ACCOUNT_ID, 1))
+                    AccountManager.getAccountById(intent.getLongExtra(EXT_ACCOUNT_ID, 1))
                 withContext(Dispatchers.Main) {
 //                    editName.hint = account.walletNickname
                 }
@@ -59,7 +55,7 @@ class AccountInfoActivity : BaseAppActivity() {
             launch(Dispatchers.IO) {
                 try {
                     val account =
-                        mAccountManager.getAccountById(intent.getLongExtra(EXT_ACCOUNT_ID, 1))
+                        AccountManager.getAccountById(intent.getLongExtra(EXT_ACCOUNT_ID, 1))
 //                    account.walletNickname = name
                     DataRepository.getAccountStorage().update(account)
                     EventBus.getDefault().post(ChangeAccountNameEvent())

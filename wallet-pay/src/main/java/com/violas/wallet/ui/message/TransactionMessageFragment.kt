@@ -111,7 +111,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
 
     private suspend fun initAddress() = withContext(Dispatchers.IO) {
         val violasAccount =
-            AccountManager().getIdentityByCoinType(getViolasCoinType().coinNumber())
+            AccountManager.getAccountByCoinNumber(getViolasCoinType().coinNumber())
                 ?: return@withContext false
 
         address = violasAccount.address

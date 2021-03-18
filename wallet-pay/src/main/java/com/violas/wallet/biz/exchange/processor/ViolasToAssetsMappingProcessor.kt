@@ -24,10 +24,6 @@ class ViolasToAssetsMappingProcessor(
     private val supportMappingPair: HashMap<String, MappingInfo>
 ) : IProcessor {
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
     private val mViolasRpcService by lazy {
         DataRepository.getViolasChainRpcService()
     }
@@ -55,7 +51,7 @@ class ViolasToAssetsMappingProcessor(
         tokenFrom as StableTokenVo
 
         val payeeAddress =
-            payee ?: mAccountManager.getIdentityByCoinType(tokenTo.coinNumber)?.address
+            payee ?: AccountManager.getAccountByCoinNumber(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
         // 检查 Libra 的稳定币有没有 Publish
@@ -86,7 +82,7 @@ class ViolasToAssetsMappingProcessor(
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = mAccountManager.getIdentityByCoinType(tokenFrom.coinNumber)
+        val fromAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")
@@ -158,7 +154,7 @@ class ViolasToAssetsMappingProcessor(
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = mAccountManager.getIdentityByCoinType(fromIAssetsMark.coinNumber())
+        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetsMark.coinNumber())
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")

@@ -32,7 +32,6 @@ import org.palliums.violascore.wallet.Account
  */
 fun BaseActivity.authenticateAccount(
     accountDO: AccountDO,
-    accountManager: AccountManager,
     retryWhenPwdInputError: Boolean = true,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
@@ -44,7 +43,6 @@ fun BaseActivity.authenticateAccount(
 ) {
     authenticateAccountByBiometric(
         accountDO = accountDO,
-        accountManager = accountManager,
         showLoadingWhenDecryptStart = showLoadingWhenDecryptStart,
         dismissLoadingWhenDecryptEnd = dismissLoadingWhenDecryptEnd,
         useFingerprint = useFingerprintWhenBiometric,
@@ -76,7 +74,6 @@ fun BaseActivity.authenticateAccount(
  */
 fun Fragment.authenticateAccount(
     accountDO: AccountDO,
-    accountManager: AccountManager,
     retryWhenPwdInputError: Boolean = true,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
@@ -88,7 +85,6 @@ fun Fragment.authenticateAccount(
 ) {
     authenticateAccountByBiometric(
         accountDO = accountDO,
-        accountManager = accountManager,
         showLoadingWhenDecryptStart = showLoadingWhenDecryptStart,
         dismissLoadingWhenDecryptEnd = dismissLoadingWhenDecryptEnd,
         useFingerprint = useFingerprintWhenBiometric,
@@ -121,7 +117,6 @@ fun Fragment.authenticateAccount(
  */
 fun BaseActivity.authenticateAccountByBiometric(
     accountDO: AccountDO,
-    accountManager: AccountManager,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
     useFingerprint: Boolean = true,
@@ -131,7 +126,7 @@ fun BaseActivity.authenticateAccountByBiometric(
     mnemonicCallback: ((mnemonics: List<String>) -> Unit)? = null,
     privateKeyCallback: ((privateKey: ByteArray) -> Unit)? = null
 ) {
-    val securityPassword = accountManager.getSecurityPassword()
+    val securityPassword = AccountManager.getSecurityPassword()
     if (securityPassword.isNullOrBlank()) {
         // 没有开启生物验证功能
         biometricErrorCallback?.invoke()
@@ -200,7 +195,6 @@ fun BaseActivity.authenticateAccountByBiometric(
  */
 fun Fragment.authenticateAccountByBiometric(
     accountDO: AccountDO,
-    accountManager: AccountManager,
     showLoadingWhenDecryptStart: Boolean = true,
     dismissLoadingWhenDecryptEnd: Boolean = false,
     useFingerprint: Boolean = true,
@@ -210,7 +204,7 @@ fun Fragment.authenticateAccountByBiometric(
     mnemonicCallback: ((mnemonics: List<String>) -> Unit)? = null,
     privateKeyCallback: ((privateKey: ByteArray) -> Unit)? = null
 ) {
-    val securityPassword = accountManager.getSecurityPassword()
+    val securityPassword = AccountManager.getSecurityPassword()
     if (securityPassword.isNullOrBlank()) {
         // 没有开启生物验证功能
         biometricErrorCallback?.invoke()

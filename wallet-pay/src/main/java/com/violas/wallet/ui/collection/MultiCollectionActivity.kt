@@ -64,7 +64,7 @@ class MultiCollectionActivity : BaseAppActivity(),
     private var coinNumber: Int = getViolasCoinType().coinNumber()
 
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this@MultiCollectionActivity)
+        WalletAppViewModel.getInstance()
     }
     private val mMultiCollectionViewModel by lazy {
         ViewModelProvider(this).get(MultiCollectionViewModel::class.java)
@@ -72,9 +72,6 @@ class MultiCollectionActivity : BaseAppActivity(),
 
     private val mTokenManager by lazy {
         TokenManager()
-    }
-    private val mAccountManager by lazy {
-        AccountManager()
     }
     private var mJob: Job? = null
 
@@ -120,7 +117,7 @@ class MultiCollectionActivity : BaseAppActivity(),
             tvToSelectText.text = assets.getAssetsName()
             mJob?.cancel()
             mJob = launch(Dispatchers.IO) {
-                val currentAccount = mAccountManager.getAccountById(assets.getAccountId())
+                val currentAccount = AccountManager.getAccountById(assets.getAccountId())
                 withContext(Dispatchers.Main) {
                     tvAddress.text = currentAccount.address
 //                tvWalletName.text = currentAccount.walletNickname

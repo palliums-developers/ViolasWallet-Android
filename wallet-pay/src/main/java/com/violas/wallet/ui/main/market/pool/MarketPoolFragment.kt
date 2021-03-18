@@ -161,7 +161,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
         }
 
         // 数据观察
-        WalletAppViewModel.getViewModelInstance().mExistsAccountLiveData
+        WalletAppViewModel.getInstance().mExistsAccountLiveData
             .observe(viewLifecycleOwner, Observer {
                 poolViewModel.setupViolasAccount(it)
             })
@@ -716,10 +716,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     }
 
     private fun authenticateAccount(transferIn: Boolean) {
-        authenticateAccount(
-            poolViewModel.getViolasAccount()!!,
-            poolViewModel.getAccountManager()
-        ) { privateKey ->
+        authenticateAccount(poolViewModel.getViolasAccount()!!) { privateKey ->
             // 转入转出前停止同步流动资产储备信息
             poolViewModel.stopSyncLiquidityReserveWork()
 

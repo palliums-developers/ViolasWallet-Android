@@ -33,9 +33,6 @@ class ImportWalletActivity : BaseAppActivity() {
     }
 
     private lateinit var mCurrentCoinType: CoinType
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
 
     override fun getLayoutResId() = R.layout.activity_import_wallet
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,14 +89,13 @@ class ImportWalletActivity : BaseAppActivity() {
                         val wordList = mnemonic.trim().split(" ")
                             .map { it.trim() }
                             .toList()
-                        val newWallet = mAccountManager.importWallet(
+                        val newWallet = AccountManager.importNonIdentityWallet(
                             mCurrentCoinType,
-                            this@ImportWalletActivity,
                             wordList,
-                            walletName,
-                            password.toByteArray()
+                            password.toByteArray(),
+                            walletName
                         )
-                        mAccountManager.switchCurrentAccount(newWallet)
+                        AccountManager.switchCurrentAccount(newWallet)
                         withContext(Dispatchers.Main) {
                             dismissProgress()
                             EventBus.getDefault().post(SwitchAccountEvent())

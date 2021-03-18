@@ -20,7 +20,7 @@ class LibraViolasService(
 ) : TransactionRecordService {
 
     private val libraTokens by lazy {
-        WalletAppViewModel.getViewModelInstance().mAssetsListLiveData.value
+        WalletAppViewModel.getInstance().mAssetsListLiveData.value
             ?.filter { it is AssetsTokenVo && it.getCoinNumber() == getDiemCoinType().coinNumber() }
             ?.associate { (it as AssetsTokenVo).module to it.getAssetsName() }
             ?: emptyMap()
@@ -98,11 +98,11 @@ class LibraViolasService(
         onSuccess.invoke(list, null)
     }
 
-    suspend fun activateAccount(
+    suspend fun activateWallet(
         address: String,
         authKeyPrefix: String
     ) =
-        repository.activateAccount(address, authKeyPrefix)
+        repository.activateWallet(address, authKeyPrefix)
 
     suspend fun getCurrencies() = repository.getCurrencies().data?.currencies
 }

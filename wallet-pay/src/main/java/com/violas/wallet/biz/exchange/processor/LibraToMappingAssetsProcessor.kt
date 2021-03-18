@@ -34,10 +34,6 @@ class LibraToMappingAssetsProcessor(
         DataRepository.getViolasChainRpcService()
     }
 
-    private val mAccountManager by lazy {
-        AccountManager()
-    }
-
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
                 && tokenFrom.coinNumber == getDiemCoinType().coinNumber()
@@ -57,7 +53,7 @@ class LibraToMappingAssetsProcessor(
         tokenFrom as StableTokenVo
 
         val payeeAddress =
-            payee ?: mAccountManager.getIdentityByCoinType(tokenTo.coinNumber)?.address
+            payee ?: AccountManager.getAccountByCoinNumber(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
         // 检查 Libra 的稳定币有没有 Publish
@@ -89,7 +85,7 @@ class LibraToMappingAssetsProcessor(
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = mAccountManager.getIdentityByCoinType(tokenFrom.coinNumber)
+        val fromAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")
@@ -160,7 +156,7 @@ class LibraToMappingAssetsProcessor(
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = mAccountManager.getIdentityByCoinType(fromIAssetsMark.coinNumber())
+        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetsMark.coinNumber())
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")

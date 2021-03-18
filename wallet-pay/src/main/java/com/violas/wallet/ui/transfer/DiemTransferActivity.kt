@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
+import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
@@ -30,7 +31,7 @@ import java.math.BigDecimal
 /**
  * Diem/Violas转账页面
  */
-class LibraTransferActivity : TransferActivity() {
+class DiemTransferActivity : TransferActivity() {
 
     override fun getLayoutResId() = R.layout.activity_transfer
 
@@ -38,7 +39,7 @@ class LibraTransferActivity : TransferActivity() {
     private lateinit var mAssetsVo: AssetsVo
 
     private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getViewModelInstance(this@LibraTransferActivity)
+        WalletAppViewModel.getInstance()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -75,7 +76,7 @@ class LibraTransferActivity : TransferActivity() {
 
             launch(Dispatchers.IO) {
                 try {
-                    account = mAccountManager.getAccountById(mAssetsVo.getAccountId())
+                    account = AccountManager.getAccountById(mAssetsVo.getAccountId())
                     if (account?.accountType == AccountType.NoDollars && mAssetsVo is AssetsCoinVo) {
                         showToast(getString(R.string.transfer_tips_unsupported_currency))
                         finish()
@@ -117,7 +118,7 @@ class LibraTransferActivity : TransferActivity() {
         ivAddressBook.setOnClickListener {
             account?.coinNumber?.let { it1 ->
                 AddressBookActivity.start(
-                    this@LibraTransferActivity,
+                    this@DiemTransferActivity,
                     it1,
                     true,
                     REQUEST_SELECTOR_ADDRESS
@@ -184,10 +185,10 @@ class LibraTransferActivity : TransferActivity() {
     private fun showPasswordSend(amount: String, address: String) {
         if (account == null) return
 
-        authenticateAccount(account!!, mAccountManager) {
+        authenticateAccount(account!!) {
             launch(Dispatchers.IO) {
                 mTransferManager.transfer(
-                    this@LibraTransferActivity,
+                    this@DiemTransferActivity,
                     address.trim(),
                     toSubAddress,
                     amount.trim(),

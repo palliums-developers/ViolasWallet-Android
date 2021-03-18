@@ -61,7 +61,6 @@ class AccountSelectionFragment : BaseFragment() {
         }
     }
 
-    private val accountManager by lazy { AccountManager() }
     private val accountDao by lazy { DataRepository.getAccountStorage() }
 
     private var accountType: Int = AccountType.ALL
@@ -125,7 +124,7 @@ class AccountSelectionFragment : BaseFragment() {
         launch(Dispatchers.IO) {
             //val data = fakeAccounts(accountType)
             val data = loadAccounts(
-                accountType, accountManager, accountDao
+                accountType, accountDao
             )
             withContext(Dispatchers.Main) {
                 vAccountList.setData(data)
@@ -226,7 +225,7 @@ class AccountSelectionFragment : BaseFragment() {
                 accountVo?.let {
                     if (operationMode == AccountOperationMode.SWITCH && !it.selected) {
                         // 切换当前钱包账号
-                        accountManager.switchCurrentAccount(it.accountDO.id)
+                        AccountManager.switchCurrentAccount(it.accountDO.id)
                         // 发送切换钱包账号事件
                         EventBus.getDefault().post(SwitchAccountEvent())
                     }
