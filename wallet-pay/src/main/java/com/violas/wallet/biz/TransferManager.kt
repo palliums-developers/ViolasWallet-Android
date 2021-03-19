@@ -237,7 +237,7 @@ class TransferManager {
             val metadata = transactionMetadata?.metadata ?: byteArrayOf()
             val metadataSignature = transactionMetadata?.signatureMessage ?: byteArrayOf()
 
-            DataRepository.getLibraRpcService().sendTransaction(
+            DataRepository.getDiemRpcService().sendTransaction(
                 TransactionPayload.optionTransactionPayload(
                     context,
                     address,

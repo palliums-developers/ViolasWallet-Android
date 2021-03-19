@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra.violas
+package com.violas.wallet.repository.http.diem.violas
 
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.common.BaseBrowserUrl

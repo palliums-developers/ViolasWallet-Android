@@ -12,7 +12,7 @@ import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.event.WalletChangeEvent
@@ -209,7 +209,7 @@ class WalletManagerActivity : BaseAppActivity() {
             // 发送删除钱包事件，通知钱包首页刷新UI
             EventBus.getDefault().post(WalletChangeEvent())
             EventBus.getDefault().post(SwitchHomePageEvent(HomePageType.Wallet))
-            CommandActuator.post(RefreshAssetsAllListCommand())
+            CommandActuator.post(RefreshAssetsCommand())
 
             delay(500)
 

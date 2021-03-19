@@ -277,13 +277,13 @@ class ViolasService(private val mViolasRepository: ViolasRepository) {
 
     suspend fun getCurrencies() = mViolasRepository.getCurrencies().data?.currencies
 
-    suspend fun getBTCChainFiatBalance(address: String) =
-        mViolasRepository.getBTCChainFiatBalance(address).data
+    suspend fun getViolasChainFiatRates(address: String) =
+        mViolasRepository.getViolasChainFiatRates(address).data
 
-    suspend fun getLibraChainFiatBalance(address: String) =
-        mViolasRepository.getLibraChainFiatBalance(address).data
+    suspend fun getDiemChainFiatRates(address: String) =
+        mViolasRepository.getDiemChainFiatRates(address).data
 
-    suspend fun getViolasChainFiatBalance(address: String) =
-        mViolasRepository.getViolasChainFiatBalance(address).data
+    suspend fun getBitcoinChainFiatRates(address: String) =
+        mViolasRepository.getBitcoinChainFiatRates(address).data
 
 }

@@ -72,21 +72,21 @@ interface ViolasApi {
         @Query("auth_key_perfix") authKeyPrefix: String
     ): Observable<Response<Any>>
 
-    @GET("/1.0/violas/value/btc")
-    fun getBTCChainFiatBalance(
+    @GET("/1.0/violas/value/violas")
+    @Headers(value = ["chainName:violas"])
+    fun getViolasChainFiatRates(
         @Query("address") walletAddress: String
-    ): Observable<ListResponse<FiatBalanceDTO>>
+    ): Observable<ListResponse<FiatRateDTO>>
 
     @GET("/1.0/violas/value/libra")
     @Headers(value = ["chainName:diem"])
-    fun getLibraChainFiatBalance(
+    fun getDiemChainFiatRates(
         @Query("address") walletAddress: String
-    ): Observable<ListResponse<FiatBalanceDTO>>
+    ): Observable<ListResponse<FiatRateDTO>>
 
-    @GET("/1.0/violas/value/violas")
-    @Headers(value = ["chainName:violas"])
-    fun getViolasChainFiatBalance(
+    @GET("/1.0/violas/value/btc")
+    fun getBitcoinChainFiatRates(
         @Query("address") walletAddress: String
-    ): Observable<ListResponse<FiatBalanceDTO>>
+    ): Observable<ListResponse<FiatRateDTO>>
 
 }

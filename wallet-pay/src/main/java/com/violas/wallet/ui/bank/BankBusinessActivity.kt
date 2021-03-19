@@ -19,8 +19,8 @@ import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.utils.loadRoundedImage
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.android.synthetic.main.view_bank_business_parameter.view.*
@@ -50,8 +50,8 @@ abstract class BankBusinessActivity : BaseAppActivity(),
     }
 
     protected val mCurrentAssertsAmountSubscriber = object : BalanceSubscriber(null) {
-        override fun onNotice(assets: AssetsVo?) {
-            onCoinAmountNotice(assets)
+        override fun onNotice(asset: AssetVo?) {
+            onCoinAmountNotice(asset)
         }
     }
 
@@ -61,7 +61,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
 
     override fun getLayoutResId() = R.layout.activity_bank_business
 
-    open fun onCoinAmountNotice(assetsVo: AssetsVo?) {}
+    open fun onCoinAmountNotice(assetsVo: AssetVo?) {}
 
     private fun handleBusinessUserView(
         viewGroup: ViewGroup,
@@ -265,17 +265,17 @@ abstract class BankBusinessActivity : BaseAppActivity(),
         coinType: Int = getViolasCoinType().coinNumber()
     ) {
         var isFind = false
-        mWalletAppViewModel.mAssetsListLiveData.value?.forEach {
+        mWalletAppViewModel.mAssetsLiveData.value?.forEach {
             if (it.isBitcoin()
                 && it.getCoinNumber() == coinType
             ) {
                 isFind = true
                 changeCurrAssets(it)
-            } else if (it is AssetsTokenVo
+            } else if (it is DiemCurrencyAssetVo
                 && it.getCoinNumber() == coinType
-                && it.module == module
-                && it.address == address
-                && it.name == name
+                && it.currency.module == module
+                && it.currency.address == address
+                && it.currency.name == name
             ) {
                 isFind = true
                 changeCurrAssets(it)
@@ -292,7 +292,7 @@ abstract class BankBusinessActivity : BaseAppActivity(),
 
     // <editor-fold defaultstate="collapsed" desc="当前币种的选择与切换逻辑">
 
-    private fun changeCurrAssets(assetsVo: AssetsVo) {
+    private fun changeCurrAssets(assetsVo: AssetVo) {
         launch {
             if (mBankBusinessViewModel.mCurrentAssetsLiveData.value != assetsVo) {
                 mBankBusinessViewModel.mCurrentAssetsLiveData.value = assetsVo
@@ -307,11 +307,11 @@ abstract class BankBusinessActivity : BaseAppActivity(),
             }.show(supportFragmentManager)
     }
 
-    override fun getCurrCoin(): AssetsVo? {
+    override fun getCurrCoin(): AssetVo? {
         return mBankBusinessViewModel.mCurrentAssetsLiveData.value
     }
 
-    override suspend fun getSupportAssetsTokens(): LiveData<List<AssetsVo>?> {
+    override suspend fun getSupportAssetsTokens(): LiveData<List<AssetVo>?> {
         return mBankBusinessViewModel.mSupportAssetsTokensLiveData
     }
 

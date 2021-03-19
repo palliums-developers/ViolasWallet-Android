@@ -11,13 +11,12 @@ import com.palliums.utils.setSystemBar
 import com.quincysx.crypto.bitcoin.script.Script
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TransferUnknownException
 import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getViolasCoinType
@@ -270,7 +269,7 @@ class WalletConnectActivity : BaseAppActivity() {
                             DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
                         }
                         getDiemCoinType() -> {
-                            DataRepository.getLibraRpcService().submitTransaction(signedTx)
+                            DataRepository.getDiemRpcService().submitTransaction(signedTx)
                         }
                     }
                 }
@@ -287,7 +286,7 @@ class WalletConnectActivity : BaseAppActivity() {
                     mWalletConnect.sendSuccessMessage(transactionSwapVo.requestID, "success")
                 }
 
-                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                 mRequestHandle = true
                 finish()
                 dismissProgress()

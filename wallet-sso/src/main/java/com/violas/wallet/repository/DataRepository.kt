@@ -17,9 +17,9 @@ import com.violas.wallet.repository.http.governor.GovernorApi
 import com.violas.wallet.repository.http.governor.GovernorRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
-import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
-import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
-import com.violas.wallet.repository.http.libra.violas.LibraViolasService
+import com.violas.wallet.repository.http.diem.violas.LibraViolasApi
+import com.violas.wallet.repository.http.diem.violas.LibraViolasRepository
+import com.violas.wallet.repository.http.diem.violas.LibraViolasService
 import com.violas.wallet.repository.http.issuer.IssuerApi
 import com.violas.wallet.repository.http.issuer.SSORepository
 import com.violas.wallet.repository.http.violas.ViolasBizService

@@ -9,7 +9,7 @@ import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -39,7 +39,7 @@ class MultiTransferViewModel : ViewModel() {
         TransactionManager(addressList)
     }
 
-    val mCurrAssets = MutableLiveData<AssetsVo>()
+    val mCurrAssets = MutableLiveData<AssetVo>()
     val mTransferAmount = MutableLiveData<String>()
     val mTransferPayeeAddress = MutableLiveData<String>()
     val mFeeProgressAmount = MutableLiveData(DEF_FEE_PROGRESS)

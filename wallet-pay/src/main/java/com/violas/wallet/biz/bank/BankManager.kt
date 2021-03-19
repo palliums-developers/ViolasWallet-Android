@@ -8,7 +8,7 @@ import com.violas.wallet.common.getViolasChainId
 import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
@@ -29,7 +29,7 @@ class BankManager {
         password: ByteArray,
         payerAccountDO: AccountDO,
         productId: String,
-        assetsMark: LibraTokenAssetsMark,
+        assetMark: DiemCurrencyAssetMark,
         amount: Long
     ): String {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
@@ -37,9 +37,9 @@ class BankManager {
 
         val typeTagFrom = TypeTagStructTag(
             StructTag(
-                AccountAddress(assetsMark.address.hexStringToByteArray()),
-                assetsMark.module,
-                assetsMark.name,
+                AccountAddress(assetMark.address.hexStringToByteArray()),
+                assetMark.module,
+                assetMark.name,
                 arrayListOf()
             )
         )
@@ -72,7 +72,7 @@ class BankManager {
         password: ByteArray,
         payerAccountDO: AccountDO,
         productId: String,
-        assetsMark: LibraTokenAssetsMark,
+        assetMark: DiemCurrencyAssetMark,
         amount: Long
     ): String {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
@@ -80,9 +80,9 @@ class BankManager {
 
         val typeTagFrom = TypeTagStructTag(
             StructTag(
-                AccountAddress(assetsMark.address.hexStringToByteArray()),
-                assetsMark.module,
-                assetsMark.name,
+                AccountAddress(assetMark.address.hexStringToByteArray()),
+                assetMark.module,
+                assetMark.name,
                 arrayListOf()
             )
         )
@@ -116,7 +116,7 @@ class BankManager {
         password: ByteArray,
         payerAccountDO: AccountDO,
         productId: String,
-        assetsMark: LibraTokenAssetsMark,
+        assetMark: DiemCurrencyAssetMark,
         amount: Long
     ): String {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
@@ -124,9 +124,9 @@ class BankManager {
 
         val typeTagFrom = TypeTagStructTag(
             StructTag(
-                AccountAddress(assetsMark.address.hexStringToByteArray()),
-                assetsMark.module,
-                assetsMark.name,
+                AccountAddress(assetMark.address.hexStringToByteArray()),
+                assetMark.module,
+                assetMark.name,
                 arrayListOf()
             )
         )
@@ -160,7 +160,7 @@ class BankManager {
         password: ByteArray,
         payerAccountDO: AccountDO,
         productId: String,
-        assetsMark: LibraTokenAssetsMark,
+        assetMark: DiemCurrencyAssetMark,
         amount: Long
     ): String {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
@@ -168,9 +168,9 @@ class BankManager {
 
         val typeTagFrom = TypeTagStructTag(
             StructTag(
-                AccountAddress(assetsMark.address.hexStringToByteArray()),
-                assetsMark.module,
-                assetsMark.name,
+                AccountAddress(assetMark.address.hexStringToByteArray()),
+                assetMark.module,
+                assetMark.name,
                 arrayListOf()
             )
         )

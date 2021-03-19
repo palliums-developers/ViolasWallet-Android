@@ -18,14 +18,14 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.common.KEY_TWO
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.BankWithdrawalEvent
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.DepositDetailsDTO
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayAmountToAmount
@@ -177,7 +177,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
             authenticateAccount(accountDO, passwordCallback = {
                 sendTransfer(
                     accountDO,
-                    LibraTokenAssetsMark(
+                    DiemCurrencyAssetMark(
                         getViolasCoinType(),
                         depositDetails.tokenModule,
                         depositDetails.tokenAddress,
@@ -192,7 +192,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
 
     private fun sendTransfer(
         account: AccountDO,
-        mark: LibraTokenAssetsMark,
+        mark: DiemCurrencyAssetMark,
         pwd: ByteArray,
         amount: Long
     ) {
@@ -205,7 +205,7 @@ class BankWithdrawalDialog : DialogFragment(), ViewController, CoroutineScope by
                 dismissProgress()
                 showToast(getString(R.string.bank_withdrawal_tips_withdrawal_success))
                 EventBus.getDefault().post(BankWithdrawalEvent())
-                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                 close()
             } catch (e: Exception) {
                 logError(e, TAG) { "withdrawal failure" }

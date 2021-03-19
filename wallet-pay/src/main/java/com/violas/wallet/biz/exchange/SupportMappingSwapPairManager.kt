@@ -7,8 +7,8 @@ import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.MappingPairInfoDTO
-import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.ui.main.market.bean.CoinAssetMark
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.utils.str2CoinNumber
 import kotlinx.coroutines.CoroutineScope
 
@@ -55,11 +55,11 @@ class SupportMappingSwapPairManager : CoroutineScope by CustomIOScope() {
                 val assetsMark =
                     when (val toMappingCoinTypes = str2CoinNumber(mappingPair.toCoin.coinType)) {
                         getBitcoinCoinType().coinNumber() -> {
-                            CoinAssetsMark(CoinType.parseCoinNumber(toMappingCoinTypes))
+                            CoinAssetMark(CoinType.parseCoinNumber(toMappingCoinTypes))
                         }
                         getDiemCoinType().coinNumber(),
                         getViolasCoinType().coinNumber() -> {
-                            LibraTokenAssetsMark(
+                            DiemCurrencyAssetMark(
                                 CoinType.parseCoinNumber(toMappingCoinTypes),
                                 mappingPair.toCoin.assets?.module ?: "",
                                 mappingPair.toCoin.assets?.address ?: "",

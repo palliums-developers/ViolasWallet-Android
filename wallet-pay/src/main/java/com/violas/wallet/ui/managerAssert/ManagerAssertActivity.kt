@@ -31,7 +31,7 @@ import com.violas.wallet.ui.web.WebCommonActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
+import com.violas.wallet.viewModel.bean.DiemCoinAssetVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.item_manager_assert.view.*
 import kotlinx.coroutines.Dispatchers
@@ -224,8 +224,8 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     override fun onTitleRightViewClick() {
         var address = ""
-        mWalletAppViewModel.mAssetsListLiveData.value?.forEach {
-            if (it is AssetsLibraCoinVo) {
+        mWalletAppViewModel.mAssetsLiveData.value?.forEach {
+            if (it is DiemCoinAssetVo) {
                 address = it.address
                 return@forEach
             }

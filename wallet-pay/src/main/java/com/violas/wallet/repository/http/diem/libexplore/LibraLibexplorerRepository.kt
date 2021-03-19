@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra.libexplore
+package com.violas.wallet.repository.http.diem.libexplore
 
 import com.palliums.exceptions.RequestException
 import com.palliums.net.await

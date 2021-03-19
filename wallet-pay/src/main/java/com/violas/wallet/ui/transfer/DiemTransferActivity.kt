@@ -10,7 +10,7 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountType
@@ -20,8 +20,8 @@ import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,7 +36,7 @@ class DiemTransferActivity : TransferActivity() {
     override fun getLayoutResId() = R.layout.activity_transfer
 
     private var mBalance: BigDecimal? = null
-    private lateinit var mAssetsVo: AssetsVo
+    private lateinit var mAssetsVo: AssetVo
 
     private val mWalletAppViewModel by lazy {
         WalletAppViewModel.getInstance()
@@ -54,14 +54,14 @@ class DiemTransferActivity : TransferActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        CommandActuator.post(RefreshAssetsAllListCommand())
-        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+        CommandActuator.post(RefreshAssetsCommand())
+        mWalletAppViewModel.mAssetsLiveData.observe(this, Observer {
             var exists = false
             for (item in it) {
                 val isCoinTrue =
-                    assetsName == null && item is AssetsCoinVo && item.getCoinNumber() == coinNumber
+                    assetsName == null && item is CoinAssetVo && item.getCoinNumber() == coinNumber
                 val isTokenTrue =
-                    assetsName != null && item !is AssetsCoinVo && item.getCoinNumber() == coinNumber && item.getAssetsName() == assetsName
+                    assetsName != null && item !is CoinAssetVo && item.getCoinNumber() == coinNumber && item.getAssetsName() == assetsName
                 if (isCoinTrue || isTokenTrue) {
                     mAssetsVo = item
                     exists = true
@@ -77,7 +77,7 @@ class DiemTransferActivity : TransferActivity() {
             launch(Dispatchers.IO) {
                 try {
                     account = AccountManager.getAccountById(mAssetsVo.getAccountId())
-                    if (account?.accountType == AccountType.NoDollars && mAssetsVo is AssetsCoinVo) {
+                    if (account?.accountType == AccountType.NoDollars && mAssetsVo is CoinAssetVo) {
                         showToast(getString(R.string.transfer_tips_unsupported_currency))
                         finish()
                         return@launch
@@ -201,7 +201,7 @@ class DiemTransferActivity : TransferActivity() {
                         print(it)
                         dismissProgress()
                         showToast(getString(R.string.transfer_tips_transfer_success))
-                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                        CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                         finish()
                     },
                     {

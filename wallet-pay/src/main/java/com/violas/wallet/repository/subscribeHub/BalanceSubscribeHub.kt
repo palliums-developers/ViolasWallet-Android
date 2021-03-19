@@ -6,13 +6,12 @@ import com.palliums.utils.CustomIOScope
 import com.palliums.utils.toMap
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.BuildConfig
-import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.ui.main.market.bean.CoinAssetMark
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
-import com.violas.wallet.viewModel.bean.AssetsVo
-import com.violas.wallet.viewModel.bean.HiddenTokenVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -31,40 +30,29 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
     }
 
     private val mBalanceSubscribers = hashMapOf<BalanceSubscriber, WrapperBalanceSubscriber>()
-    private var mAssetsMap = mapOf<String, AssetsVo>()
+    private var mAssetMap = mapOf<String, AssetVo>()
 
     init {
-        WalletAppViewModel.getInstance().mAssetsListLiveData.observe(this, Observer {
+        WalletAppViewModel.getInstance().mAssetsLiveData.observe(this) {
             launch {
-                mAssetsMap = it.toMap { assets ->
-                    when (assets) {
-                        is AssetsCoinVo -> {
-                            CoinAssetsMark(CoinType.parseCoinNumber(assets.getCoinNumber())).mark()
+                mAssetMap = it.toMap { asset ->
+                    when (asset) {
+                        is CoinAssetVo -> {
+                            CoinAssetMark(CoinType.parseCoinNumber(asset.getCoinNumber())).mark()
                         }
-                        is HiddenTokenVo -> {
-                            LibraTokenAssetsMark(
-                                CoinType.parseCoinNumber(assets.getCoinNumber()),
-                                assets.module,
-                                assets.address,
-                                assets.name
+                        is DiemCurrencyAssetVo -> {
+                            DiemCurrencyAssetMark(
+                                CoinType.parseCoinNumber(asset.getCoinNumber()),
+                                asset.currency.module,
+                                asset.currency.address,
+                                asset.currency.name
                             ).mark()
-                        }
-                        is AssetsTokenVo -> {
-                            LibraTokenAssetsMark(
-                                CoinType.parseCoinNumber(assets.getCoinNumber()),
-                                assets.module,
-                                assets.address,
-                                assets.name
-                            ).mark()
-                        }
-                        else -> {
-                            ""
                         }
                     }
                 }
                 notice()
             }
-        })
+        }
         mLifecycleRegistry.currentState = Lifecycle.State.RESUMED
     }
 
@@ -73,11 +61,11 @@ object BalanceSubscribeHub : LifecycleOwner, LifecycleObserver, RemoveSubscriber
      */
     override fun notice(subscriber: BalanceSubscriber?) {
         if (subscriber != null) {
-            val assetsVo = mAssetsMap[subscriber.getAssetsMarkUnique()]
+            val assetsVo = mAssetMap[subscriber.getAssetsMarkUnique()]
             subscriber.onNotice(assetsVo)
         } else {
             mBalanceSubscribers.keys.forEach { item ->
-                mAssetsMap[item.getAssetsMarkUnique()].let { assets ->
+                mAssetMap[item.getAssetsMarkUnique()].let { assets ->
                     item.onNotice(assets)
                 }
             }

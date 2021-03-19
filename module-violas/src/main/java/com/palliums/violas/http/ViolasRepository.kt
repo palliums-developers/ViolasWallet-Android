@@ -85,21 +85,21 @@ class ViolasRepository(private val mViolasApi: ViolasApi) {
         mViolasApi.getCurrency().await()
 
     @Throws(RequestException::class)
-    suspend fun getBTCChainFiatBalance(
+    suspend fun getViolasChainFiatRates(
         address: String
     ) =
-        mViolasApi.getBTCChainFiatBalance(address).await()
+        mViolasApi.getViolasChainFiatRates(address).await()
 
     @Throws(RequestException::class)
-    suspend fun getLibraChainFiatBalance(
+    suspend fun getDiemChainFiatRates(
         address: String
     ) =
-        mViolasApi.getLibraChainFiatBalance(address).await()
+        mViolasApi.getDiemChainFiatRates(address).await()
 
     @Throws(RequestException::class)
-    suspend fun getViolasChainFiatBalance(
+    suspend fun getBitcoinChainFiatRates(
         address: String
     ) =
-        mViolasApi.getViolasChainFiatBalance(address).await()
+        mViolasApi.getBitcoinChainFiatRates(address).await()
 
 }

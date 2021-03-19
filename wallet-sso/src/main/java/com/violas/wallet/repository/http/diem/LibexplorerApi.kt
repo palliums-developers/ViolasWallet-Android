@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra
+package com.violas.wallet.repository.http.diem
 
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URLNAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_LIBEXPLORER

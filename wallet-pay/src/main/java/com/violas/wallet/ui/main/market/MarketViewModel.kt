@@ -8,12 +8,13 @@ import com.palliums.utils.toMap
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.ui.main.market.bean.ITokenVo
+import com.violas.wallet.ui.main.market.bean.PlatformTokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
-import com.violas.wallet.viewModel.bean.AssetsVo
-import com.violas.wallet.viewModel.bean.HiddenTokenVo
+import com.violas.wallet.viewModel.bean.AssetVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -35,7 +36,7 @@ class MarketViewModel : BaseViewModel() {
     private var marketCoinsLiveData = MediatorLiveData<List<ITokenVo>>()
 
     init {
-        marketCoinsLiveData.addSource(appViewModel.mAssetsListLiveData) {
+        marketCoinsLiveData.addSource(appViewModel.mAssetsLiveData) {
             val marketCoins = marketCoinsLiveData.value
             if (marketCoins.isNullOrEmpty()) return@addSource
 
@@ -55,11 +56,11 @@ class MarketViewModel : BaseViewModel() {
         if (!marketCoins.isNullOrEmpty()) return
 
         marketCoins = exchangeManager.getMarketSupportTokens()
-        setupBalance(appViewModel.mAssetsListLiveData.value, marketCoins)
+        setupBalance(appViewModel.mAssetsLiveData.value, marketCoins)
         marketCoinsLiveData.postValue(marketCoins)
     }
 
-    private fun setupBalance(assetsList: List<AssetsVo>?, marketCoins: List<ITokenVo>) {
+    private fun setupBalance(assetsList: List<AssetVo>?, marketCoins: List<ITokenVo>) {
         if (assetsList.isNullOrEmpty()) return
 
         val assetsMap = assetsList.toMap { getAssetsKey(it) }
@@ -71,29 +72,25 @@ class MarketViewModel : BaseViewModel() {
         }
     }
 
-    private fun getAssetsKey(assets: AssetsVo): String {
+    private fun getAssetsKey(assets: AssetVo): String {
         return when (assets) {
-            is AssetsTokenVo -> {
-                "${assets.getCoinNumber()}${assets.name}"
-            }
-            is HiddenTokenVo -> {
-                "${assets.getCoinNumber()}${assets.name}"
-            }
-
-            else -> {
+            is CoinAssetVo -> {
                 "${assets.getCoinNumber()}${assets.getAssetsName()}"
+            }
+            is DiemCurrencyAssetVo -> {
+                "${assets.getCoinNumber()}${assets.currency.module}"
             }
         }
     }
 
     private fun getMarketCoinKey(coin: ITokenVo): String {
         return when (coin) {
-            is StableTokenVo -> {
-                "${coin.coinNumber}${coin.name}"
+            is PlatformTokenVo -> {
+                "${coin.coinNumber}${coin.displayName}"
             }
 
-            else -> {
-                "${coin.coinNumber}${coin.displayName}"
+            is StableTokenVo -> {
+                "${coin.coinNumber}${coin.module}"
             }
         }
     }

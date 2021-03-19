@@ -26,9 +26,9 @@ import com.violas.wallet.utils.convertAmountToDisplayAmount
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.utils.str2CoinType
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
-import com.violas.wallet.viewModel.bean.AssetsVo
-import com.violas.wallet.viewModel.bean.HiddenTokenVo
+import com.violas.wallet.viewModel.bean.AssetVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,7 +58,7 @@ class MappingViewModel : BaseViewModel() {
     val coinsTipsMessage by lazy { EnhancedMutableLiveData<String>() }
 
     init {
-        coinsLiveData.addSource(appViewModel.mAssetsListLiveData) {
+        coinsLiveData.addSource(appViewModel.mAssetsLiveData) {
             val coins = coinsLiveData.value
             if (coins.isNullOrEmpty()) return@addSource
 
@@ -135,7 +135,7 @@ class MappingViewModel : BaseViewModel() {
         mappingCoinPairsLiveData.value?.forEach {
             if (coin.coinNumber == str2CoinType(it.fromCoin.chainName).coinNumber()) {
                 if (coin is PlatformTokenVo
-                    || (coin is StableTokenVo && coin.name == it.fromCoin.assets.name)
+                    || (coin is StableTokenVo && coin.module == it.fromCoin.assets.module)
                 ) {
                     return it
                 }
@@ -168,7 +168,7 @@ class MappingViewModel : BaseViewModel() {
                     coinPairs?.forEach {
                         coins.add(coinPair2Coin(it))
                     }
-                    setupBalance(appViewModel.mAssetsListLiveData.value, coins)
+                    setupBalance(appViewModel.mAssetsLiveData.value, coins)
 
                     mappingCoinPairsLiveData.postValue(coinPairs)
                     coinsLiveData.postValue(coins)
@@ -192,7 +192,7 @@ class MappingViewModel : BaseViewModel() {
         return true
     }
 
-    private fun setupBalance(assetsList: List<AssetsVo>?, coins: List<ITokenVo>) {
+    private fun setupBalance(assetsList: List<AssetVo>?, coins: List<ITokenVo>) {
         if (assetsList.isNullOrEmpty()) return
 
         val assetsMap = assetsList.toMap { getAssetsKey(it) }
@@ -204,29 +204,24 @@ class MappingViewModel : BaseViewModel() {
         }
     }
 
-    private fun getAssetsKey(assets: AssetsVo): String {
+    private fun getAssetsKey(assets: AssetVo): String {
         return when (assets) {
-            is AssetsTokenVo -> {
-                "${assets.getCoinNumber()}${assets.name}"
-            }
-            is HiddenTokenVo -> {
-                "${assets.getCoinNumber()}${assets.name}"
-            }
-
-            else -> {
+            is CoinAssetVo -> {
                 "${assets.getCoinNumber()}${assets.getAssetsName()}"
+            }
+            is DiemCurrencyAssetVo -> {
+                "${assets.getCoinNumber()}${assets.currency.module}"
             }
         }
     }
 
     private fun getMarketCoinKey(coin: ITokenVo): String {
         return when (coin) {
-            is StableTokenVo -> {
-                "${coin.coinNumber}${coin.name}"
-            }
-
-            else -> {
+            is PlatformTokenVo -> {
                 "${coin.coinNumber}${coin.displayName}"
+            }
+            is StableTokenVo -> {
+                "${coin.coinNumber}${coin.module}"
             }
         }
     }

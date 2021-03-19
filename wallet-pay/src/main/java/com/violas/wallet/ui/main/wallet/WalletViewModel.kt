@@ -8,8 +8,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.ReceiveIncentiveRewardsEvent
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -67,7 +66,7 @@ class WalletViewModel : ViewModel() {
         mHiddenTotalFiatBalanceLiveData.value = !(mHiddenTotalFiatBalanceLiveData.value ?: false)
     }
 
-    fun calculateFiat(it: List<AssetsVo>?) = viewModelScope.launch {
+    fun calculateFiat(it: List<AssetVo>?) = viewModelScope.launch {
         var total = BigDecimal("0")
         it?.forEach {
             try {

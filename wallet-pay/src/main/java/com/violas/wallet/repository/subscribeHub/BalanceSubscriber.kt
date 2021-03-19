@@ -1,22 +1,20 @@
 package com.violas.wallet.repository.subscribeHub
 
 import androidx.annotation.WorkerThread
-import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.ui.main.market.bean.IAssetMark
+import com.violas.wallet.viewModel.bean.AssetVo
 
-abstract class BalanceSubscriber(private var assetsMark: IAssetsMark?) {
+abstract class BalanceSubscriber(private var assetMark: IAssetMark?) {
 
     private var callBack: NoticeSubscriberCallBack? = null
 
-    fun getAssetsMarkUnique() = assetsMark?.mark() ?: ""
+    fun getAssetsMarkUnique() = assetMark?.mark() ?: ""
 
-    fun getAssetsMark() = assetsMark
+    fun getAssetsMark() = assetMark
 
     @WorkerThread
-    fun changeSubscriber(assetsMark: IAssetsMark?) {
-        this.assetsMark = assetsMark
+    fun changeSubscriber(assetMark: IAssetMark?) {
+        this.assetMark = assetMark
         callBack?.notice(this)
     }
 
@@ -24,5 +22,5 @@ abstract class BalanceSubscriber(private var assetsMark: IAssetsMark?) {
         this.callBack = callBack
     }
 
-    abstract fun onNotice(assets: AssetsVo?)
+    abstract fun onNotice(asset: AssetVo?)
 }

@@ -12,7 +12,7 @@ import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 
 /**
  * Created by elephant on 2019-11-11 15:47.
@@ -25,9 +25,9 @@ class ViolasBizService(
 ) : TransactionRecordService {
 
     private val violasTokens by lazy {
-        WalletAppViewModel.getInstance().mAssetsListLiveData.value
-            ?.filter { it is AssetsTokenVo && it.getCoinNumber() == getViolasCoinType().coinNumber() }
-            ?.associate { (it as AssetsTokenVo).module to it.getAssetsName() }
+        WalletAppViewModel.getInstance().mAssetsLiveData.value
+            ?.filter { it is DiemCurrencyAssetVo && it.getCoinNumber() == getViolasCoinType().coinNumber() }
+            ?.associate { (it as DiemCurrencyAssetVo).currency.module to it.getAssetsName() }
             ?: emptyMap()
     }
 

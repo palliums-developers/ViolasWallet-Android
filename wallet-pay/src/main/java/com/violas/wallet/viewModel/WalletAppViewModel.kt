@@ -1,6 +1,5 @@
 package com.violas.wallet.viewModel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -9,15 +8,16 @@ import com.palliums.content.ContextProvider
 import com.palliums.utils.CustomMainScope
 import com.palliums.utils.coroutineExceptionHandler
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.AssetsManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
-import com.violas.wallet.biz.command.SaveAssetsAllBalanceCommand
-import com.violas.wallet.biz.command.SaveAssetsFiatBalanceCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
+import com.violas.wallet.biz.command.SaveAssetsBalanceCommand
+import com.violas.wallet.biz.command.SaveAssetsFiatRateCommand
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getViolasCoinType
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsLibraCoinVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.DiemCoinAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,76 +33,70 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
         }
     }
 
-    val mAssetsListLiveData = MutableLiveData<List<AssetsVo>>()
+    val mAssetsLiveData = MutableLiveData<List<AssetVo>>()
     val mExistsAccountLiveData = MutableLiveData<Boolean>()
     val mDataRefreshingLiveData = MutableLiveData<Boolean>()
 
+    private val mAssetsManager by lazy { AssetsManager() }
+
     init {
-        //refreshAccountStatus()
-        refreshAssetsList(true)
+        refreshAssets(true)
     }
 
     fun isExistsAccount() = mExistsAccountLiveData.value == true
 
     fun refreshAccountStatus() = launch {
-        val existsAccount = try {
-            AccountManager.getDefaultAccount()
-            true
-        } catch (e: Exception) {
-            false
+        val existsAccount = withContext(Dispatchers.IO) {
+            try {
+                AccountManager.getDefaultAccount()
+                true
+            } catch (e: Exception) {
+                false
+            }
         }
 
         if (mExistsAccountLiveData.value != existsAccount)
             mExistsAccountLiveData.value = existsAccount
     }
 
-    fun refreshAssetsList(isFirst: Boolean = false) = launch(Dispatchers.IO) {
-        val existsAccount = try {
-            AccountManager.getDefaultAccount()
-            true
-        } catch (e: Exception) {
-            false
-        }
-        if (mExistsAccountLiveData.value != existsAccount)
-            mExistsAccountLiveData.postValue(existsAccount)
+    fun refreshAssets(isFirst: Boolean = false) = launch(Dispatchers.IO) {
+        refreshAccountStatus()
 
         if (mDataRefreshingLiveData.value == true) {
             return@launch
         }
 
         mDataRefreshingLiveData.postValue(true)
-        var localAssets = AccountManager.getLocalAssets()
+        var localAssets = mAssetsManager.getLocalAssets()
         if (localAssets.isEmpty()) {
-            mAssetsListLiveData.postValue(arrayListOf())
+            mAssetsLiveData.postValue(arrayListOf())
         } else {
             if (isFirst) {
-                mAssetsListLiveData.postValue(localAssets)
+                mAssetsLiveData.postValue(localAssets)
             }
 
-            localAssets = AccountManager.refreshAssetsAmount(localAssets)
-            Log.d("==assets==", "WalletFragment AssetsList Refresh")
-            mAssetsListLiveData.postValue(localAssets) // todo 尝试效果再决定是否删除
+            localAssets = mAssetsManager.refreshAssets(localAssets)
+            mAssetsLiveData.postValue(localAssets)
+            CommandActuator.post(SaveAssetsBalanceCommand())
 
-            CommandActuator.post(SaveAssetsAllBalanceCommand())
-
-            //if (isFirst) {
-            localAssets = AccountManager.refreshFiatAssetsAmount(localAssets)
-            mAssetsListLiveData.postValue(localAssets)
-            CommandActuator.post(SaveAssetsFiatBalanceCommand())
-            //}
+            localAssets = mAssetsManager.refreshFiatAssets(localAssets)
+            mAssetsLiveData.postValue(localAssets)
+            CommandActuator.post(SaveAssetsFiatRateCommand())
         }
         mDataRefreshingLiveData.postValue(false)
-        checkAccountActivate(localAssets)
+
+        checkWalletActivate(localAssets)
     }
 
-    private suspend fun checkAccountActivate(localAssets: List<AssetsVo>) {
+    private suspend fun checkWalletActivate(localAssets: List<AssetVo>) {
         withContext(Dispatchers.IO + coroutineExceptionHandler()) {
             var activateResult = false
 
             localAssets.filter {
-                it is AssetsCoinVo && (it.getCoinNumber() == getViolasCoinType().coinNumber() || it.getCoinNumber() == getDiemCoinType().coinNumber())
+                it is CoinAssetVo && (it.getCoinNumber() == getViolasCoinType().coinNumber() || it.getCoinNumber() == getDiemCoinType().coinNumber())
             }.forEach {
-                it as AssetsLibraCoinVo
+                it as DiemCoinAssetVo
+
                 try {
                     if (AccountManager.activateWallet(it)) {
                         activateResult = true
@@ -113,8 +107,17 @@ class WalletAppViewModel : ViewModel(), CoroutineScope by CustomMainScope() {
 
             if (activateResult) {
                 // 激活账户成功要刷新资产
-                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 1000)
+                CommandActuator.postDelay(RefreshAssetsCommand(), 1000)
             }
         }
     }
+
+    fun saveAssetsBalance(){
+        mAssetsManager.saveBalance(mAssetsLiveData.value)
+    }
+
+    fun saveAssetsFiatRate(){
+        mAssetsManager.saveFiatRate(mAssetsLiveData.value)
+    }
+
 }

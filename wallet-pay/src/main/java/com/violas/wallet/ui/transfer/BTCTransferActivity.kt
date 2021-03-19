@@ -12,15 +12,15 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.android.synthetic.main.activity_transfer_btc.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ class BTCTransferActivity : TransferActivity() {
 
     //BTC
     private lateinit var mTransactionManager: TransactionManager
-    private lateinit var mAssetsVo: AssetsVo
+    private lateinit var mAssetVo: AssetVo
 
     override fun getLayoutResId() = R.layout.activity_transfer_btc
 
@@ -53,15 +53,15 @@ class BTCTransferActivity : TransferActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+        mWalletAppViewModel.mAssetsLiveData.observe(this, Observer {
             var exists = false
             for (item in it) {
                 val isCoinTrue =
-                    assetsName == null && item is AssetsCoinVo && item.getCoinNumber() == coinNumber
+                    assetsName == null && item is CoinAssetVo && item.getCoinNumber() == coinNumber
                 val isTokenTrue =
-                    assetsName != null && item !is AssetsCoinVo && item.getCoinNumber() == coinNumber && item.getAssetsName() == assetsName
+                    assetsName != null && item !is CoinAssetVo && item.getCoinNumber() == coinNumber && item.getAssetsName() == assetsName
                 if (isCoinTrue || isTokenTrue) {
-                    mAssetsVo = item
+                    mAssetVo = item
                     exists = true
                     break
                 }
@@ -74,7 +74,7 @@ class BTCTransferActivity : TransferActivity() {
 
             launch(Dispatchers.IO) {
                 try {
-                    account = AccountManager.getAccountById(mAssetsVo.getAccountId())
+                    account = AccountManager.getAccountById(mAssetVo.getAccountId())
 
                     val coinType = CoinType.parseCoinNumber(account!!.coinNumber)
                     withContext(Dispatchers.Main) {
@@ -85,8 +85,8 @@ class BTCTransferActivity : TransferActivity() {
                         }
                         if (isToken) {
                             title =
-                                getString(R.string.transfer_title_format, mAssetsVo.getAssetsName())
-                            tvHintCoinName.text = mAssetsVo.getAssetsName()
+                                getString(R.string.transfer_title_format, mAssetVo.getAssetsName())
+                            tvHintCoinName.text = mAssetVo.getAssetsName()
                         } else {
                             title =
                                 getString(R.string.transfer_title_format, coinType.coinName())
@@ -199,7 +199,7 @@ class BTCTransferActivity : TransferActivity() {
                         print(it)
                         dismissProgress()
                         showToast(getString(R.string.transfer_tips_transfer_success))
-                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                        CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                         finish()
                     },
                     error = {

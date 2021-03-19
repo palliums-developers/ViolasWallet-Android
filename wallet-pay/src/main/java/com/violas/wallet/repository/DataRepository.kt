@@ -25,9 +25,9 @@ import com.violas.wallet.repository.http.incentive.IncentiveApi
 import com.violas.wallet.repository.http.incentive.IncentiveRepository
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor
 import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor
-import com.violas.wallet.repository.http.libra.violas.LibraViolasApi
-import com.violas.wallet.repository.http.libra.violas.LibraViolasRepository
-import com.violas.wallet.repository.http.libra.violas.LibraViolasService
+import com.violas.wallet.repository.http.diem.violas.DiemViolasApi
+import com.violas.wallet.repository.http.diem.violas.DiemViolasRepository
+import com.violas.wallet.repository.http.diem.violas.DiemViolasService
 import com.violas.wallet.repository.http.mapping.MappingApi
 import com.violas.wallet.repository.http.mapping.MappingRepository
 import com.violas.wallet.repository.http.message.MessageApi
@@ -82,11 +82,11 @@ object DataRepository {
 
     fun getBitcoinService() = BitcoinChainApi.get()
 
-    fun getLibraRpcService() =
+    fun getDiemRpcService() =
         LibraRpcService(LibraRpcRepository(okHttpClient, ApiBaseUrl.DIEM_CHAIN_BASE_URL))
 
-    fun getLibraBizService() =
-        LibraViolasService(LibraViolasRepository(retrofit.create(LibraViolasApi::class.java)))
+    fun getDiemBizService() =
+        DiemViolasService(DiemViolasRepository(retrofit.create(DiemViolasApi::class.java)))
 
     fun getViolasBizService() =
         ViolasBizService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
@@ -104,8 +104,8 @@ object DataRepository {
             }
 
             getDiemCoinType() -> {
-                LibraViolasService(
-                    LibraViolasRepository(retrofit.create(LibraViolasApi::class.java))
+                DiemViolasService(
+                    DiemViolasRepository(retrofit.create(DiemViolasApi::class.java))
                 )
             }
 

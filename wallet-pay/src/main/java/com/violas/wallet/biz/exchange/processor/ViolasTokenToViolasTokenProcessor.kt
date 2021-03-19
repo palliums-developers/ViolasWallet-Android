@@ -11,7 +11,7 @@ import com.violas.wallet.common.getViolasChainId
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
@@ -136,16 +136,16 @@ class ViolasTokenToViolasTokenProcessor : IProcessor {
     }
 
     override fun hasHandleCancel(
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark
     ): Boolean {
         return false
     }
 
     override suspend fun cancel(
         pwd: ByteArray,
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark,
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark,
         typeTag: String,
         originPayeeAddress: String,
         tranId: String?,

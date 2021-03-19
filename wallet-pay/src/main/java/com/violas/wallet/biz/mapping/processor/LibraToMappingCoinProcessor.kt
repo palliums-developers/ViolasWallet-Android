@@ -32,7 +32,7 @@ class LibraToMappingCoinProcessor(
     private val violasRpcService: ViolasRpcService
 ) : MappingProcessor {
 
-    private val libraService by lazy { DataRepository.getLibraRpcService() }
+    private val libraService by lazy { DataRepository.getDiemRpcService() }
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
         return str2CoinType(coinPair.fromCoin.chainName) == getDiemCoinType()

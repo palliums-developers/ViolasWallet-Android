@@ -19,7 +19,7 @@ import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.ReserveManager
@@ -28,7 +28,7 @@ import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.MarketViewModel
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Companion.ACTION_SWAP_SELECT_FROM
@@ -36,7 +36,7 @@ import com.violas.wallet.ui.main.market.selectToken.SwapSelectTokenDialog.Compan
 import com.violas.wallet.ui.main.market.selectToken.SwapTokensDataResourcesBridge
 import com.violas.wallet.utils.*
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.fragment_swap.*
 import kotlinx.coroutines.Dispatchers
@@ -91,16 +91,16 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
     }
 
     private val fromAssertsAmountSubscriber = object : BalanceSubscriber(null) {
-        override fun onNotice(assets: AssetsVo?) {
+        override fun onNotice(asset: AssetVo?) {
             launch {
-                mCurrFromAssetsAmount = BigDecimal(assets?.amountWithUnit?.amount ?: "0")
+                mCurrFromAssetsAmount = BigDecimal(asset?.amountWithUnit?.amount ?: "0")
                 withContext(Dispatchers.IO) {
                     swapViewModel.getSupportTokensLiveData().value?.forEach {
-                        if (IAssetsMark.convert(it) == getAssetsMark()) {
+                        if (IAssetMark.convert(it) == getAssetsMark()) {
                             withContext(Dispatchers.Main) {
                                 tvFromBalance.text = getString(
                                     R.string.market_common_label_token_balance_format,
-                                    "${assets?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
+                                    "${asset?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
                                 )
                             }
                         }
@@ -111,14 +111,14 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
     }
 
     private val toAssertsAmountSubscriber = object : BalanceSubscriber(null) {
-        override fun onNotice(assets: AssetsVo?) {
+        override fun onNotice(asset: AssetVo?) {
             launch {
                 swapViewModel.getSupportTokensLiveData().value?.forEach {
-                    if (IAssetsMark.convert(it) == getAssetsMark()) {
+                    if (IAssetMark.convert(it) == getAssetsMark()) {
                         withContext(Dispatchers.Main) {
                             tvToBalance.text = getString(
                                 R.string.market_common_label_token_balance_format,
-                                "${assets?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
+                                "${asset?.amountWithUnit?.amount ?: "0"} ${it.displayName}"
                             )
                         }
                     }
@@ -246,7 +246,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 fromAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvFromSelectText.text = it.displayName
-                fromAssertsAmountSubscriber.changeSubscriber(IAssetsMark.convert(it))
+                fromAssertsAmountSubscriber.changeSubscriber(IAssetMark.convert(it))
             }
         })
         swapViewModel.getCurrToTokenLiveData().observe(viewLifecycleOwner, Observer {
@@ -257,7 +257,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 toAssertsAmountSubscriber.changeSubscriber(null)
             } else {
                 tvToSelectText.text = it.displayName
-                toAssertsAmountSubscriber.changeSubscriber(IAssetsMark.convert(it))
+                toAssertsAmountSubscriber.changeSubscriber(IAssetMark.convert(it))
             }
         })
         mReserveManager.mChangeLiveData.observe(this, Observer {
@@ -332,7 +332,7 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                     mSwapPath,
                     isInputFrom
                 )
-                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                 resetState(true)
                 showToast(getString(R.string.market_swap_tips_swap_success))
             } catch (e: UnsupportedTradingPairsException) {

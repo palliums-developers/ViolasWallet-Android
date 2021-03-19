@@ -138,7 +138,7 @@ data class AccountBalance(
 )
 
 @Keep
-data class FiatBalanceDTO(
+data class FiatRateDTO(
     val name: String,
     val rate: Double
 )

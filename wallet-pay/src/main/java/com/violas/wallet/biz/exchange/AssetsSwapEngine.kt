@@ -2,7 +2,7 @@ package com.violas.wallet.biz.exchange
 
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.exchange.processor.IProcessor
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
@@ -81,17 +81,17 @@ internal class AssetsSwapEngine {
     )
     suspend fun cancel(
         pwd: ByteArray,
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark,
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark,
         typeTag: String,
         payeeAddress: String,
         tranId: String?,
         sequence: String?
     ): String {
         processors.forEach {
-            if (it.hasHandleCancel(fromIAssetsMark,toIAssetsMark)) {
+            if (it.hasHandleCancel(fromIAssetMark,toIAssetMark)) {
                 return it.cancel(
-                    pwd, fromIAssetsMark,toIAssetsMark, typeTag, payeeAddress, tranId, sequence
+                    pwd, fromIAssetMark,toIAssetMark, typeTag, payeeAddress, tranId, sequence
                 )
             }
         }

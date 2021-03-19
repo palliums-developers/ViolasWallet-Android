@@ -25,14 +25,14 @@ import com.palliums.net.LoadState
 import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.event.SwitchMarketPoolOpModeEvent
 import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.incentive.IncentiveWebActivity
 import com.violas.wallet.ui.main.market.MarketViewModel
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.wallet.ui.main.market.pool.MarketPoolViewModel.Companion.ACTION_ADD_LIQUIDITY
@@ -47,7 +47,7 @@ import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayAmountToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.android.synthetic.main.fragment_market_pool.*
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
@@ -454,7 +454,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             coinABalance = BigDecimal.ZERO
         } else {
             tvSelectTextA.text = it.displayName
-            coinABalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
+            coinABalanceSubscriber.changeSubscriber(IAssetMark.convert(it))
         }
 
         adjustInputBoxAPaddingEnd()
@@ -471,7 +471,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
             coinBBalance = BigDecimal.ZERO
         } else {
             tvSelectTextB.text = it.displayName
-            coinBBalanceSubscriber.changeSubscriber(IAssetsMark.convert(it))
+            coinBBalanceSubscriber.changeSubscriber(IAssetMark.convert(it))
         }
 
         adjustInputBoxBPaddingEnd()
@@ -732,7 +732,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                         poolViewModel.startSyncLiquidityReserveWork()
                     }
                 ) {
-                    CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                    CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                     showToast(R.string.market_pool_tips_add_liquidity_success)
 
                     poolViewModel.startSyncLiquidityReserveWork()
@@ -748,7 +748,7 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
                         poolViewModel.startSyncLiquidityReserveWork()
                     }
                 ) {
-                    CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                    CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                     showToast(R.string.market_pool_tips_remove_liquidity_success)
                 }
             }
@@ -759,13 +759,13 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
     // <editor-fold defaultState="collapsed" desc="币种余额更新逻辑">
     private val coinABalanceSubscriber =
         object : BalanceSubscriber(null) {
-            override fun onNotice(assets: AssetsVo?) {
+            override fun onNotice(asset: AssetVo?) {
                 launch {
                     val coinA =
                         poolViewModel.getCurrCoinALiveData().value ?: return@launch
 
                     coinABalance = convertDisplayAmountToAmount(
-                        assets?.amountWithUnit?.amount ?: "0"
+                        asset?.amountWithUnit?.amount ?: "0"
                     )
 
                     tvBalanceA.text = getString(
@@ -778,13 +778,13 @@ class MarketPoolFragment : BaseFragment(), CoinsBridge {
 
     private val coinBBalanceSubscriber =
         object : BalanceSubscriber(null) {
-            override fun onNotice(assets: AssetsVo?) {
+            override fun onNotice(asset: AssetVo?) {
                 launch {
                     val coinB =
                         poolViewModel.getCurrCoinBLiveData().value ?: return@launch
 
                     coinBBalance = convertDisplayAmountToAmount(
-                        assets?.amountWithUnit?.amount ?: "0"
+                        asset?.amountWithUnit?.amount ?: "0"
                     )
 
                     tvBalanceB.text = getString(

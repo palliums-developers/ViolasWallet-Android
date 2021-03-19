@@ -24,18 +24,18 @@ import kotlinx.android.synthetic.main.dialog_market_select_token.*
 import kotlinx.android.synthetic.main.item_market_select_token.view.*
 import kotlinx.coroutines.*
 
-class AssetsVoTokenSelectTokenDialog : TokenSelectTokenDialog<AssetsVo>() {
-    override fun getContent(vo: AssetsVo) = vo.getAssetsName()
+class AssetsVoTokenSelectTokenDialog : TokenSelectTokenDialog<AssetVo>() {
+    override fun getContent(vo: AssetVo) = vo.getAssetsName()
 
-    override fun getLogoUrl(vo: AssetsVo) = vo.getLogoUrl()
+    override fun getLogoUrl(vo: AssetVo) = vo.getLogoUrl()
 
-    override fun getName(vo: AssetsVo) = vo.getAssetsName()
+    override fun getName(vo: AssetVo) = vo.getAssetsName()
 
-    override fun getBalance(vo: AssetsVo) = vo.amountWithUnit.amount
+    override fun getBalance(vo: AssetVo) = vo.amountWithUnit.amount
 
-    override fun getUnit(vo: AssetsVo) = vo.amountWithUnit.unit
+    override fun getUnit(vo: AssetVo) = vo.amountWithUnit.unit
 
-    interface AssetsDataResourcesBridge : DataResourcesBridge<AssetsVo>
+    interface AssetsDataResourcesBridge : DataResourcesBridge<AssetVo>
 }
 
 /**
@@ -158,16 +158,14 @@ abstract class TokenSelectTokenDialog<VO> : DialogFragment(), CoroutineScope by 
         withContext(Dispatchers.Main) {
             mDataResourcesBridge?.getSupportAssetsTokens()
                 ?.observe(this@TokenSelectTokenDialog, Observer {
-                    val filter = it?.filter { asstsVo ->
-                        if (asstsVo is AssetsCoinVo && asstsVo.accountType == AccountType.NoDollars) {
-                            false
-                        } else if (asstsVo is HiddenTokenVo) {
-                            false
-                        } else {
-                            true
+                    val assets = it?.filter { asset ->
+                        when (asset) {
+                            is CoinAssetVo -> asset.accountType != AccountType.NoDollars
+                            is DiemCurrencyAssetVo -> asset.enable
+                            else -> true
                         }
                     }
-                    handleSwapTokens(filter)
+                    handleSwapTokens(assets)
                 })
         }
     }

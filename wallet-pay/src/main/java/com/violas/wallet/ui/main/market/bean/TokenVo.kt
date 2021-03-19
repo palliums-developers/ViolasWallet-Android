@@ -13,7 +13,7 @@ import java.math.BigDecimal
 /**
  * 市场支持的币
  */
-abstract class ITokenVo(
+sealed class ITokenVo(
     val coinNumber: Int,            // 币种类型值
     val displayName: String,        // 币的显示名称
     val logo: String,               // 币的logo

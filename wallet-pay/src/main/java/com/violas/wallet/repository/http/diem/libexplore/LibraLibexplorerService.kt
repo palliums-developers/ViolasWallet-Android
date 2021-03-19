@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra.libexplore
+package com.violas.wallet.repository.http.diem.libexplore
 
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getDiemTxnDetailsUrl

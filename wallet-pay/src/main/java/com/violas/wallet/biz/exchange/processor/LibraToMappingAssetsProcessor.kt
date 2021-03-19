@@ -8,9 +8,9 @@ import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
 import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.json.JSONObject
@@ -27,7 +27,7 @@ class LibraToMappingAssetsProcessor(
 ) : IProcessor {
 
     private val mLibraRpcService by lazy {
-        DataRepository.getLibraRpcService()
+        DataRepository.getDiemRpcService()
     }
 
     private val mViolasRpcService by lazy {
@@ -37,7 +37,7 @@ class LibraToMappingAssetsProcessor(
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is StableTokenVo
                 && tokenFrom.coinNumber == getDiemCoinType().coinNumber()
-                && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
+                && supportMappingPair.containsKey(IAssetMark.convert(tokenTo).mark())
     }
 
     override suspend fun handle(
@@ -104,7 +104,7 @@ class LibraToMappingAssetsProcessor(
         subExchangeDate.put("flag", "libra")
         subExchangeDate.put(
             "type",
-            supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label
+            supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.label
         )
         if (tokenTo.coinNumber == getBitcoinCoinType().coinNumber()) {
             subExchangeDate.put("to_address", payeeAddress)
@@ -119,7 +119,7 @@ class LibraToMappingAssetsProcessor(
         val optionTokenSwapTransactionPayload =
             TransactionPayload.optionTransactionPayload(
                 ContextProvider.getContext(),
-                supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
+                supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
                 amountIn,
                 metaData = subExchangeDate.toString().toByteArray(),
                 typeTag = typeTagFrom
@@ -134,29 +134,29 @@ class LibraToMappingAssetsProcessor(
     }
 
     override fun hasHandleCancel(
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark
     ): Boolean {
-        return fromIAssetsMark is LibraTokenAssetsMark
-                && fromIAssetsMark.coinNumber() == getDiemCoinType().coinNumber()
-                && supportMappingPair.containsKey(toIAssetsMark.mark())
+        return fromIAssetMark is DiemCurrencyAssetMark
+                && fromIAssetMark.coinNumber() == getDiemCoinType().coinNumber()
+                && supportMappingPair.containsKey(toIAssetMark.mark())
     }
 
     override suspend fun cancel(
         pwd: ByteArray,
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark,
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark,
         typeTag: String,
         originPayeeAddress: String,
         tranId: String?,
         sequence: String?
     ): String {
-        fromIAssetsMark as LibraTokenAssetsMark
+        fromIAssetMark as DiemCurrencyAssetMark
 
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetsMark.coinNumber())
+        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetMark.coinNumber())
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")
@@ -168,8 +168,8 @@ class LibraToMappingAssetsProcessor(
         val typeTagFrom = TypeTagStructTag(
             StructTag(
                 AccountAddress.DEFAULT,
-                fromIAssetsMark.module,
-                fromIAssetsMark.name,
+                fromIAssetMark.module,
+                fromIAssetMark.name,
                 arrayListOf()
             )
         )
@@ -186,7 +186,7 @@ class LibraToMappingAssetsProcessor(
         val optionTokenSwapTransactionPayload =
             TransactionPayload.optionTransactionPayload(
                 ContextProvider.getContext(),
-                supportMappingPair[toIAssetsMark.mark()]?.receiverAddress ?: "",
+                supportMappingPair[toIAssetMark.mark()]?.receiverAddress ?: "",
                 1,
                 metaData = subExchangeDate.toString().toByteArray(),
                 typeTag = typeTagFrom

@@ -31,5 +31,5 @@ interface TokenDao : BaseDao<TokenDo> {
     fun findByModelName(accountId: Long, moduleName: String): TokenDo?
 
     @Query("UPDATE token SET amount = :amount WHERE id = :id")
-    fun saveCoinBalance(id: Long, amount: Long)
+    fun saveCurrencyBalance(id: Long, amount: Long)
 }

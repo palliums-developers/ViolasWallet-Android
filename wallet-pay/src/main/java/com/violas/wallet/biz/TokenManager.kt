@@ -65,7 +65,7 @@ class TokenManager {
     private suspend fun loadNetWorkSupportLibraToken(): List<AssertOriginateToken> {
         val list = mutableListOf<AssertOriginateToken>()
         try {
-            DataRepository.getLibraBizService().getCurrencies()?.forEach {
+            DataRepository.getDiemBizService().getCurrencies()?.forEach {
                 list.add(
                     AssertOriginateToken(
                         tokenMark = TokenMark(it.module, it.address, it.name),
@@ -149,7 +149,7 @@ class TokenManager {
             localToken.map {
                 supportTokenMap[CoinTokenMark(
                     TokenMark(it.module, it.address, it.name),
-                    it.account_id
+                    it.accountId
                 )] = it
             }
 
@@ -176,7 +176,7 @@ class TokenManager {
         mTokenStorage.insert(
             TokenDo(
                 enable = checked,
-                account_id = assertOriginateToken.account_id,
+                accountId = assertOriginateToken.account_id,
                 assetsName = assertOriginateToken.name,
                 name = assertOriginateToken.tokenMark?.name ?: "",
                 address = assertOriginateToken.tokenMark?.address ?: "",
@@ -243,7 +243,7 @@ class TokenManager {
             }
 
             getDiemCoinType().coinNumber() -> {
-                val libraService = DataRepository.getLibraRpcService()
+                val libraService = DataRepository.getDiemRpcService()
 
                 val transactionResult = libraService.addCurrency(
                     ContextProvider.getContext(),
@@ -300,7 +300,7 @@ class TokenManager {
                         }
                 }
                 getDiemCoinType().coinNumber() -> {
-                    DataRepository.getLibraRpcService()
+                    DataRepository.getDiemRpcService()
                         .getAccountState(it.address)?.balances?.forEach { accountBalance ->
                             if (tokenMark.module == accountBalance.currency) {
                                 isPublish = true

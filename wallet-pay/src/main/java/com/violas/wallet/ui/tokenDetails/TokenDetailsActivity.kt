@@ -9,7 +9,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.google.android.material.tabs.TabLayout
 import com.palliums.base.ViewController
 import com.palliums.extensions.close
@@ -20,24 +19,27 @@ import com.palliums.widget.adapter.FragmentPagerAdapterSupport
 import com.palliums.widget.loading.LoadingDialog
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.bean.DiemCurrency
 import com.violas.wallet.common.*
 import com.violas.wallet.event.HomePageType
 import com.violas.wallet.event.MarketPageType
 import com.violas.wallet.event.SwitchHomePageEvent
 import com.violas.wallet.event.SwitchMarketPageEvent
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
+import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
 import com.violas.wallet.ui.collection.CollectionActivity
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.transactionRecord.TransactionRecordFragment
 import com.violas.wallet.ui.transactionRecord.TransactionType
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.loadCircleImage
-import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 import kotlinx.android.synthetic.main.activity_token_details.*
+import kotlinx.android.synthetic.main.fragment_market_pool.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,31 +57,23 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     CoroutineScope by CustomMainScope() {
 
     companion object {
-        fun start(context: Context, assetsVo: AssetsVo) {
+        fun start(context: Context, asset: AssetVo) {
             Intent(context, TokenDetailsActivity::class.java)
                 .apply {
-                    putExtra(KEY_ONE, assetsVo.getCoinNumber())
-                    if (assetsVo is AssetsTokenVo) {
-                        putExtra(KEY_TWO, assetsVo.address)
-                        putExtra(KEY_THREE, assetsVo.module)
-                        putExtra(KEY_FOUR, assetsVo.name)
+                    putExtra(KEY_ONE, asset.getCoinNumber())
+                    if (asset is DiemCurrencyAssetVo) {
+                        putExtra(KEY_TWO, asset.currency)
                     }
                 }
                 .start(context)
         }
     }
 
-    private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getInstance()
-    }
-
     private var mCoinNumber = Int.MIN_VALUE
-    private var mTokenAddress: String? = null
-    private var mTokenModule: String? = null
-    private var mTokenName: String? = null
+    private var mCurrency: DiemCurrency? = null
 
-    private lateinit var mAssetsVo: AssetsVo
-    private lateinit var mAccountDO: AccountDO
+    private lateinit var mAsset: AssetVo
+    private lateinit var mAccount: AccountDO
 
     private var mLoadingDialog: LoadingDialog? = null
 
@@ -101,74 +95,58 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         if (mCoinNumber != Int.MIN_VALUE) {
             outState.putInt(KEY_ONE, mCoinNumber)
         }
-        mTokenAddress?.let { outState.putString(KEY_TWO, it) }
-        mTokenModule?.let { outState.putString(KEY_THREE, it) }
-        mTokenName?.let { outState.putString(KEY_FOUR, it) }
+        mCurrency?.let { outState.putParcelable(KEY_TWO, it) }
     }
 
     private fun init(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             mCoinNumber = savedInstanceState.getInt(KEY_ONE, mCoinNumber)
-            mTokenAddress = savedInstanceState.getString(KEY_TWO)
-            mTokenModule = savedInstanceState.getString(KEY_THREE)
-            mTokenName = savedInstanceState.getString(KEY_FOUR)
+            mCurrency = savedInstanceState.getParcelable(KEY_TWO)
         } else if (intent != null) {
             mCoinNumber = intent.getIntExtra(KEY_ONE, mCoinNumber)
-            mTokenAddress = intent.getStringExtra(KEY_TWO)
-            mTokenModule = intent.getStringExtra(KEY_THREE)
-            mTokenName = intent.getStringExtra(KEY_FOUR)
+            mCurrency = intent.getParcelableExtra(KEY_TWO)
         }
         if (mCoinNumber == Int.MIN_VALUE) {
             close()
             return
         }
 
-        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
-            var exists = false
-            for (item in it) {
-                if (item.getCoinNumber() == mCoinNumber
-                    && ((item is AssetsCoinVo && mTokenModule.isNullOrBlank())
-                            || (item is AssetsTokenVo
-                            && item.address == mTokenAddress
-                            && item.module == mTokenModule
-                            && item.name == mTokenName)
-                            )
-                ) {
-                    mAssetsVo = item
-                    exists = true
-                    break
-                }
-            }
+        val assetMark = IAssetMark.convert(mCoinNumber, mCurrency)
+        val balanceSubscriber = object : BalanceSubscriber(assetMark) {
+            override fun onNotice(asset: AssetVo?) {
+                launch {
+                    if (this@TokenDetailsActivity::mAccount.isInitialized) {
+                        if (asset == null) return@launch
+                        mAsset = asset
+                        updateTokenInfoView()
+                    } else {
+                        if (asset == null) {
+                            close()
+                            return@launch
+                        }
 
-            if (exists && this::mAccountDO.isInitialized) {
-                updateTokenInfoView()
-                return@Observer
-            } else if (!exists) {
-                if (!this::mAccountDO.isInitialized) {
-                    close()
-                }
-                return@Observer
-            }
+                        mAsset = asset
+                        val account = withContext(Dispatchers.IO) {
+                            try {
+                                AccountManager.getAccountById(mAsset.getAccountId())
+                            } catch (e: Exception) {
+                                null
+                            }
+                        }
 
-            launch {
-                val accountDO = withContext(Dispatchers.IO) {
-                    try {
-                            AccountManager.getAccountById(mAssetsVo.getAccountId())
-                    } catch (e: Exception) {
-                        null
+                        if (account == null) {
+                            close()
+                        } else {
+                            mAccount = account
+                            updateTokenInfoView()
+                            initFragmentPager()
+                            initEvent()
+                        }
                     }
                 }
-
-                if (accountDO == null) {
-                    close()
-                } else {
-                    mAccountDO = accountDO
-                    updateTokenInfoView()
-                    initFragmentPager()
-                    initEvent()
-                }
             }
-        })
+        }
+        BalanceSubscribeHub.observe(this, balanceSubscriber)
     }
 
     private fun initTopView() {
@@ -204,23 +182,23 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
     }
 
     private fun updateTokenInfoView() {
-        tvTitle.text = mAssetsVo.getAssetsName()
+        tvTitle.text = mAsset.getAssetsName()
 
         ivTokenLogo.loadCircleImage(
-            mAssetsVo.getLogoUrl(),
+            mAsset.getLogoUrl(),
             getResourceId(R.attr.iconCoinDefLogo, this)
         )
 
-        tvTokenName.text = mAssetsVo.getAssetsName()
-        tvTokenAmount.text = mAssetsVo.amountWithUnit.amount
+        tvTokenName.text = mAsset.getAssetsName()
+        tvTokenAmount.text = mAsset.amountWithUnit.amount
         tvFiatAmount.text =
-            "≈${mAssetsVo.fiatAmountWithUnit.symbol}${mAssetsVo.fiatAmountWithUnit.amount}"
-        tvTokenAddress.text = mAccountDO.address
+            "≈${mAsset.fiatAmountWithUnit.symbol}${mAsset.fiatAmountWithUnit.amount}"
+        tvTokenAddress.text = mAccount.address
     }
 
     private fun initFragmentPager() {
-        val tokenId = (mAssetsVo as? AssetsTokenVo)?.module
-        val tokenDisplayName = mAssetsVo.getAssetsName()
+        val tokenId = (mAsset as? DiemCurrencyAssetVo)?.currency?.module
+        val tokenDisplayName = mAsset.getAssetsName()
 
         val fragments = mutableListOf<Fragment>()
         supportFragmentManager.fragments.forEach {
@@ -231,7 +209,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
         if (fragments.isEmpty()) {
             fragments.add(
                 TransactionRecordFragment.newInstance(
-                    walletAddress = mAccountDO.address,
+                    walletAddress = mAccount.address,
                     coinNumber = mCoinNumber,
                     transactionType = TransactionType.ALL,
                     tokenId = tokenId,
@@ -243,7 +221,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
             ) {
                 fragments.add(
                     TransactionRecordFragment.newInstance(
-                        walletAddress = mAccountDO.address,
+                        walletAddress = mAccount.address,
                         coinNumber = mCoinNumber,
                         transactionType = TransactionType.COLLECTION,
                         tokenId = tokenId,
@@ -252,7 +230,7 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
                 )
                 fragments.add(
                     TransactionRecordFragment.newInstance(
-                        walletAddress = mAccountDO.address,
+                        walletAddress = mAccount.address,
                         coinNumber = mCoinNumber,
                         transactionType = TransactionType.TRANSFER,
                         tokenId = tokenId,
@@ -331,25 +309,25 @@ class TokenDetailsActivity : SupportActivity(), ViewController,
 
     private fun initEvent() {
         tvTokenAddress.setOnClickListener {
-            ClipboardUtils.copy(this, mAccountDO.address)
+            ClipboardUtils.copy(this, mAccount.address)
         }
 
         btnTransfer.setOnClickListener {
-            TransferActivity.start(this, mAssetsVo)
+            TransferActivity.start(this, mAsset)
         }
 
         btnCollection.setOnClickListener {
-            if (mAssetsVo is AssetsTokenVo) {
+            if (mAsset is DiemCurrencyAssetVo) {
                 CollectionActivity.start(
                     context = this,
-                    accountId = mAssetsVo.getAccountId(),
+                    accountId = mAsset.getAccountId(),
                     isToken = true,
-                    tokenId = mAssetsVo.getId()
+                    tokenId = mAsset.getId()
                 )
             } else {
                 CollectionActivity.start(
                     context = this,
-                    accountId = mAssetsVo.getAccountId(),
+                    accountId = mAsset.getAccountId(),
                     isToken = false
                 )
             }

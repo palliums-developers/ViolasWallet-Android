@@ -17,7 +17,7 @@ import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
 import com.violas.wallet.biz.mapping.UnsupportedMappingCoinPairException
@@ -27,14 +27,14 @@ import com.violas.wallet.common.getViolasDappUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
-import com.violas.wallet.ui.main.market.bean.CoinAssetsMark
+import com.violas.wallet.ui.main.market.bean.CoinAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_MAPPING_SELECT
 import com.violas.wallet.utils.*
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import com.violas.wallet.widget.dialog.PublishTokenDialog
 import kotlinx.android.synthetic.main.activity_mapping.*
 import kotlinx.coroutines.Dispatchers
@@ -128,9 +128,9 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                 val coinType = str2CoinType(it.fromCoin.chainName)
                 val assetsMark =
                     if (coinType == getBitcoinCoinType()) {
-                        CoinAssetsMark(coinType)
+                        CoinAssetMark(coinType)
                     } else {
-                        LibraTokenAssetsMark(
+                        DiemCurrencyAssetMark(
                             coinType,
                             it.fromCoin.assets.module,
                             it.fromCoin.assets.address,
@@ -374,7 +374,7 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                     etFromInputBox.text.toString().trim()
                 )
 
-                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                 clearInputBox()
                 dismissProgress()
                 showToast(R.string.mapping_tips_mapping_success)
@@ -475,14 +475,14 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
     private val coinBalanceSubscriber =
         object : BalanceSubscriber(null) {
-            override fun onNotice(assets: AssetsVo?) {
+            override fun onNotice(asset: AssetVo?) {
                 launch {
                     val coinPair =
                         mappingViewModel.getCurrMappingCoinPairLiveData().value ?: return@launch
 
                     val coinType = str2CoinType(coinPair.fromCoin.chainName)
                     coinBalance = convertDisplayAmountToAmount(
-                        assets?.amountWithUnit?.amount ?: "0",
+                        asset?.amountWithUnit?.amount ?: "0",
                         coinType
                     )
 

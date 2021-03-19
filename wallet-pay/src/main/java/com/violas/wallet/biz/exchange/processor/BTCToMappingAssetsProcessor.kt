@@ -39,7 +39,7 @@ class BTCToMappingAssetsProcessor(
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
         return tokenFrom is PlatformTokenVo
                 && tokenFrom.coinNumber == getBitcoinCoinType().coinNumber()
-                && supportMappingPair.containsKey(IAssetsMark.convert(tokenTo).mark())
+                && supportMappingPair.containsKey(IAssetMark.convert(tokenTo).mark())
     }
 
     override suspend fun handle(
@@ -103,10 +103,10 @@ class BTCToMappingAssetsProcessor(
                 privateKey,
                 sendAccount.publicKey.hexStringToByteArray(),
                 checkBalance,
-                supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
+                supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
                 sendAccount.address,
                 violasOutputScript.requestExchange(
-                    supportMappingPair[IAssetsMark.convert(tokenTo).mark()]?.label ?: "",
+                    supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.label ?: "",
                     payeeAddress.hexStringToByteArray(),
                     contractAddress.hexStringToByteArray(),
                     amountOutMin
@@ -131,32 +131,32 @@ class BTCToMappingAssetsProcessor(
     }
 
     override fun hasHandleCancel(
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark
     ): Boolean {
-        return fromIAssetsMark is CoinAssetsMark
-                && fromIAssetsMark.coinNumber() == getBitcoinCoinType().coinNumber()
-                && supportMappingPair.containsKey(toIAssetsMark.mark())
+        return fromIAssetMark is CoinAssetMark
+                && fromIAssetMark.coinNumber() == getBitcoinCoinType().coinNumber()
+                && supportMappingPair.containsKey(toIAssetMark.mark())
     }
 
     override suspend fun cancel(
         pwd: ByteArray,
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark,
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark,
         typeTag: String,
         originPayeeAddress: String,
         tranId: String?,
         sequence: String?
     ): String {
-        toIAssetsMark as LibraTokenAssetsMark
+        toIAssetMark as DiemCurrencyAssetMark
 
-        val sendAccount = AccountManager.getAccountByCoinNumber(fromIAssetsMark.coinNumber())
+        val sendAccount = AccountManager.getAccountByCoinNumber(fromIAssetMark.coinNumber())
             ?: throw AccountNotFindAddressException()
 
         val simpleSecurity =
             SimpleSecurity.instance(ContextProvider.getContext())
 
-        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetsMark.coinNumber())
+        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetMark.coinNumber())
             ?: throw AccountNotFindAddressException()
         val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
             ?: throw RuntimeException("password error")
@@ -175,7 +175,7 @@ class BTCToMappingAssetsProcessor(
                 privateKey,
                 sendAccount.publicKey.hexStringToByteArray(),
                 checkBalance,
-                supportMappingPair[toIAssetsMark.mark()]?.receiverAddress ?: "",
+                supportMappingPair[toIAssetMark.mark()]?.receiverAddress ?: "",
                 sendAccount.address,
                 violasOutputScript.cancelExchange(
                     typeTag,

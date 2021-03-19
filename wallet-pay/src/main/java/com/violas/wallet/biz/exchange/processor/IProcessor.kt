@@ -1,7 +1,7 @@
 package com.violas.wallet.biz.exchange.processor
 
 import androidx.annotation.WorkerThread
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 
 interface IProcessor {
@@ -20,15 +20,15 @@ interface IProcessor {
     ): String
 
     fun hasHandleCancel(
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark
     ): Boolean
 
     @WorkerThread
     suspend fun cancel(
         pwd: ByteArray,
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark,
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark,
         typeTag: String,
         originPayeeAddress: String,
         tranId: String?,

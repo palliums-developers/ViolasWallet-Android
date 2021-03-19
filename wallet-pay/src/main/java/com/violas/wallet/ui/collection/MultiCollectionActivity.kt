@@ -19,9 +19,9 @@ import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.common.*
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_collection.*
 import kotlinx.android.synthetic.main.activity_multi_transfer.*
@@ -45,8 +45,8 @@ class MultiCollectionActivity : BaseAppActivity(),
         const val EXT_ASSETS_NAME = "1"
         const val EXT_COIN_NUMBER = "2"
 
-        fun start(context: Context, assetsVo: AssetsVo? = null) {
-            val assetsName = if (assetsVo is AssetsCoinVo) {
+        fun start(context: Context, assetsVo: AssetVo? = null) {
+            val assetsName = if (assetsVo is CoinAssetVo) {
                 null
             } else {
                 assetsVo?.getAssetsName()
@@ -91,7 +91,7 @@ class MultiCollectionActivity : BaseAppActivity(),
         super.onCreate(savedInstanceState)
         title = getString(R.string.receive_title)
 
-        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+        mWalletAppViewModel.mAssetsLiveData.observe(this, Observer {
             if (!initTag) {
                 initTag = true
                 init(savedInstanceState)
@@ -189,16 +189,16 @@ class MultiCollectionActivity : BaseAppActivity(),
             .show(supportFragmentManager)
     }
 
-    override suspend fun getSupportAssetsTokens(): LiveData<List<AssetsVo>?> {
-        return mWalletAppViewModel.mAssetsListLiveData
+    override suspend fun getSupportAssetsTokens(): LiveData<List<AssetVo>?> {
+        return mWalletAppViewModel.mAssetsLiveData
     }
 
-    override fun getCurrCoin(): AssetsVo? {
+    override fun getCurrCoin(): AssetVo? {
         return mMultiCollectionViewModel.mCurrAssets.value
     }
 
 
-    private fun changeCurrAssets(assetsVo: AssetsVo) {
+    private fun changeCurrAssets(assetsVo: AssetVo) {
         launch {
             if (mMultiCollectionViewModel.mCurrAssets.value != assetsVo) {
                 mMultiCollectionViewModel.mCurrAssets.value = assetsVo
@@ -207,7 +207,7 @@ class MultiCollectionActivity : BaseAppActivity(),
     }
 
     private fun changeCurrAssets(coinType: Int, tokenModule: String?) {
-        mWalletAppViewModel.mAssetsListLiveData.value?.forEach { assets ->
+        mWalletAppViewModel.mAssetsLiveData.value?.forEach { assets ->
             if (coinType == getBitcoinCoinType().coinNumber()) {
                 if (coinType == assets.getCoinNumber()) {
                     changeCurrAssets(assets)
@@ -217,9 +217,9 @@ class MultiCollectionActivity : BaseAppActivity(),
                 if (tokenModule == null) {
                     return@forEach
                 }
-                if (assets is AssetsTokenVo
+                if (assets is DiemCurrencyAssetVo
                     && coinType == assets.getCoinNumber()
-                    && assets.module.equals(tokenModule, true)
+                    && assets.currency.module.equals(tokenModule, true)
                 ) {
                     changeCurrAssets(assets)
                     return@forEach

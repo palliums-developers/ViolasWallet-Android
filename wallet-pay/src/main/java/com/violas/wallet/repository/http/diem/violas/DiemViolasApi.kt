@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra.violas
+package com.violas.wallet.repository.http.diem.violas
 
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
@@ -15,10 +15,10 @@ import retrofit2.http.Query
  * Created by elephant on 2019-11-11 15:34.
  * Copyright © 2019-2020. All rights reserved.
  * <p>
- * desc: Violas libra api
+ * desc: Violas diem api
  * @see <a href="https://github.com/palliums-developers/violas-webservice">link</a>
  */
-interface LibraViolasApi {
+interface DiemViolasApi {
 
     /**
      * 获取指定地址的交易记录，分页查询

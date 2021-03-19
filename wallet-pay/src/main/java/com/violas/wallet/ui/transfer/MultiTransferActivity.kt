@@ -17,7 +17,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getViolasCoinType
@@ -25,15 +25,15 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.addressBook.AddressBookActivity
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsTokenVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_multi_transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -59,12 +59,12 @@ class MultiTransferActivity : BaseAppActivity(),
 
         fun start(
             context: Context,
-            assetsVo: AssetsVo? = null,
+            assetsVo: AssetVo? = null,
             toAddress: String? = null,
             toSubAddress: String? = null,
             amount: Long? = null
         ) {
-            val assetsName = if (assetsVo is AssetsCoinVo) {
+            val assetsName = if (assetsVo is CoinAssetVo) {
                 null
             } else {
                 assetsVo?.getAssetsName()
@@ -96,15 +96,15 @@ class MultiTransferActivity : BaseAppActivity(),
     }
 
     private val mCurrAssertsAmountSubscriber = object : BalanceSubscriber(null) {
-        override fun onNotice(assets: AssetsVo?) {
+        override fun onNotice(asset: AssetVo?) {
             launch {
                 tvCoinAmount.text = String.format(
                     getString(R.string.transfer_label_balance_format),
-                    assets?.amountWithUnit?.amount ?: "- -",
-                    assets?.amountWithUnit?.unit ?: ""
+                    asset?.amountWithUnit?.amount ?: "- -",
+                    asset?.amountWithUnit?.unit ?: ""
                 )
                 withContext(Dispatchers.IO) {
-                    mCurrAssetsAmount = BigDecimal(assets?.amountWithUnit?.amount ?: "0")
+                    mCurrAssetsAmount = BigDecimal(asset?.amountWithUnit?.amount ?: "0")
                 }
             }
         }
@@ -131,7 +131,7 @@ class MultiTransferActivity : BaseAppActivity(),
         super.onCreate(savedInstanceState)
         title = getString(R.string.transfer_title)
 
-        mWalletAppViewModel.mAssetsListLiveData.observe(this, Observer {
+        mWalletAppViewModel.mAssetsLiveData.observe(this, Observer {
             if (!initTag) {
                 initTag = true
                 init(savedInstanceState)
@@ -200,7 +200,7 @@ class MultiTransferActivity : BaseAppActivity(),
 
                 tvToSelectText.text = it.getAssetsName()
                 withContext(Dispatchers.IO) {
-                    mCurrAssertsAmountSubscriber.changeSubscriber(IAssetsMark.convert(it))
+                    mCurrAssertsAmountSubscriber.changeSubscriber(IAssetMark.convert(it))
                 }
             }
         })
@@ -277,7 +277,7 @@ class MultiTransferActivity : BaseAppActivity(),
                     dismissProgress()
                     withContext(Dispatchers.Main) {
                         showToast(getString(R.string.transfer_tips_transfer_success))
-                        CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                        CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                         finish()
                     }
                 } catch (e: Exception) {
@@ -296,11 +296,11 @@ class MultiTransferActivity : BaseAppActivity(),
             .show(supportFragmentManager)
     }
 
-    override suspend fun getSupportAssetsTokens(): LiveData<List<AssetsVo>?> {
-        return mWalletAppViewModel.mAssetsListLiveData
+    override suspend fun getSupportAssetsTokens(): LiveData<List<AssetVo>?> {
+        return mWalletAppViewModel.mAssetsLiveData
     }
 
-    override fun getCurrCoin(): AssetsVo? {
+    override fun getCurrCoin(): AssetVo? {
         return mMultiTransferViewModel.mCurrAssets.value
     }
 
@@ -334,7 +334,7 @@ class MultiTransferActivity : BaseAppActivity(),
         }
     }
 
-    private fun changeCurrAssets(assetsVo: AssetsVo) {
+    private fun changeCurrAssets(assetsVo: AssetVo) {
         launch {
             if (mMultiTransferViewModel.mCurrAssets.value != assetsVo) {
                 mMultiTransferViewModel.mCurrAssets.value = assetsVo
@@ -343,7 +343,7 @@ class MultiTransferActivity : BaseAppActivity(),
     }
 
     private fun changeCurrAssets(coinType: Int, tokenModule: String?) {
-        val assetsList = mWalletAppViewModel.mAssetsListLiveData.value
+        val assetsList = mWalletAppViewModel.mAssetsLiveData.value
         logError { "assetsList size = ${assetsList?.size ?: 0}" }
         assetsList?.forEach { assets ->
             if (coinType == getBitcoinCoinType().coinNumber()) {
@@ -355,9 +355,9 @@ class MultiTransferActivity : BaseAppActivity(),
                 if (tokenModule == null) {
                     return@forEach
                 }
-                if (assets is AssetsTokenVo
+                if (assets is DiemCurrencyAssetVo
                     && coinType == assets.getCoinNumber()
-                    && assets.module.equals(tokenModule, true)
+                    && assets.currency.module.equals(tokenModule, true)
                 ) {
                     changeCurrAssets(assets)
                     return@forEach

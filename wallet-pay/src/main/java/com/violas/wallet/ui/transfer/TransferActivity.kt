@@ -12,8 +12,8 @@ import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.AssetVo
 
 abstract class TransferActivity : BaseAppActivity() {
     companion object {
@@ -30,17 +30,17 @@ abstract class TransferActivity : BaseAppActivity() {
 
         fun start(
             context: Context,
-            assetsVo: AssetsVo,
+            asset: AssetVo,
             address: String? = null,
             subAddress: String? = null,
             amount: Long? = null
         ) {
-            val assetsName = if (assetsVo is AssetsCoinVo) {
+            val assetsName = if (asset is CoinAssetVo) {
                 null
             } else {
-                assetsVo.getAssetsName()
+                asset.getAssetsName()
             }
-            start(context, assetsVo.getCoinNumber(), address, subAddress, amount, assetsName)
+            start(context, asset.getCoinNumber(), address, subAddress, amount, assetsName)
         }
 
         fun start(
@@ -93,7 +93,8 @@ abstract class TransferActivity : BaseAppActivity() {
         if (savedInstanceState != null) {
             isToken = savedInstanceState.getBoolean(EXT_IS_TOKEN, false)
             assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
-            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
+            coinNumber =
+                savedInstanceState.getInt(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
             transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
             toAddress = savedInstanceState.getString(EXT_ADDRESS)
             toSubAddress = savedInstanceState.getString(EXT_SUB_ADDRESS)

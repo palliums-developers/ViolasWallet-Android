@@ -107,8 +107,8 @@ class SwapViewModel() : BaseViewModel() {
                         currToToken?.let { toToken ->
                             var exists = false
                             getSwapToTokenList().forEach { token ->
-                                if (IAssetsMark.convert(toToken)
-                                        .equals(IAssetsMark.convert(token))
+                                if (IAssetMark.convert(toToken)
+                                        .equals(IAssetMark.convert(token))
                                 ) {
                                     exists = true
                                 }

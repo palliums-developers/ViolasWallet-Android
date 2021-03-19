@@ -20,7 +20,7 @@ import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.ExchangeManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.*
 import com.violas.wallet.event.*
 import com.violas.wallet.ui.changeLanguage.MultiLanguageUtility
@@ -29,7 +29,6 @@ import com.violas.wallet.ui.incentive.receiveRewards.ReceiveIncentiveRewardsActi
 import com.violas.wallet.ui.main.market.pool.MarketPoolOpMode
 import com.violas.wallet.utils.ClipboardUtils
 import com.violas.wallet.utils.authenticateAccount
-import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_bridge_web.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -279,7 +278,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
                 return@launch
             }
 
-            CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+            CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
             callbackFunction.onCallBack(Response.success(request.id).toJson())
             startLoad()
             showToast(R.string.incentive_tips_active_extraction_success)

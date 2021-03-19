@@ -105,8 +105,8 @@ class AssetsSwapManager(
 
     suspend fun cancel(
         pwd: ByteArray,
-        fromIAssetsMark: IAssetsMark,
-        toIAssetsMark: IAssetsMark,
+        fromIAssetMark: IAssetMark,
+        toIAssetMark: IAssetMark,
         typeTag: String,
         payeeAddress: String,
         tranId: String? = null,
@@ -114,8 +114,8 @@ class AssetsSwapManager(
     ): String {
         return mAssetsSwapEngine.cancel(
             pwd,
-            fromIAssetsMark,
-            toIAssetsMark,
+            fromIAssetMark,
+            toIAssetMark,
             typeTag,
             payeeAddress,
             tranId,
@@ -135,7 +135,7 @@ class AssetsSwapManager(
         val supportTokenMap = HashMap<String, Int>(supportTokens.size)
         val supportTokenCoinMap = HashMap<Int, List<ITokenVo>>()
         supportTokens.forEachIndexed { index, iTokenVo ->
-            supportTokenMap[IAssetsMark.convert(iTokenVo).mark()] = index
+            supportTokenMap[IAssetMark.convert(iTokenVo).mark()] = index
 
             val tokens: MutableList<ITokenVo> =
                 if (supportTokenCoinMap.containsKey(iTokenVo.coinNumber)) {
@@ -154,8 +154,8 @@ class AssetsSwapManager(
             if (assets.coinNumber == getViolasCoinType().coinNumber()) {
                 // 将相同链的币种放入集合
                 supportTokenCoinMap[assets.coinNumber]?.forEach { iTokenVo ->
-                    val assetsMark = IAssetsMark.convert(iTokenVo)
-                    val hasNotOneAssets = assetsMark.mark() != IAssetsMark.convert(assets).mark()
+                    val assetsMark = IAssetMark.convert(iTokenVo)
+                    val hasNotOneAssets = assetsMark.mark() != IAssetMark.convert(assets).mark()
                     if (hasNotOneAssets) {
                         supportTokenMap[assetsMark.mark()]?.let { index ->
                             bitmap.setBit(index)
@@ -170,7 +170,7 @@ class AssetsSwapManager(
                     bitmap.setBit(index)
                 }
             }
-            result[IAssetsMark.convert(assets).mark()] = bitmap
+            result[IAssetMark.convert(assets).mark()] = bitmap
         }
         return result
     }
@@ -182,7 +182,7 @@ class AssetsSwapManager(
     ): List<ITokenVo> {
         val result = mutableListOf<ITokenVo>()
 
-        val assetsMark = IAssetsMark.convert(fromToken)
+        val assetsMark = IAssetMark.convert(fromToken)
         supportTokensPair?.get(assetsMark.mark())?.forEach {
             supportTokens?.get(it)?.let { token -> result.add(token) }
         }
@@ -195,15 +195,15 @@ class AssetsSwapManager(
      * @exception Exception 网络请求失败会报错
      */
     @Throws(Exception::class)
-    private fun getMappingCoinTokenPair(): java.util.HashMap<Int, List<IAssetsMark>> {
-        val resultMap = java.util.HashMap<Int, List<IAssetsMark>>()
+    private fun getMappingCoinTokenPair(): java.util.HashMap<Int, List<IAssetMark>> {
+        val resultMap = java.util.HashMap<Int, List<IAssetMark>>()
         supportMappingSwapPairManager.getMappingSwapPair().forEach { mappingPair ->
-            val tokens: MutableList<IAssetsMark>? =
+            val tokens: MutableList<IAssetMark>? =
                 str2CoinNumber(mappingPair.inputCoinType)?.let { coinType ->
                     if (resultMap.containsKey(coinType)) {
-                        resultMap[coinType] as MutableList<IAssetsMark>
+                        resultMap[coinType] as MutableList<IAssetMark>
                     } else {
-                        val tokens = mutableListOf<IAssetsMark>()
+                        val tokens = mutableListOf<IAssetMark>()
                         resultMap[coinType] = tokens
                         tokens
                     }
@@ -212,11 +212,11 @@ class AssetsSwapManager(
             val assetsMark = str2CoinNumber(mappingPair.toCoin.coinType)?.let { coinType ->
                 when (coinType) {
                     getBitcoinCoinType().coinNumber() -> {
-                        CoinAssetsMark(CoinType.parseCoinNumber(coinType))
+                        CoinAssetMark(CoinType.parseCoinNumber(coinType))
                     }
                     getDiemCoinType().coinNumber(),
                     getViolasCoinType().coinNumber() -> {
-                        LibraTokenAssetsMark(
+                        DiemCurrencyAssetMark(
                             CoinType.parseCoinNumber(coinType),
                             mappingPair.toCoin.assets?.module ?: "",
                             mappingPair.toCoin.assets?.address ?: "",

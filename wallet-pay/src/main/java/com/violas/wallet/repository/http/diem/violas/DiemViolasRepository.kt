@@ -1,4 +1,4 @@
-package com.violas.wallet.repository.http.libra.violas
+package com.violas.wallet.repository.http.diem.violas
 
 import com.palliums.exceptions.RequestException
 import com.palliums.net.await
@@ -9,7 +9,7 @@ import com.palliums.net.await
  * <p>
  * desc: Violas repository
  */
-class LibraViolasRepository(private val api: LibraViolasApi) {
+class DiemViolasRepository(private val api: DiemViolasApi) {
 
     /**
      * 获取交易记录

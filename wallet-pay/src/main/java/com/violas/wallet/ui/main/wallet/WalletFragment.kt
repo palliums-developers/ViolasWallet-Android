@@ -26,7 +26,7 @@ import com.scwang.smartrefresh.layout.listener.SimpleMultiPurposeListener
 import com.violas.wallet.R
 import com.violas.wallet.biz.*
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.event.BackupIdentityMnemonicEvent
 import com.violas.wallet.repository.database.entity.AccountType
 import com.violas.wallet.ui.account.walletmanager.WalletManagerActivity
@@ -50,9 +50,9 @@ import com.violas.wallet.utils.loadCircleImage
 import com.violas.wallet.viewModel.MessageViewModel
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.WalletConnectViewModel
-import com.violas.wallet.viewModel.bean.AssetsCoinVo
-import com.violas.wallet.viewModel.bean.AssetsVo
-import com.violas.wallet.viewModel.bean.HiddenTokenVo
+import com.violas.wallet.viewModel.bean.AssetVo
+import com.violas.wallet.viewModel.bean.CoinAssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 import com.violas.wallet.walletconnect.WalletConnectStatus
 import com.violas.wallet.widget.dialog.FastIntoWalletDialog
 import kotlinx.android.synthetic.main.fragment_wallet.*
@@ -74,7 +74,7 @@ class WalletFragment : BaseFragment() {
     }
 
     private val mWalletAppViewModel by lazy {
-         WalletAppViewModel.getInstance()
+        WalletAppViewModel.getInstance()
     }
     private val mWalletConnectViewModel by lazy {
         WalletConnectViewModel.getInstance()
@@ -137,16 +137,15 @@ class WalletFragment : BaseFragment() {
                 refreshLayout.finishRefresh()
             }
         }
-        mWalletAppViewModel.mAssetsListLiveData.observe(viewLifecycleOwner) {
-            val filter = it.filter { asset ->
+        mWalletAppViewModel.mAssetsLiveData.observe(viewLifecycleOwner) {
+            val assets = it.filter { asset ->
                 when (asset) {
-                    is HiddenTokenVo -> false
-                    !is AssetsCoinVo -> true
-                    else -> asset.accountType != AccountType.NoDollars
+                    is CoinAssetVo -> asset.accountType != AccountType.NoDollars
+                    is DiemCurrencyAssetVo -> asset.enable
                 }
             }
-            mAssertAdapter.submitList(filter)
-            mWalletViewModel.calculateFiat(filter)
+            mAssertAdapter.submitList(assets)
+            mWalletViewModel.calculateFiat(assets)
         }
         mWalletAppViewModel.mExistsAccountLiveData.observe(viewLifecycleOwner) {
             if (it) {
@@ -249,7 +248,7 @@ class WalletFragment : BaseFragment() {
             }
         })
         refreshLayout.setOnRefreshListener {
-            CommandActuator.post(RefreshAssetsAllListCommand())
+            CommandActuator.post(RefreshAssetsCommand())
             MessageViewModel.getInstance().syncUnreadMsgNum()
             mWalletViewModel.loadReceiveIncentiveRewardsState()
         }
@@ -425,7 +424,7 @@ class WalletFragment : BaseFragment() {
         when (requestCode) {
             REQUEST_ADD_ASSERT -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    mWalletAppViewModel.refreshAssetsList(true)
+                    mWalletAppViewModel.refreshAssets(true)
                 }
             }
         }
@@ -439,17 +438,17 @@ class WalletFragment : BaseFragment() {
 }
 
 class AssertAdapter(
-    val call: (AssetsVo) -> Unit
-) : ListAdapter<AssetsVo, AssertAdapter.ViewHolder>(object : DiffUtil.ItemCallback<AssetsVo>() {
-    override fun areItemsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
-        return if (oldItem is AssetsCoinVo && newItem is AssetsCoinVo) {
+    val call: (AssetVo) -> Unit
+) : ListAdapter<AssetVo, AssertAdapter.ViewHolder>(object : DiffUtil.ItemCallback<AssetVo>() {
+    override fun areItemsTheSame(oldItem: AssetVo, newItem: AssetVo): Boolean {
+        return if (oldItem is CoinAssetVo && newItem is CoinAssetVo) {
             oldItem.getId() == newItem.getId()
         } else {
             oldItem.getAccountId() == newItem.getAccountId() && oldItem.getId() == newItem.getId()
         }
     }
 
-    override fun areContentsTheSame(oldItem: AssetsVo, newItem: AssetsVo): Boolean {
+    override fun areContentsTheSame(oldItem: AssetVo, newItem: AssetVo): Boolean {
         val isChange = oldItem.getId() == newItem.getId() &&
                 oldItem.amountWithUnit.amount == newItem.amountWithUnit.amount &&
                 oldItem.amountWithUnit.unit == newItem.amountWithUnit.unit &&

@@ -5,7 +5,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
 
 data class BusinessParameter(
     val title: String,
@@ -56,7 +56,7 @@ class BankBusinessViewModel : ViewModel() {
     /**
      * 当前选中的币种
      */
-    val mCurrentAssetsLiveData = MutableLiveData<AssetsVo>()
+    val mCurrentAssetsLiveData = MutableLiveData<AssetVo>()
 
     // <editor-fold defaultstate="collapsed" desc="底部悬浮栏里面的内容">
     /**
@@ -92,6 +92,6 @@ class BankBusinessViewModel : ViewModel() {
 
 
     // <editor-fold defaultstate="collapsed" desc="业务数据">
-    val mSupportAssetsTokensLiveData = MutableLiveData<List<AssetsVo>?>()
+    val mSupportAssetsTokensLiveData = MutableLiveData<List<AssetVo>?>()
     //</editor-fold>
 }

@@ -28,3 +28,9 @@ const val KEY_FIREBASE_CLOUD_MESSAGING_MSG_ID = "google.message_id"
 const val SYSTEM_ALBUM_DIR_NAME = "ViolasPay Photos"
 
 const val CURRENCY_DEFAULT_ADDRESS = "00000000000000000000000000000001"
+
+/**
+ * SharedPreferences文件名
+ */
+const val SP_FILE_NAME_APP_CONFIG = "config"
+const val SP_FILE_NAME_FIAT_RATES = "fiat_rates"

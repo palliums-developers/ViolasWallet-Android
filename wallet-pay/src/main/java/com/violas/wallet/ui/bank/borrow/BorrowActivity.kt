@@ -18,20 +18,20 @@ import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.bank.BankManager
 import com.violas.wallet.biz.command.CommandActuator
-import com.violas.wallet.biz.command.RefreshAssetsAllListCommand
+import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.event.BankBorrowEvent
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bank.BorrowProductDetailsDTO
 import com.violas.wallet.ui.bank.*
-import com.violas.wallet.ui.main.market.bean.IAssetsMark
-import com.violas.wallet.ui.main.market.bean.LibraTokenAssetsMark
+import com.violas.wallet.ui.main.market.bean.IAssetMark
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.utils.convertRateToPercentage
-import com.violas.wallet.viewModel.bean.AssetsVo
+import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.android.synthetic.main.activity_bank_business.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -152,7 +152,7 @@ class BorrowActivity : BankBusinessActivity() {
             )
 
             mCurrentAssertsAmountSubscriber.changeSubscriber(
-                LibraTokenAssetsMark(
+                DiemCurrencyAssetMark(
                     getViolasCoinType(),
                     tokenModule,
                     tokenAddress,
@@ -220,7 +220,7 @@ class BorrowActivity : BankBusinessActivity() {
         }
     }
 
-    override fun onCoinAmountNotice(assetsVo: AssetsVo?) {
+    override fun onCoinAmountNotice(assetsVo: AssetVo?) {
         assetsVo?.let {
             mBankBusinessViewModel.mCurrentAssetsLiveData.postValue(it)
         }
@@ -235,8 +235,8 @@ class BorrowActivity : BankBusinessActivity() {
                 return@launch
             }
 
-            val market = IAssetsMark.convert(assets)
-            if (market !is LibraTokenAssetsMark) {
+            val market = IAssetMark.convert(assets)
+            if (market !is DiemCurrencyAssetMark) {
                 showToast(getString(R.string.bank_biz_tips_select_currency_error))
                 return@launch
             }
@@ -317,7 +317,7 @@ class BorrowActivity : BankBusinessActivity() {
 
     private fun sendTransfer(
         account: AccountDO,
-        mark: LibraTokenAssetsMark,
+        mark: DiemCurrencyAssetMark,
         pwd: String,
         amount: Long
     ) {
@@ -331,7 +331,7 @@ class BorrowActivity : BankBusinessActivity() {
                 dismissProgress()
                 showToast(getString(R.string.bank_borrow_tips_borrow_success))
                 EventBus.getDefault().post(BankBorrowEvent())
-                CommandActuator.postDelay(RefreshAssetsAllListCommand(), 2000)
+                CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
                 finish()
             } catch (e: Exception) {
                 e.printStackTrace()
