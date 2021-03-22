@@ -19,7 +19,8 @@
     <string name="common_desc_value_null">--</string>
     <string name="common_state_cancelled">Cancelled</string>
     <string name="common_state_submitted">Submitted</string>
-    <string name="common_label_balance_format">Balance: %1$s %2$s</string>
+    <string name="common_label_balance_with_unit_format">Balance: %1$s %2$s</string>
+    <string name="common_label_balance_format">Balance: %1$s</string>
     <string name="common_label_available_balance">Available balance:&#160;</string>
     <string name="common_label_gas_fees">Gas Fees</string>
     <string name="common_label_gas_fees_colon">Gas Fees:&#160;</string>

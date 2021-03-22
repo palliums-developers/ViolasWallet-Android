@@ -67,6 +67,15 @@ open class CoinAssetVo(
 
     override fun getCoinNumber(): Int = coinNumber
     override fun getLogoUrl() = logo
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as CoinAssetVo
+        return id == other.getId()
+                && coinNumber == other.getCoinNumber()
+    }
 }
 
 class DiemCoinAssetVo(
@@ -107,4 +116,16 @@ data class DiemCurrencyAssetVo(
 
     override fun getCoinNumber(): Int = coinNumber
     override fun getLogoUrl() = logo
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DiemCurrencyAssetVo
+        return id == other.getId()
+                && accountId == other.accountId
+                && coinNumber == other.getCoinNumber()
+                && currency == other.currency
+
+    }
 }

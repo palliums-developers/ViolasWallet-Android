@@ -28,35 +28,35 @@ class MultiTransferViewModel : ViewModel() {
     }
 
     private val mTransactionManager by lazy {
-        val identityByCoinType = AccountManager.getAccountByCoinNumber(
+        val bitcoinAccount = AccountManager.getAccountByCoinNumber(
             getBitcoinCoinType().coinNumber()
         )
-        val addressList = if (identityByCoinType == null) {
+        val addressList = if (bitcoinAccount == null) {
             arrayListOf()
         } else {
-            arrayListOf(identityByCoinType.address)
+            arrayListOf(bitcoinAccount.address)
         }
         TransactionManager(addressList)
     }
 
-    val mCurrAssets = MutableLiveData<AssetVo>()
-    val mTransferAmount = MutableLiveData<String>()
-    val mTransferPayeeAddress = MutableLiveData<String>()
-    val mFeeProgressAmount = MutableLiveData(DEF_FEE_PROGRESS)
+    val mAssetLiveData = MutableLiveData<AssetVo>()
+    val mAmountLiveData = MutableLiveData<String>()
+    val mFeeProgressLiveData = MutableLiveData(DEF_FEE_PROGRESS)
+    val mPayeeAddressLiveData = MutableLiveData<String>()
 
     // Pair<String,String> first is Amount,second is unit
     val mFeeAmount = MediatorLiveData<Pair<String, String>>()
 
     init {
-        mFeeAmount.addSource(mCurrAssets) { calculateFee() }
-        mFeeAmount.addSource(mTransferAmount) { calculateFee() }
-        mFeeAmount.addSource(mFeeProgressAmount) { calculateFee() }
+        mFeeAmount.addSource(mAssetLiveData) { calculateFee() }
+        mFeeAmount.addSource(mAmountLiveData) { calculateFee() }
+        mFeeAmount.addSource(mFeeProgressLiveData) { calculateFee() }
 
         // 单独监听比特币手续费计算
         viewModelScope.launch(Dispatchers.IO) {
             mTransactionManager.setFeeCallback {
-                if (mCurrAssets.value?.isBitcoin() == true) {
-                    setFeeAmount(it, mCurrAssets.value?.amountWithUnit?.unit)
+                if (mAssetLiveData.value?.isBitcoin() == true) {
+                    setFeeAmount(it, mAssetLiveData.value?.amountWithUnit?.unit)
                 }
             }
         }
@@ -74,23 +74,23 @@ class MultiTransferViewModel : ViewModel() {
     private fun calculateFee() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (mCurrAssets.value == null) {
+                if (mAssetLiveData.value == null) {
                     setFeeAmount("- -")
                     return@launch
                 }
-                if (mTransferAmount.value?.isEmpty() == true
-                    || (mTransferAmount.value?.toDouble() ?: 0.0) == 0.0
+                if (mAmountLiveData.value?.isEmpty() == true
+                    || (mAmountLiveData.value?.toDouble() ?: 0.0) == 0.0
                 ) {
-                    setFeeAmount("0.00", mCurrAssets.value?.amountWithUnit?.unit)
+                    setFeeAmount("0.00", mAssetLiveData.value?.amountWithUnit?.unit)
                     return@launch
                 }
-                if (mCurrAssets.value?.isBitcoin() == true) {
+                if (mAssetLiveData.value?.isBitcoin() == true) {
                     mTransactionManager.transferAmountIntent(
-                        mTransferAmount.value?.toDouble() ?: 0.0,
-                        mFeeProgressAmount.value ?: DEF_FEE_PROGRESS
+                        mAmountLiveData.value?.toDouble() ?: 0.0,
+                        mFeeProgressLiveData.value ?: DEF_FEE_PROGRESS
                     )
                 } else {
-                    setFeeAmount("0.00", mCurrAssets.value?.amountWithUnit?.unit)
+                    setFeeAmount("0.00", mAssetLiveData.value?.amountWithUnit?.unit)
                 }
             } catch (e: Exception) {
                 setFeeAmount("- -")
@@ -101,16 +101,16 @@ class MultiTransferViewModel : ViewModel() {
     /**
      * 检查转账的金额，地址是否合理合法
      */
-    fun checkConditions(
-        account: AccountDO,
-        mCurrAssetsAmount: BigDecimal
-    ) {
-        if (mCurrAssetsAmount < BigDecimal(mTransferAmount.value ?: "0")) {
+    fun checkConditions(account: AccountDO) {
+        if (BigDecimal(mAssetLiveData.value?.amountWithUnit?.amount ?: "0") <
+            BigDecimal(mAmountLiveData.value ?: "0")
+        ) {
             throw LackOfBalanceException()
         }
+
         mTransferManager.checkTransferParam(
-            mTransferAmount.value ?: "0",
-            mTransferPayeeAddress.value ?: "",
+            mAmountLiveData.value ?: "0",
+            mPayeeAddressLiveData.value ?: "",
             account
         )
     }
@@ -121,7 +121,7 @@ class MultiTransferViewModel : ViewModel() {
         pwd: ByteArray,
         toSubAddress: String?
     ) {
-        val assets = mCurrAssets.value
+        val assets = mAssetLiveData.value
             ?: throw RuntimeException(getString(R.string.transfer_tips_token_empty))
 
         suspendCancellableCoroutine<String> { cancellation ->
@@ -135,11 +135,11 @@ class MultiTransferViewModel : ViewModel() {
 
                 mTransferManager.transferBtc(
                     transactionManager = mTransactionManager,
-                    address = mTransferPayeeAddress.value ?: "",
-                    amount = mTransferAmount.value?.toDouble() ?: 0.0,
+                    address = mPayeeAddressLiveData.value ?: "",
+                    amount = mAmountLiveData.value?.toDouble() ?: 0.0,
                     privateKey = privateKey,
                     accountDO = account,
-                    progress = mFeeProgressAmount.value ?: DEF_FEE_PROGRESS,
+                    progress = mFeeProgressLiveData.value ?: DEF_FEE_PROGRESS,
                     success = {
                         cancellation.resume(it)
                     }, error = {
@@ -153,12 +153,12 @@ class MultiTransferViewModel : ViewModel() {
                 viewModelScope.launch(Dispatchers.IO) {
                     mTransferManager.transfer(
                         context = ContextProvider.getContext(),
-                        receiverAddress = mTransferPayeeAddress.value ?: "",
-                        receiverSubAddress = toSubAddress,
-                        amountStr = mTransferAmount.value ?: "",
+                        payeeAddress = mPayeeAddressLiveData.value ?: "",
+                        payeeSubAddress = toSubAddress,
+                        amountStr = mAmountLiveData.value ?: "",
                         privateKey = privateKey,
                         accountDO = account,
-                        progress = mFeeProgressAmount.value ?: DEF_FEE_PROGRESS,
+                        progress = mFeeProgressLiveData.value ?: DEF_FEE_PROGRESS,
                         token = true,
                         tokenId = assets.getId(),
                         success = {

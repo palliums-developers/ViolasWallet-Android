@@ -30,24 +30,24 @@ import kotlinx.coroutines.withContext
 class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
 
     companion object {
-        private const val EXT_COIN_TYPE = "a1"
+        private const val EXT_COIN_NUMBER = "a1"
         private const val EXT_IS_SELECTOR = "a2"
         const val RESULT_SELECT_ADDRESS = "a3"
         private const val REQUEST_ADD_COIN = 1
         fun start(
             context: Activity,
-            coinType: Int = Int.MIN_VALUE,
+            coinNumber: Int = Int.MIN_VALUE,
             isSelector: Boolean = false,
             requestCode: Int = -1
         ) {
             if (isSelector) {
                 Intent(context, AddressBookActivity::class.java).apply {
-                    putExtra(EXT_COIN_TYPE, coinType)
+                    putExtra(EXT_COIN_NUMBER, coinNumber)
                     putExtra(EXT_IS_SELECTOR, true)
                 }.start(context, requestCode)
             } else {
                 Intent(context, AddressBookActivity::class.java).apply {
-                    putExtra(EXT_COIN_TYPE, coinType)
+                    putExtra(EXT_COIN_NUMBER, coinNumber)
                 }.start(context)
             }
 
@@ -104,7 +104,7 @@ class AddressBookActivity : BaseListingActivity<AddressBookDo>() {
         title = getString(R.string.common_title_address_book)
         setTitleRightImageResource(getResourceId(R.attr.iconAdd, this))
 
-        mCoinType = intent.getIntExtra(EXT_COIN_TYPE, Int.MIN_VALUE)
+        mCoinType = intent.getIntExtra(EXT_COIN_NUMBER, Int.MIN_VALUE)
         mSelector = intent.getBooleanExtra(EXT_IS_SELECTOR, false)
 
         getListingHandler().init()

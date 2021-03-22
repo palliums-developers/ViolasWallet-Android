@@ -162,7 +162,7 @@ class AddAddressBookActivity : BaseAppActivity() {
                                 try {
                                     editAddress.setText(qrCode.address)
                                     mCoinTypes =
-                                        CoinType.parseCoinNumber(qrCode.coinType).coinNumber()
+                                        CoinType.parseCoinNumber(qrCode.coinNumber).coinNumber()
                                     refreshCoinType()
                                 } catch (e: Exception) {
                                 }

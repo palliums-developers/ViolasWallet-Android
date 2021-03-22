@@ -126,8 +126,8 @@ class TransferManager {
     @Throws(AddressFaultException::class, WrongPasswordException::class)
     suspend fun transfer(
         context: Context,
-        receiverAddress: String,
-        receiverSubAddress: String?,
+        payeeAddress: String,
+        payeeSubAddress: String?,
         amountStr: String,
         privateKey: ByteArray,
         accountDO: AccountDO,
@@ -141,10 +141,10 @@ class TransferManager {
 
         when (accountDO.coinNumber) {
             getDiemCoinType().coinNumber() -> {
-                transferLibra(
+                transferDiem(
                     context,
-                    receiverAddress,
-                    receiverSubAddress,
+                    payeeAddress,
+                    payeeSubAddress,
                     amount,
                     privateKey,
                     accountDO,
@@ -157,7 +157,7 @@ class TransferManager {
             getViolasCoinType().coinNumber() -> {
                 transferViolas(
                     context,
-                    receiverAddress,
+                    payeeAddress,
                     amount,
                     privateKey,
                     accountDO,
@@ -211,7 +211,7 @@ class TransferManager {
             })
     }
 
-    private suspend fun transferLibra(
+    private suspend fun transferDiem(
         context: Context,
         address: String,
         subAddress: String?,

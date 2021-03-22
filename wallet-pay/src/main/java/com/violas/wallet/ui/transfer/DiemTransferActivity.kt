@@ -1,9 +1,7 @@
 package com.violas.wallet.ui.transfer
 
-import android.accounts.AccountsException
 import android.os.Bundle
 import android.text.AmountInputFilter
-import androidx.lifecycle.Observer
 import com.palliums.extensions.expandTouchArea
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
@@ -13,14 +11,14 @@ import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getViolasCoinType
-import com.violas.wallet.repository.database.entity.AccountType
+import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
+import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.addressBook.AddressBookActivity
+import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.scan.ScanActivity
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
-import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.CoinAssetVo
 import com.violas.wallet.viewModel.bean.AssetVo
 import kotlinx.android.synthetic.main.activity_transfer.*
 import kotlinx.coroutines.Dispatchers
@@ -36,78 +34,99 @@ class DiemTransferActivity : TransferActivity() {
     override fun getLayoutResId() = R.layout.activity_transfer
 
     private var mBalance: BigDecimal? = null
-    private lateinit var mAssetsVo: AssetVo
 
-    private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getInstance()
+    private lateinit var mAsset: AssetVo
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        init()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        toAddress = editAddressInput.text.toString().trim()
-        transferAmount = convertDisplayUnitToAmount(
+        mPayeeAddress = editAddressInput.text.toString().trim()
+        mAmount = convertDisplayUnitToAmount(
             editAmountInput.text.toString().trim(),
-            CoinType.parseCoinNumber(coinNumber)
+            CoinType.parseCoinNumber(mCoinNumber)
         )
         super.onSaveInstanceState(outState)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onSelectAddress(address: String) {
+        editAddressInput.setText(address)
+    }
 
-        CommandActuator.post(RefreshAssetsCommand())
-        mWalletAppViewModel.mAssetsLiveData.observe(this, Observer {
-            var exists = false
-            for (item in it) {
-                val isCoinTrue =
-                    assetsName == null && item is CoinAssetVo && item.getCoinNumber() == coinNumber
-                val isTokenTrue =
-                    assetsName != null && item !is CoinAssetVo && item.getCoinNumber() == coinNumber && item.getAssetsName() == assetsName
-                if (isCoinTrue || isTokenTrue) {
-                    mAssetsVo = item
-                    exists = true
-                    break
-                }
-            }
-            if (!exists) {
-                showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
-                finish()
-                return@Observer
-            }
+    override fun onScanAddressQr(address: String) {
+        editAddressInput.setText(address)
+    }
 
-            launch(Dispatchers.IO) {
-                try {
-                    account = AccountManager.getAccountById(mAssetsVo.getAccountId())
-                    if (account?.accountType == AccountType.NoDollars && mAssetsVo is CoinAssetVo) {
-                        showToast(getString(R.string.transfer_tips_unsupported_currency))
-                        finish()
+    private fun init() {
+        if (mCoinNumber != getViolasCoinType().coinNumber() &&
+            mCoinNumber != getDiemCoinType().coinNumber()
+        ) {
+            close()
+            return
+        }
+
+        val assetMark = IAssetMark.convert(mCoinNumber, mCurrency)
+        val balanceSubscriber = object : BalanceSubscriber(assetMark) {
+            override fun onNotice(asset: AssetVo?) {
+                launch {
+                    // 已初始化，资产更新
+                    if (mPayerAccount != null) {
+                        if (asset != null) {
+                            mAsset = asset
+                            setBalance()
+                        }
                         return@launch
                     }
-                    refreshCurrentAmount()
 
-                    val coinType = CoinType.parseCoinNumber(account!!.coinNumber)
-                    withContext(Dispatchers.Main) {
-                        if (transferAmount > 0) {
-                            val convertAmountToDisplayUnit =
-                                convertAmountToDisplayUnit(transferAmount, coinType)
-                            editAmountInput.setText(convertAmountToDisplayUnit.first)
-                        }
-                        if (isToken) {
-                            title =
-                                getString(R.string.transfer_title_format, mAssetsVo.getAssetsName())
-                            tvHintCoinName.text = mAssetsVo.getAssetsName()
-                        } else {
-                            title =
-                                getString(R.string.transfer_title_format, coinType.coinName())
-                            tvHintCoinName.text = coinType.coinName()
+                    // 未找到对应资产
+                    if (asset == null) {
+                        showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
+                        close()
+                        return@launch
+                    }
+
+                    val account = withContext(Dispatchers.IO) {
+                        try {
+                            AccountManager.getAccountById(asset.getAccountId())
+                        } catch (e: Exception) {
+                            null
                         }
                     }
-                } catch (e: AccountsException) {
-                    finish()
+                    // 未找到账户
+                    if (account == null) {
+                        showToast(getString(R.string.common_tips_account_error))
+                        close()
+                        return@launch
+                    }
+
+                    // 找到资产，初始化
+                    mPayerAccount = account
+                    mAsset = asset
+                    initView()
+                    initEvent()
+                    setBalance()
+                    CommandActuator.post(RefreshAssetsCommand())
                 }
             }
-        })
-        initViewData()
-        editAmountInput.filters = arrayOf(AmountInputFilter(12, 6))
+        }
+        BalanceSubscribeHub.observe(this, balanceSubscriber)
+    }
+
+    private fun initView() {
+        title = getString(R.string.transfer_title_format, mAsset.getAssetsName())
+        tvHintCoinName.text = mAsset.getAssetsName()
+        if (!mPayeeAddress.isNullOrBlank())
+            editAddressInput.setText(mPayeeAddress)
+        if (mAmount > 0) {
+            val displayAmount =
+                convertAmountToDisplayUnit(mAmount, CoinType.parseCoinNumber(mCoinNumber))
+            editAmountInput.setText(displayAmount.first)
+        }
+    }
+
+    private fun initEvent() {
         ivScan.setOnClickListener {
             ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
         }
@@ -115,38 +134,29 @@ class DiemTransferActivity : TransferActivity() {
         btnConfirm.setOnClickListener {
             send()
         }
-        ivAddressBook.setOnClickListener {
-            account?.coinNumber?.let { it1 ->
-                AddressBookActivity.start(
-                    this@DiemTransferActivity,
-                    it1,
-                    true,
-                    REQUEST_SELECTOR_ADDRESS
-                )
-            }
-        }
+
         ivAddressBook.expandTouchArea(8)
-    }
-
-    private fun initViewData() {
-        editAddressInput.setText(toAddress)
-    }
-
-    private suspend fun refreshCurrentAmount() {
-        withContext(Dispatchers.Main) {
-            mAssetsVo.amountWithUnit
-            tvCoinAmount.text = String.format(
-                getString(R.string.transfer_label_balance_format),
-                mAssetsVo.amountWithUnit.amount,
-                mAssetsVo.amountWithUnit.unit
+        ivAddressBook.setOnClickListener {
+            AddressBookActivity.start(
+                this,
+                mCoinNumber,
+                true,
+                REQUEST_SELECTOR_ADDRESS
             )
         }
 
-        mBalance = BigDecimal(mAssetsVo.getAmount())
+        editAmountInput.filters = arrayOf(AmountInputFilter(12, 6))
+    }
+
+    private fun setBalance() {
+        tvCoinAmount.text = String.format(
+            getString(R.string.common_label_balance_format),
+            mAsset.amountWithUnit.amount,
+        )
     }
 
     private fun checkBalance(): Boolean {
-        when (account?.coinNumber) {
+        when (mPayerAccount?.coinNumber) {
             getDiemCoinType().coinNumber(),
             getViolasCoinType().coinNumber() -> {
                 if (BigDecimal(
@@ -162,41 +172,36 @@ class DiemTransferActivity : TransferActivity() {
     }
 
     private fun send() {
+        if (mPayerAccount == null) return
+
         val amount = editAmountInput.text.toString()
-        val address = editAddressInput.text.toString()
-
-        if (account == null) {
-            return
-        }
+        val payeeAddress = editAddressInput.text.toString()
         try {
-            mTransferManager.checkTransferParam(amount, address, account!!)
-
-            if (!checkBalance()) {
-                return
+            mTransferManager.checkTransferParam(amount, payeeAddress, mPayerAccount!!)
+            if (checkBalance()) {
+                showPasswordSend(amount, payeeAddress)
             }
-
-            showPasswordSend(amount, address)
         } catch (e: Exception) {
             e.message?.let { it1 -> showToast(it1) }
             e.printStackTrace()
         }
     }
 
-    private fun showPasswordSend(amount: String, address: String) {
-        if (account == null) return
+    private fun showPasswordSend(amount: String, payeeAddress: String) {
+        if (mPayerAccount == null) return
 
-        authenticateAccount(account!!) {
+        authenticateAccount(mPayerAccount!!) {
             launch(Dispatchers.IO) {
                 mTransferManager.transfer(
                     this@DiemTransferActivity,
-                    address.trim(),
-                    toSubAddress,
+                    payeeAddress.trim(),
+                    mPayeeSubAddress,
                     amount.trim(),
                     it,
-                    account!!,
+                    mPayerAccount!!,
                     sbQuota.progress,
                     isToken,
-                    mAssetsVo.getId(),
+                    mAsset.getId(),
                     {
                         print(it)
                         dismissProgress()
@@ -211,13 +216,5 @@ class DiemTransferActivity : TransferActivity() {
                     })
             }
         }
-    }
-
-    override fun onSelectAddress(address: String) {
-        editAddressInput.setText(address)
-    }
-
-    override fun onScanAddressQr(address: String) {
-        editAddressInput.setText(address)
     }
 }

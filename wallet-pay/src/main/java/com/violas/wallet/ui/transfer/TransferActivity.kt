@@ -6,24 +6,29 @@ import android.os.Bundle
 import com.palliums.utils.start
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
-import com.violas.wallet.biz.*
+import com.violas.wallet.biz.CommonQRCode
+import com.violas.wallet.biz.QRCode
+import com.violas.wallet.biz.TransferManager
+import com.violas.wallet.biz.TransferQRCode
+import com.violas.wallet.biz.bean.DiemCurrency
 import com.violas.wallet.common.getBitcoinCoinType
+import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.addressBook.AddressBookActivity
 import com.violas.wallet.ui.scan.ScanActivity
-import com.violas.wallet.viewModel.bean.CoinAssetVo
 import com.violas.wallet.viewModel.bean.AssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 
 abstract class TransferActivity : BaseAppActivity() {
+
     companion object {
         private const val EXT_ACCOUNT_ID = "0"
-        private const val EXT_ADDRESS = "1"
-        private const val EXT_AMOUNT = "2"
-        private const val EXT_IS_TOKEN = "3"
-        private const val EXT_ASSETS_NAME = "4"
-        private const val EXT_COIN_NUMBER = "5"
-        private const val EXT_SUB_ADDRESS = "6"
+        private const val EXT_COIN_NUMBER = "1"
+        private const val EXT_CURRENCY = "2"
+        private const val EXT_PAYEE_ADDRESS = "3"
+        private const val EXT_PAYEE_SUB_ADDRESS = "4"
+        private const val EXT_AMOUNT = "5"
 
         const val REQUEST_SELECTOR_ADDRESS = 1
         const val REQUEST_SCAN_QR_CODE = 2
@@ -31,57 +36,82 @@ abstract class TransferActivity : BaseAppActivity() {
         fun start(
             context: Context,
             asset: AssetVo,
-            address: String? = null,
-            subAddress: String? = null,
+            payeeAddress: String? = null,
+            payeeSubAddress: String? = null,
             amount: Long? = null
         ) {
-            val assetsName = if (asset is CoinAssetVo) {
-                null
-            } else {
-                asset.getAssetsName()
-            }
-            start(context, asset.getCoinNumber(), address, subAddress, amount, assetsName)
+            start(
+                context,
+                asset.getCoinNumber(),
+                if (asset is DiemCurrencyAssetVo)
+                    asset.currency
+                else
+                    null,
+                payeeAddress,
+                payeeSubAddress,
+                amount
+            )
         }
 
         fun start(
             context: Context,
-            coinType: Int,
-            address: String? = null,
-            subAddress: String? = null,
-            amount: Long? = null,
-            tokenName: String? = null
+            coinNumber: Int,
+            currencyCode: String?,
+            payeeAddress: String? = null,
+            payeeSubAddress: String? = null,
+            amount: Long? = null
         ) {
-            var isToken = tokenName == null
-            when (coinType) {
+
+            start(
+                context,
+                coinNumber,
+                if (currencyCode.isNullOrBlank())
+                    null
+                else
+                    DiemCurrency(currencyCode),
+                payeeAddress,
+                payeeSubAddress,
+                amount
+            )
+        }
+
+        fun start(
+            context: Context,
+            coinNumber: Int,
+            currency: DiemCurrency?,
+            payeeAddress: String? = null,
+            payeeSubAddress: String? = null,
+            amount: Long? = null
+        ) {
+            when (coinNumber) {
                 getBitcoinCoinType().coinNumber() -> {
                     Intent(context, BTCTransferActivity::class.java)
                 }
-                else -> {
-                    isToken = true
+                getDiemCoinType().coinNumber(), getViolasCoinType().coinNumber() -> {
                     Intent(context, DiemTransferActivity::class.java)
                 }
-            }.apply {
-                putExtra(EXT_ADDRESS, address)
+                else -> {
+                    null
+                }
+            }?.apply {
+                putExtra(EXT_COIN_NUMBER, coinNumber)
+                putExtra(EXT_CURRENCY, currency)
+                putExtra(EXT_PAYEE_ADDRESS, payeeAddress)
+                putExtra(EXT_PAYEE_SUB_ADDRESS, payeeSubAddress)
                 putExtra(EXT_AMOUNT, amount)
-                putExtra(EXT_IS_TOKEN, isToken)
-                putExtra(EXT_ASSETS_NAME, tokenName)
-                putExtra(EXT_COIN_NUMBER, coinType)
-                putExtra(EXT_SUB_ADDRESS, subAddress)
-            }.start(context)
+            }?.start(context)
         }
     }
 
     var isToken = false
-    var assetsName: String? = ""
-    var coinNumber: Int = getViolasCoinType().coinNumber()
-    var transferAmount = 0L
-    var toAddress: String? = ""
-    var toSubAddress: String? = ""
-    var account: AccountDO? = null
+    var mCoinNumber: Int = Int.MIN_VALUE
+    var mCurrency: DiemCurrency? = null
+    var mPayeeAddress: String? = null
+    var mPayeeSubAddress: String? = null
+    var mAmount: Long = 0
 
-    val mTransferManager by lazy {
-        TransferManager()
-    }
+    var mPayerAccount: AccountDO? = null
+    val mTransferManager by lazy { TransferManager() }
 
     abstract fun onSelectAddress(address: String)
     abstract fun onScanAddressQr(address: String)
@@ -89,58 +119,59 @@ abstract class TransferActivity : BaseAppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = getString(R.string.transfer_title)
+        setTitle(R.string.transfer_title)
         if (savedInstanceState != null) {
-            isToken = savedInstanceState.getBoolean(EXT_IS_TOKEN, false)
-            assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
-            coinNumber =
-                savedInstanceState.getInt(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
-            transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
-            toAddress = savedInstanceState.getString(EXT_ADDRESS)
-            toSubAddress = savedInstanceState.getString(EXT_SUB_ADDRESS)
+            mCoinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, Int.MIN_VALUE)
+            mCurrency = savedInstanceState.getParcelable(EXT_CURRENCY)
+            mPayeeAddress = savedInstanceState.getString(EXT_PAYEE_ADDRESS)
+            mPayeeSubAddress = savedInstanceState.getString(EXT_PAYEE_SUB_ADDRESS)
+            mAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
         } else if (intent != null) {
-            isToken = intent.getBooleanExtra(EXT_IS_TOKEN, false)
-            assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
-            transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
-            toAddress = intent.getStringExtra(EXT_ADDRESS)
-            toSubAddress = intent.getStringExtra(EXT_SUB_ADDRESS)
+            mCoinNumber = intent.getIntExtra(EXT_COIN_NUMBER, Int.MIN_VALUE)
+            mCurrency = intent.getParcelableExtra(EXT_CURRENCY)
+            mPayeeAddress = intent.getStringExtra(EXT_PAYEE_ADDRESS)
+            mPayeeSubAddress = intent.getStringExtra(EXT_PAYEE_SUB_ADDRESS)
+            mAmount = intent.getLongExtra(EXT_AMOUNT, 0)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(EXT_IS_TOKEN, isToken)
-        assetsName?.let { outState.putString(EXT_ASSETS_NAME, it) }
-        outState.putInt(EXT_COIN_NUMBER, coinNumber)
-        outState.putLong(EXT_AMOUNT, transferAmount)
-        toAddress?.let { outState.putString(EXT_ADDRESS, it) }
-        toSubAddress?.let { outState.putString(EXT_SUB_ADDRESS, it) }
+        if (mCoinNumber != Int.MIN_VALUE)
+            outState.putInt(EXT_COIN_NUMBER, mCoinNumber)
+        mCurrency?.let { outState.putParcelable(EXT_CURRENCY, it) }
+        mPayeeAddress?.let { outState.putString(EXT_PAYEE_ADDRESS, it) }
+        mPayeeSubAddress?.let { outState.putString(EXT_PAYEE_SUB_ADDRESS, it) }
+        outState.putLong(EXT_AMOUNT, mAmount)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_SELECTOR_ADDRESS -> {
-                data?.apply {
-                    toAddress = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
-                    toSubAddress = null
-                    onSelectAddress(toAddress ?: "")
+                data?.getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS)?.let {
+                    if (it.isBlank()) return@let
+                    mPayeeAddress = it
+                    mPayeeSubAddress = null
+                    onSelectAddress(it)
                 }
             }
+
             REQUEST_SCAN_QR_CODE -> {
                 data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
                     when (qrCode) {
                         is TransferQRCode -> {
-                            toAddress = qrCode.address
-                            toSubAddress = qrCode.subAddress
-                            onScanAddressQr(toAddress ?: "")
+                            if (qrCode.address.isBlank()) return@let
+                            mPayeeAddress = qrCode.address
+                            mPayeeSubAddress = qrCode.subAddress
+                            onScanAddressQr(qrCode.address)
                         }
 
                         is CommonQRCode -> {
-                            toAddress = qrCode.content
-                            toSubAddress = null
-                            onScanAddressQr(toAddress ?: "")
+                            if (qrCode.content.isBlank()) return@let
+                            mPayeeAddress = qrCode.content
+                            mPayeeSubAddress = null
+                            onScanAddressQr(qrCode.content)
                         }
                     }
                 }

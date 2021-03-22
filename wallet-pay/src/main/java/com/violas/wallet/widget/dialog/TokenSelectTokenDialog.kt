@@ -300,7 +300,7 @@ abstract class TokenSelectTokenDialog<VO> : DialogFragment(), CoroutineScope by 
             )
             holder.itemView.tvTokenName.text = getName(item)
             holder.itemView.tvTokenBalance.text = getString(
-                R.string.common_label_balance_format,
+                R.string.common_label_balance_with_unit_format,
                 getBalance(item),
                 getUnit(item)
             )

@@ -330,7 +330,7 @@ class SelectTokenDialog : DialogFragment(), CoroutineScope by CustomMainScope() 
             )
             holder.itemView.tvTokenName.text = item.displayName
             holder.itemView.tvTokenBalance.text = getString(
-                R.string.common_label_balance_format,
+                R.string.common_label_balance_with_unit_format,
                 item.displayAmount.toPlainString(),
                 item.displayName
             )

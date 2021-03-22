@@ -142,11 +142,11 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
                 is TransferQRCode -> {
                     TransferActivity.start(
                         this@ScanActivity,
-                        qrCode.coinType,
+                        qrCode.coinNumber,
+                        qrCode.tokenName,
                         qrCode.address,
                         qrCode.subAddress,
-                        qrCode.amount,
-                        qrCode.tokenName
+                        qrCode.amount
                     )
                 }
 

@@ -19,7 +19,8 @@
     <string name="common_desc_value_null">--</string>
     <string name="common_state_cancelled">已取消</string>
     <string name="common_state_submitted">已提交</string>
-    <string name="common_label_balance_format">余额：%1$s %2$s</string>
+    <string name="common_label_balance_with_unit_format">余额：%1$s %2$s</string>
+    <string name="common_label_balance_format">余额：%1$s</string>
     <string name="common_label_available_balance">可用余额&#160;：</string>
     <string name="common_label_gas_fees">矿工费用</string>
     <string name="common_label_gas_fees_colon">矿工费用：</string>

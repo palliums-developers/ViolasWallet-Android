@@ -6,16 +6,15 @@ import android.os.Bundle
 import android.widget.SeekBar
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.palliums.extensions.expandTouchArea
-import com.palliums.extensions.logError
 import com.palliums.extensions.show
 import com.palliums.utils.start
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.biz.*
+import com.violas.wallet.biz.bean.DiemCurrency
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.common.getBitcoinCoinType
@@ -31,15 +30,13 @@ import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.convertDisplayUnitToAmount
 import com.violas.wallet.viewModel.WalletAppViewModel
-import com.violas.wallet.viewModel.bean.CoinAssetVo
-import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 import com.violas.wallet.viewModel.bean.AssetVo
+import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 import com.violas.wallet.widget.dialog.AssetsVoTokenSelectTokenDialog
 import kotlinx.android.synthetic.main.activity_multi_transfer.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.math.BigDecimal
 
 /**
  * 转账通用页面
@@ -51,104 +48,162 @@ class MultiTransferActivity : BaseAppActivity(),
         private const val REQUEST_SELECTOR_ADDRESS = 1
         private const val REQUEST_SCAN_QR_CODE = 2
 
-        private const val EXT_ADDRESS = "1"
-        private const val EXT_AMOUNT = "2"
-        private const val EXT_ASSETS_NAME = "3"
-        private const val EXT_COIN_NUMBER = "4"
-        private const val EXT_SUB_ADDRESS = "5"
+        private const val EXT_COIN_NUMBER = "1"
+        private const val EXT_CURRENCY = "2"
+        private const val EXT_PAYEE_ADDRESS = "3"
+        private const val EXT_PAYEE_SUB_ADDRESS = "4"
+        private const val EXT_AMOUNT = "5"
 
         fun start(
             context: Context,
-            assetsVo: AssetVo? = null,
-            toAddress: String? = null,
-            toSubAddress: String? = null,
+            asset: AssetVo? = null,
+            payeeAddress: String? = null,
+            payeeSubAddress: String? = null,
             amount: Long? = null
         ) {
-            val assetsName = if (assetsVo is CoinAssetVo) {
-                null
-            } else {
-                assetsVo?.getAssetsName()
-            }
-            val coinNumber = assetsVo?.getCoinNumber() ?: getBitcoinCoinType().coinNumber()
+            start(
+                context,
+                asset?.getCoinNumber() ?: getBitcoinCoinType().coinNumber(),
+                if (asset is DiemCurrencyAssetVo)
+                    asset.currency
+                else
+                    null,
+                payeeAddress,
+                payeeSubAddress,
+                amount
+            )
+        }
+
+        fun start(
+            context: Context,
+            coinNumber: Int = getBitcoinCoinType().coinNumber(),
+            currency: DiemCurrency? = null,
+            payeeAddress: String? = null,
+            payeeSubAddress: String? = null,
+            amount: Long? = null
+        ) {
             Intent(context, MultiTransferActivity::class.java).apply {
-                putExtra(EXT_ADDRESS, toAddress)
-                putExtra(EXT_AMOUNT, amount)
-                putExtra(EXT_ASSETS_NAME, assetsName)
                 putExtra(EXT_COIN_NUMBER, coinNumber)
-                putExtra(EXT_SUB_ADDRESS, toSubAddress)
+                putExtra(EXT_CURRENCY, currency)
+                putExtra(EXT_PAYEE_ADDRESS, payeeAddress)
+                putExtra(EXT_PAYEE_SUB_ADDRESS, payeeSubAddress)
+                putExtra(EXT_AMOUNT, amount)
             }.start(context)
         }
     }
 
-    private var initTag = false
-    private var assetsName: String? = ""
-    private var coinNumber: Int = getViolasCoinType().coinNumber()
-    private var transferAmount = 0L
-    private var toAddress: String? = ""
-    private var toSubAddress: String? = ""
-    private var mCurrAssetsAmount = BigDecimal("0")
+    private var mCoinNumber: Int = Int.MIN_VALUE
+    private var mCurrency: DiemCurrency? = null
+    private var mPayeeAddress: String? = null
+    private var mPayeeSubAddress: String? = null
+    private var mAmount = 0L
 
-    private val mWalletAppViewModel by lazy {
-        WalletAppViewModel.getInstance()
-    }
-    private val mMultiTransferViewModel by lazy {
+    private val mViewModel by lazy {
         ViewModelProvider(this).get(MultiTransferViewModel::class.java)
     }
 
-    private val mCurrAssertsAmountSubscriber = object : BalanceSubscriber(null) {
-        override fun onNotice(asset: AssetVo?) {
-            launch {
-                tvCoinAmount.text = String.format(
-                    getString(R.string.transfer_label_balance_format),
-                    asset?.amountWithUnit?.amount ?: "- -",
-                    asset?.amountWithUnit?.unit ?: ""
-                )
-                withContext(Dispatchers.IO) {
-                    mCurrAssetsAmount = BigDecimal(asset?.amountWithUnit?.amount ?: "0")
-                }
-            }
-        }
-    }
+    private lateinit var mBalanceSubscriber: BalanceSubscriber
 
     override fun getLayoutResId() = R.layout.activity_multi_transfer
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        assetsName?.let { outState.putString(EXT_ASSETS_NAME, it) }
-        outState.putInt(EXT_COIN_NUMBER, coinNumber)
-        outState.putLong(
-            EXT_AMOUNT,
-            convertDisplayUnitToAmount(
-                editAmountInput.text.toString().trim(),
-                CoinType.parseCoinNumber(coinNumber)
-            )
-        )
-        outState.putString(EXT_ADDRESS, editAddressInput.text.toString().trim())
-        toSubAddress?.let { outState.putString(EXT_SUB_ADDRESS, it) }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = getString(R.string.transfer_title)
+        init(savedInstanceState)
+    }
 
-        mWalletAppViewModel.mAssetsLiveData.observe(this, Observer {
-            if (!initTag) {
-                initTag = true
-                init(savedInstanceState)
-            }
-        })
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (mCoinNumber != Int.MIN_VALUE)
+            outState.putInt(EXT_COIN_NUMBER, mCoinNumber)
+        mCurrency?.let { outState.putParcelable(EXT_CURRENCY, it) }
+        val payeeAddress = editAddressInput.text.toString().trim()
+        if (payeeAddress.isNotBlank())
+            outState.putString(EXT_PAYEE_ADDRESS, payeeAddress)
+        if (!mPayeeSubAddress.isNullOrBlank())
+            outState.putString(EXT_PAYEE_SUB_ADDRESS, mPayeeSubAddress)
+        outState.putLong(
+            EXT_AMOUNT,
+            convertDisplayUnitToAmount(
+                editAmountInput.text.toString().trim(),
+                CoinType.parseCoinNumber(mCoinNumber)
+            )
+        )
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        initData(savedInstanceState)
-        initView()
+        if (savedInstanceState != null) {
+            mCoinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, Int.MIN_VALUE)
+            mCurrency = savedInstanceState.getParcelable(EXT_CURRENCY)
+            mPayeeAddress = savedInstanceState.getString(EXT_PAYEE_ADDRESS)
+            mPayeeSubAddress = savedInstanceState.getString(EXT_PAYEE_SUB_ADDRESS)
+            mAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
+        } else if (intent != null) {
+            mCoinNumber = intent.getIntExtra(EXT_COIN_NUMBER, Int.MIN_VALUE)
+            mCurrency = intent.getParcelableExtra(EXT_CURRENCY)
+            mPayeeAddress = intent.getStringExtra(EXT_PAYEE_ADDRESS)
+            mPayeeSubAddress = intent.getStringExtra(EXT_PAYEE_SUB_ADDRESS)
+            mAmount = intent.getLongExtra(EXT_AMOUNT, 0)
+        }
 
-        sbQuota.progress = mMultiTransferViewModel.mFeeProgressAmount.value
-            ?: MultiTransferViewModel.DEF_FEE_PROGRESS
+        if (mCoinNumber != getViolasCoinType().coinNumber() &&
+            mCoinNumber != getDiemCoinType().coinNumber() &&
+            mCoinNumber != getBitcoinCoinType().coinNumber()
+        ) {
+            close()
+            return
+        }
+
+        val assetMark = IAssetMark.convert(mCoinNumber, mCurrency)
+        mBalanceSubscriber = object : BalanceSubscriber(assetMark) {
+            override fun onNotice(asset: AssetVo?) {
+                launch {
+                    // 已初始化，资产更新
+                    val currAsset = mViewModel.mAssetLiveData.value
+                    if (currAsset != null) {
+                        if (asset == null) return@launch
+                        mViewModel.mAssetLiveData.value = asset
+                        return@launch
+                    }
+
+                    // 未找到对应资产
+                    if (asset == null) {
+                        showToast(getString(R.string.transfer_tips_unopened_or_unsupported_token))
+                        close()
+                        return@launch
+                    }
+
+                    // 找到资产，初始化
+                    mViewModel.mAssetLiveData.value = asset
+                    initView()
+                    initEvent()
+                    CommandActuator.post(RefreshAssetsCommand())
+                }
+            }
+        }
+        BalanceSubscribeHub.observe(this, mBalanceSubscriber)
+    }
+
+    private fun initView() {
+        if (!mPayeeAddress.isNullOrBlank()) {
+            editAddressInput.setText(mPayeeAddress)
+            mViewModel.mPayeeAddressLiveData.value = mPayeeAddress
+        }
+        if (mAmount > 0) {
+            val displayAmount =
+                convertAmountToDisplayUnit(mAmount, CoinType.parseCoinNumber(mCoinNumber))
+            editAmountInput.setText(displayAmount.first)
+            mViewModel.mAmountLiveData.value = displayAmount.first
+        }
+    }
+
+    private fun initEvent() {
         // 监听进度条变化通知 ViewModel
+        sbQuota.progress = mViewModel.mFeeProgressLiveData.value
+            ?: MultiTransferViewModel.DEF_FEE_PROGRESS
         sbQuota.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                mMultiTransferViewModel.mFeeProgressAmount.value = progress
+                mViewModel.mFeeProgressLiveData.value = progress
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -157,92 +212,69 @@ class MultiTransferActivity : BaseAppActivity(),
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
+
         // 监听转账金额变化通知 ViewModel
         editAmountInput.addTextChangedListener {
-            mMultiTransferViewModel.mTransferAmount.value = it.toString()
-        }
-        // 监听转账地址变化通知 ViewModel
-        editAddressInput.addTextChangedListener {
-            mMultiTransferViewModel.mTransferPayeeAddress.value = it.toString()
+            mViewModel.mAmountLiveData.value = it.toString()
         }
 
-        // 订阅当前币种的金额变化
-        BalanceSubscribeHub.observe(this, mCurrAssertsAmountSubscriber)
+        // 监听转账地址变化通知 ViewModel
+        editAddressInput.addTextChangedListener {
+            mViewModel.mPayeeAddressLiveData.value = it.toString()
+        }
+
         // 选择币种的点击事件
         llToSelectGroup.setOnClickListener {
             showSelectTokenDialog()
         }
-        llToSelectGroup.expandTouchArea(12)
+
         // 转账按钮的点击事件
+        llToSelectGroup.expandTouchArea(12)
         btnConfirm.setOnClickListener {
             transfer()
         }
+
         // 跳转地址簿的点击事件
         ivAddressBook.setOnClickListener {
             AddressBookActivity.start(
                 this@MultiTransferActivity,
-                coinNumber,
+                mCoinNumber,
                 isSelector = true,
                 requestCode = REQUEST_SELECTOR_ADDRESS
             )
         }
-        ivAddressBook.expandTouchArea(8)
+
         // 扫码点击事件
+        ivAddressBook.expandTouchArea(8)
         ivScan.setOnClickListener {
             ScanActivity.start(this, REQUEST_SCAN_QR_CODE)
         }
 
         // 订阅当前需要转账的币种变化
-        mMultiTransferViewModel.mCurrAssets.observe(this, Observer {
+        mViewModel.mAssetLiveData.observe(this) {
             launch {
-                assetsName = it.getAssetsName()
-                coinNumber = it.getCoinNumber()
+                mCoinNumber = it.getCoinNumber()
+                mCurrency = if (it is DiemCurrencyAssetVo) it.currency else null
 
                 tvToSelectText.text = it.getAssetsName()
-                withContext(Dispatchers.IO) {
-                    mCurrAssertsAmountSubscriber.changeSubscriber(IAssetMark.convert(it))
-                }
+                tvCoinAmount.text = getString(
+                    R.string.common_label_balance_with_unit_format,
+                    it.amountWithUnit.amount,
+                    it.amountWithUnit.unit
+                )
             }
-        })
+        }
+
         // 订阅手续费
-        mMultiTransferViewModel.mFeeAmount.observe(this, Observer {
+        mViewModel.mFeeAmount.observe(this) {
             launch {
-                tvFee.setText("${it.first} ${it.second}")
+                tvFee.text = "${it.first} ${it.second}"
             }
-        })
-    }
-
-    private fun initData(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            assetsName = savedInstanceState.getString(EXT_ASSETS_NAME)
-            coinNumber = savedInstanceState.getInt(EXT_COIN_NUMBER, getViolasCoinType().coinNumber())
-            transferAmount = savedInstanceState.getLong(EXT_AMOUNT, 0)
-            toAddress = savedInstanceState.getString(EXT_ADDRESS)
-            toSubAddress = savedInstanceState.getString(EXT_SUB_ADDRESS)
-        } else if (intent != null) {
-            assetsName = intent.getStringExtra(EXT_ASSETS_NAME)
-            coinNumber = intent.getIntExtra(EXT_COIN_NUMBER, getDiemCoinType().coinNumber())
-            transferAmount = intent.getLongExtra(EXT_AMOUNT, 0)
-            toAddress = intent.getStringExtra(EXT_ADDRESS)
-            toSubAddress = intent.getStringExtra(EXT_SUB_ADDRESS)
-        }
-    }
-
-    private fun initView() {
-        if (transferAmount > 0) {
-            val displayAmount =
-                convertAmountToDisplayUnit(transferAmount, CoinType.parseCoinNumber(coinNumber))
-            editAmountInput.setText(displayAmount.first)
-        }
-        editAddressInput.setText(toAddress)
-
-        launch(Dispatchers.IO) {
-            changeCurrAssets(coinNumber, assetsName)
         }
     }
 
     private fun transfer() {
-        val assets = mMultiTransferViewModel.mCurrAssets.value
+        val assets = mViewModel.mAssetLiveData.value
         if (assets == null) {
             showToast(R.string.transfer_tips_token_empty)
             return
@@ -257,7 +289,7 @@ class MultiTransferActivity : BaseAppActivity(),
                     return@launch
                 }
 
-                mMultiTransferViewModel.checkConditions(account, mCurrAssetsAmount)
+                mViewModel.checkConditions(account)
                 dismissProgress()
                 showPasswordAndSend(account)
             } catch (e: Exception) {
@@ -273,7 +305,7 @@ class MultiTransferActivity : BaseAppActivity(),
             launch(Dispatchers.IO) {
                 try {
                     showProgress()
-                    mMultiTransferViewModel.transfer(account, it.toByteArray(), toSubAddress)
+                    mViewModel.transfer(account, it.toByteArray(), mPayeeSubAddress)
                     dismissProgress()
                     withContext(Dispatchers.Main) {
                         showToast(getString(R.string.transfer_tips_transfer_success))
@@ -290,43 +322,51 @@ class MultiTransferActivity : BaseAppActivity(),
 
     private fun showSelectTokenDialog() {
         AssetsVoTokenSelectTokenDialog()
-            .setCallback { assetsVo ->
-                changeCurrAssets(assetsVo)
+            .setCallback {
+                changeBalanceSubscriber(
+                    it.getCoinNumber(),
+                    if (it is DiemCurrencyAssetVo) it.currency else null
+                )
             }
             .show(supportFragmentManager)
     }
 
     override suspend fun getSupportAssetsTokens(): LiveData<List<AssetVo>?> {
-        return mWalletAppViewModel.mAssetsLiveData
+        return WalletAppViewModel.getInstance().mAssetsLiveData
     }
 
     override fun getCurrCoin(): AssetVo? {
-        return mMultiTransferViewModel.mCurrAssets.value
+        return mViewModel.mAssetLiveData.value
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_SELECTOR_ADDRESS -> {
-                data?.apply {
-                    val address = getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS) ?: ""
+                data?.getStringExtra(AddressBookActivity.RESULT_SELECT_ADDRESS)?.let {
+                    if (it.isBlank()) return@let
                     launch {
-                        editAddressInput.setText(address)
+                        editAddressInput.setText(it)
                     }
                 }
             }
+
             REQUEST_SCAN_QR_CODE -> {
                 data?.getParcelableExtra<QRCode>(ScanActivity.RESULT_QR_CODE_DATA)?.let { qrCode ->
                     when (qrCode) {
                         is TransferQRCode -> {
-                            toSubAddress = qrCode.subAddress
-                            changeCurrAssets(qrCode.coinType, qrCode.tokenName)
-                            onScanAddressQr(qrCode.address)
+                            changeBalanceSubscriber(
+                                qrCode.coinNumber,
+                                if (!qrCode.tokenName.isNullOrBlank()) DiemCurrency(qrCode.tokenName) else null
+                            )
+
+                            mPayeeSubAddress = qrCode.subAddress
+                            editAddressInput.setText(qrCode.address)
                         }
 
                         is CommonQRCode -> {
-                            toSubAddress = null
-                            onScanAddressQr(qrCode.content)
+                            mPayeeSubAddress = null
+                            editAddressInput.setText(qrCode.content)
                         }
                     }
                 }
@@ -334,41 +374,18 @@ class MultiTransferActivity : BaseAppActivity(),
         }
     }
 
-    private fun changeCurrAssets(assetsVo: AssetVo) {
+    private fun changeBalanceSubscriber(coinNumber: Int, currency: DiemCurrency?) {
         launch {
-            if (mMultiTransferViewModel.mCurrAssets.value != assetsVo) {
-                mMultiTransferViewModel.mCurrAssets.value = assetsVo
+            if (coinNumber != mCoinNumber || mCurrency != currency) {
+                mCoinNumber = coinNumber
+                mCurrency = currency
+                mBalanceSubscriber.changeSubscriber(
+                    IAssetMark.convert(
+                        coinNumber,
+                        currency
+                    )
+                )
             }
-        }
-    }
-
-    private fun changeCurrAssets(coinType: Int, tokenModule: String?) {
-        val assetsList = mWalletAppViewModel.mAssetsLiveData.value
-        logError { "assetsList size = ${assetsList?.size ?: 0}" }
-        assetsList?.forEach { assets ->
-            if (coinType == getBitcoinCoinType().coinNumber()) {
-                if (coinType == assets.getCoinNumber()) {
-                    changeCurrAssets(assets)
-                    return@forEach
-                }
-            } else {
-                if (tokenModule == null) {
-                    return@forEach
-                }
-                if (assets is DiemCurrencyAssetVo
-                    && coinType == assets.getCoinNumber()
-                    && assets.currency.module.equals(tokenModule, true)
-                ) {
-                    changeCurrAssets(assets)
-                    return@forEach
-                }
-            }
-        }
-    }
-
-    private fun onScanAddressQr(address: String) {
-        launch {
-            editAddressInput.setText(address)
         }
     }
 }

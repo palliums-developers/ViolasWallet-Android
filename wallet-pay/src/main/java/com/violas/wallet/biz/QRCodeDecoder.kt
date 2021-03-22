@@ -54,7 +54,7 @@ class WalletConnectQRCode(
 @Parcelize
 class TransferQRCode(
     val content: String,
-    val coinType: Int,
+    val coinNumber: Int,
     val address: String,
     val subAddress: String? = null,
     var amount: Long = 0,
@@ -81,7 +81,7 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
         decodeTransferQRCode(content)
     }
 
-    val coinType = when (transferQRCodeBean.coinType?.toLowerCase(Locale.CHINA)) {
+    val coinType = when (transferQRCodeBean.chainName?.toLowerCase(Locale.CHINA)) {
         getBitcoinCoinType().chainName().toLowerCase(Locale.CHINA) -> {
             getBitcoinCoinType()
         }
@@ -128,7 +128,7 @@ suspend fun decodeQRCode(content: String): QRCode = withContext(Dispatchers.IO) 
 }
 
 private data class TransferQRCodeBean(
-    val coinType: String?,
+    val chainName: String?,
     val chainId: Int?,
     val address: String,
     val subAddress: String? = null,
@@ -190,17 +190,17 @@ private fun decodeTransferQRCode(content: String): TransferQRCodeBean {
         return TransferQRCodeBean(null, null, content)
     }
     var tokenName: String? = null
-    val coinTypeSplit = content.split(":")
-    val coinType = if (coinTypeSplit[0].isEmpty()) {
+    val chainNames = content.split(":")
+    val chainName = if (chainNames[0].isEmpty()) {
         null
     } else {
-        coinTypeSplit[0].toLowerCase(Locale.CHINA)
+        chainNames[0].toLowerCase(Locale.CHINA)
     }
-    val addressSplit = coinTypeSplit[1].split("?")
+    val addresses = chainNames[1].split("?")
     var amount = 0L
     var label: String? = null
-    if (addressSplit.size > 1) {
-        addressSplit[1].split("&")
+    if (addresses.size > 1) {
+        addresses[1].split("&")
             .forEach {
                 val paramSplit = it.split("=")
                 when (paramSplit[0].toLowerCase(Locale.CHINA)) {
@@ -217,7 +217,7 @@ private fun decodeTransferQRCode(content: String): TransferQRCodeBean {
                 }
             }
     }
-    return TransferQRCodeBean(coinType, 2, addressSplit[0], null, amount, label)
+    return TransferQRCodeBean(chainName, 2, addresses[0], null, amount, label)
 }
 
 private fun decodeWalletConnectQRCode(content: String): Boolean {
