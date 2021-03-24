@@ -60,6 +60,7 @@
     <fields>;}
 
 -keep,includecode class org.palliums.violascore.transaction.***{*;}
+-keep,includecode class org.palliums.libracore.transaction.***{*;}
 #-keep class com.violas.walletconnect.***{*;}
 #-keep class com.violas.walletconnect.***$Companion{*;}
 #-keep class com.violas.walletconnect.session.**{*;}
