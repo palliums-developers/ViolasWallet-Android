@@ -33,8 +33,6 @@ class DiemTransferActivity : TransferActivity() {
 
     override fun getLayoutResId() = R.layout.activity_transfer
 
-    private var mBalance: BigDecimal? = null
-
     private lateinit var mAsset: AssetVo
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,9 +157,8 @@ class DiemTransferActivity : TransferActivity() {
         when (mPayerAccount?.coinNumber) {
             getDiemCoinType().coinNumber(),
             getViolasCoinType().coinNumber() -> {
-                if (BigDecimal(
-                        editAmountInput.text.toString().trim()
-                    ) > mBalance ?: BigDecimal("0")
+                if (BigDecimal(editAmountInput.text.toString().trim())
+                    > BigDecimal(mAsset.amountWithUnit.amount)
                 ) {
                     LackOfBalanceException().message?.let { showToast(it) }
                     return false
