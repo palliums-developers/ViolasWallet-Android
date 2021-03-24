@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.palliums.content.App
+import com.palliums.extensions.getShowErrorMessage
 import com.palliums.utils.setSystemBar
 import com.quincysx.crypto.bitcoin.script.Script
 import com.violas.wallet.R
@@ -31,6 +32,7 @@ import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import kotlinx.android.synthetic.main.activity_wallet_connect.*
 import kotlinx.coroutines.*
+import org.palliums.lib.jsonrpc.ResponseExceptions
 import org.palliums.violascore.crypto.Ed25519PublicKey
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.RawTransaction
@@ -290,17 +292,28 @@ class WalletConnectActivity : BaseAppActivity() {
                 mRequestHandle = true
                 finish()
                 dismissProgress()
-            } catch (e: LackOfBalanceException) {
-                dismissProgress()
-                mWalletConnect.sendErrorMessage(
-                    transactionSwapVo.requestID,
-                    JsonRpcError.lackOfBalanceError()
-                )
-                e.message?.let { it1 -> showToast(it1) }
             } catch (e: Exception) {
-                dismissProgress()
-                e.message?.let { it1 -> showToast(it1) }
                 e.printStackTrace()
+
+                dismissProgress()
+                showToast(
+                    e.getShowErrorMessage(
+                        failedDesc = if (e is ResponseExceptions) e.msg else null
+                    )
+                )
+
+                when (e) {
+                    is LackOfBalanceException ->
+                        JsonRpcError.lackOfBalanceError()
+                    is ResponseExceptions ->
+                        if (e.code != -1) JsonRpcError(e.code, e.msg) else null
+                    else ->
+                        null
+                }?.let {
+                    mWalletConnect.sendErrorMessage(transactionSwapVo.requestID, it)
+                    mRequestHandle = true
+                    close()
+                }
             }
         }
 
