@@ -235,7 +235,8 @@ class ReserveManager : LifecycleObserver, CoroutineScope by CustomIOScope(), Han
     ): TradeResult? {
         val inIndex =
             getMarkIndex(fromToken) ?: throw ExchangeError.UnsupportedCurrenciesException()
-        val outIndex = getMarkIndex(toToken) ?: throw ExchangeError.UnsupportedCurrenciesException()
+        val outIndex =
+            getMarkIndex(toToken) ?: throw ExchangeError.UnsupportedCurrenciesException()
         val trades = if (isInputFrom) {
             bestTradeExactIn(mReserveList, inIndex, outIndex, inputAmount)
         } else {

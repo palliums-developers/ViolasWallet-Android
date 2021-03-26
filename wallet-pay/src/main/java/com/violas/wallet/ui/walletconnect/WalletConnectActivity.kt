@@ -268,7 +268,7 @@ class WalletConnectActivity : BaseAppActivity() {
                 if (signedTx != null && transactionSwapVo.isSend) {
                     when (transactionSwapVo.coinType) {
                         getViolasCoinType() -> {
-                            DataRepository.getViolasChainRpcService().submitTransaction(signedTx)
+                            DataRepository.getViolasRpcService().submitTransaction(signedTx)
                         }
                         getDiemCoinType() -> {
                             DataRepository.getDiemRpcService().submitTransaction(signedTx)

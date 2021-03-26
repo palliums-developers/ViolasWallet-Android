@@ -18,10 +18,10 @@ import com.palliums.utils.stripTrailingZeros
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.ReceiverAccountCurrencyNotAddException
+import com.violas.wallet.biz.ReceiverAccountNotActivationException
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsCommand
-import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
-import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.ReserveManager
 import com.violas.wallet.biz.exchange.UnsupportedTradingPairsException
 import com.violas.wallet.common.getBitcoinCoinType
@@ -337,9 +337,9 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
                 showToast(getString(R.string.market_swap_tips_swap_success))
             } catch (e: UnsupportedTradingPairsException) {
                 showToast(getString(R.string.market_swap_tips_unsupported_pair))
-            } catch (e: AccountPayeeNotFindException) {
+            } catch (e: ReceiverAccountNotActivationException) {
                 showToast(getString(R.string.chain_tips_payee_account_not_active))
-            } catch (e: AccountPayeeTokenNotActiveException) {
+            } catch (e: ReceiverAccountCurrencyNotAddException) {
                 showPublishTokenDialog(pwd, e)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -351,17 +351,17 @@ class SwapFragment : BaseFragment(), SwapTokensDataResourcesBridge {
 
     private fun showPublishTokenDialog(
         pwd: ByteArray,
-        e: AccountPayeeTokenNotActiveException
+        e: ReceiverAccountCurrencyNotAddException
     ) {
         PublishTokenDialog()
             .setAddCurrencyPage(false)
-            .setCurrencyName(e.assetsMark.displayName)
+            .setCurrencyName(e.appToken.name)
             .setConfirmListener {
                 it.dismiss()
                 launch(Dispatchers.IO) {
                     showProgress()
                     try {
-                        if (swapViewModel.publishToken(pwd, e.coinType, e.assetsMark)) {
+                        if (swapViewModel.publishToken(pwd, e.coinType, e.appToken)) {
                             swap(pwd)
                         } else {
                             showToast(R.string.txn_details_state_add_currency_failure)

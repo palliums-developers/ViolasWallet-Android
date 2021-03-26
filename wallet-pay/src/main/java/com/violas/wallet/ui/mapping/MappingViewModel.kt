@@ -8,11 +8,12 @@ import com.palliums.extensions.getShowErrorMessage
 import com.palliums.extensions.isNoNetwork
 import com.palliums.net.LoadState
 import com.palliums.utils.toMap
-import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.biz.bean.AssertOriginateToken
+import com.violas.wallet.biz.bean.DiemAppToken
 import com.violas.wallet.biz.mapping.MappingManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.getBitcoinCoinType
@@ -254,27 +255,25 @@ class MappingViewModel : BaseViewModel() {
     suspend fun publishToken(
         password: ByteArray,
         accountDO: AccountDO,
-        assets: MappingCoinPairDTO.Assets
+        appToken: DiemAppToken
     ): Boolean {
-        val simpleSecurity =
-            SimpleSecurity.instance(ContextProvider.getContext())
-        val privateKey = simpleSecurity.decrypt(password, accountDO.privateKey)!!
+        val privateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(password, accountDO.privateKey) ?: throw WrongPasswordException()
 
-        val tokenMark = TokenMark(assets.module, assets.address, assets.name)
         val hasSucceed = tokenManager.publishToken(
             CoinType.parseCoinNumber(accountDO.coinNumber),
             privateKey,
-            tokenMark
+            appToken.currency
         )
         if (hasSucceed) {
             tokenManager.insert(
                 true, AssertOriginateToken(
-                    tokenMark,
-                    account_id = accountDO.id,
-                    name = assets.displayName,
-                    fullName = assets.displayName,
+                    appToken.currency,
+                    accountId = accountDO.id,
+                    name = appToken.name,
+                    fullName = appToken.fullName,
                     isToken = true,
-                    logo = assets.logo
+                    logo = appToken.logo
                 )
             )
         }

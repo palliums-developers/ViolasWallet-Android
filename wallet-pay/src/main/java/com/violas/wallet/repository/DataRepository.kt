@@ -94,7 +94,7 @@ object DataRepository {
     fun getViolasService() =
         ViolasService(ViolasRepository(retrofit.create(ViolasApi::class.java)))
 
-    fun getViolasChainRpcService() =
+    fun getViolasRpcService() =
         ViolasRpcService(ViolasRpcRepository(okHttpClient, ApiBaseUrl.VIOLAS_CHAIN_BASE_URL))
 
     fun getTransactionRecordService(coinType: CoinType) =

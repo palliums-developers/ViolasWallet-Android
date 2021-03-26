@@ -1,19 +1,28 @@
-package com.violas.wallet.walletconnect.libraTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import com.google.gson.*
 import com.violas.wallet.walletconnect.TransactionDataType
-import org.palliums.libracore.serialization.toHex
-import org.palliums.libracore.transaction.RawTransaction
+import org.palliums.violascore.serialization.toHex
+import org.palliums.violascore.transaction.RawTransaction
 import java.lang.reflect.Type
 
 
-class LibraTransferDecodeEngine(
+class ViolasTxnDecodeEngine(
     private val mRawTransaction: RawTransaction
 ) {
-    private val mDecode: ArrayList<TransferDecode> =
+    private val mDecode: ArrayList<ViolasTxnDecoder> =
         arrayListOf(
-            TransferP2PWithDataDecode(mRawTransaction),
-            TransferAddCurrencyToAccountDecode(mRawTransaction)
+            ViolasPeerToPeerWithMetadataDecoder(mRawTransaction),
+            ViolasAddCurrencyToAccountDecoder(mRawTransaction),
+            ViolasExchangeSwapDecoder(mRawTransaction),
+            ViolasExchangeAddLiquidityDecoder(mRawTransaction),
+            ViolasExchangeRemoveLiquidityDecoder(mRawTransaction),
+            ViolasBankDepositDecoder(mRawTransaction),
+            ViolasBankRedeemDecoder(mRawTransaction),
+            ViolasBankRepayBorrowDecoder(mRawTransaction),
+            ViolasBankBorrowDecoder(mRawTransaction),
+            ViolasExchangeWithdrawRewardDecoder(mRawTransaction),
+            ViolasBankWithdrawRewardDecoder(mRawTransaction)
         )
 
     fun decode(): Pair<TransactionDataType, String> {
@@ -27,7 +36,7 @@ class LibraTransferDecodeEngine(
             ByteArrayToHexStringTypeAdapter()
         ).create()
         return Pair(
-            TransactionDataType.None,
+            TransactionDataType.UNKNOWN,
             gson.toJson(mRawTransaction.payload?.payload)
         )
     }

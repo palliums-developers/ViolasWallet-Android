@@ -25,6 +25,7 @@ import com.violas.wallet.base.BaseListingActivity
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
 import com.violas.wallet.biz.bean.AssertOriginateToken
+import com.violas.wallet.biz.bean.DiemCurrency
 import com.violas.wallet.common.getViolasFaucetUrl
 import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.ui.web.WebCommonActivity
@@ -122,12 +123,12 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
 
     private suspend fun isPublish(
         accountId: Long,
-        tokenMark: TokenMark?
+        diemCurrency: DiemCurrency?
     ): Boolean {
-        if (tokenMark == null) {
+        if (diemCurrency == null) {
             return false
         }
-        return mTokenManager.isPublish(accountId, tokenMark)
+        return mTokenManager.isPublish(accountId, diemCurrency)
     }
 
     private fun openToken(
@@ -138,13 +139,13 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
         showProgress()
         launch(Dispatchers.IO) {
             try {
-                if (isPublish(assertOriginateToken.account_id, assertOriginateToken.tokenMark)) {
+                if (isPublish(assertOriginateToken.accountId, assertOriginateToken.currency)) {
                     assertOriginateToken.enable = true
                     mTokenManager.insert(checked, assertOriginateToken)
                     mChange = true
                     dismissProgress()
                 } else {
-                    val account = AccountManager.getAccountById(assertOriginateToken.account_id)
+                    val account = AccountManager.getAccountById(assertOriginateToken.accountId)
                     dismissProgress()
                     withContext(Dispatchers.Main) {
                         PublishTokenDialog()
@@ -185,9 +186,9 @@ class ManagerAssertActivity : BaseListingActivity<AssertOriginateToken>() {
             launch(Dispatchers.IO) {
                 try {
                     val hasSuccess = mTokenManager.publishToken(
-                        assertOriginateToken.account_id,
+                        assertOriginateToken.accountId,
                         it,
-                        assertOriginateToken.tokenMark!!
+                        assertOriginateToken.currency!!
                     )
                     if (hasSuccess) {
                         assertOriginateToken.enable = true

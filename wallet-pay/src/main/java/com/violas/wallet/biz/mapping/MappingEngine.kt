@@ -41,7 +41,7 @@ internal class MappingEngine {
         payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
-        amount: Long,
+        mappingAmount: Long,
         coinPair: MappingCoinPairDTO
     ): String {
         processors.forEach {
@@ -52,7 +52,7 @@ internal class MappingEngine {
                     payeeAccountDO,
                     payerAccountDO,
                     password,
-                    amount,
+                    mappingAmount,
                     coinPair
                 )
             }

@@ -60,7 +60,7 @@ class WalletManagerActivity : BaseAppActivity() {
 
         launch {
             try {
-                mAccountDO = AccountManager.getDefaultAccount()
+                mAccountDO = withContext(Dispatchers.IO) { AccountManager.getDefaultAccount() }
                 initView()
                 initEvent()
             } catch (e: Exception) {

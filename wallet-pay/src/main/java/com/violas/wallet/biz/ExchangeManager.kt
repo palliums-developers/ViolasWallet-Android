@@ -3,6 +3,7 @@ package com.violas.wallet.biz
 import com.palliums.extensions.logInfo
 import com.palliums.violas.error.ViolasException
 import com.palliums.violas.smartcontract.ViolasExchangeContract
+import com.violas.wallet.biz.transaction.ViolasTxnManager
 import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.PoolLiquidityDTO
@@ -16,7 +17,7 @@ import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
-import org.palliums.violascore.transaction.storage.TypeTagStructTag
+import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.wallet.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -33,7 +34,7 @@ class ExchangeManager {
     }
 
     private val mViolasRPCService by lazy {
-        DataRepository.getViolasChainRpcService()
+        DataRepository.getViolasRpcService()
     }
 
     private val mViolasExchangeContract by lazy {
@@ -94,7 +95,7 @@ class ExchangeManager {
         amountADesired: Long,
         amountBDesired: Long
     ) {
-        val typeTagA = TypeTagStructTag(
+        val typeTagA = TypeTag.newStructTag(
             StructTag(
                 AccountAddress(coinA.address.hexStringToByteArray()),
                 coinA.module,
@@ -102,7 +103,7 @@ class ExchangeManager {
                 arrayListOf()
             )
         )
-        val typeTagB = TypeTagStructTag(
+        val typeTagB = TypeTag.newStructTag(
             StructTag(
                 AccountAddress(coinB.address.hexStringToByteArray()),
                 coinB.module,
@@ -139,10 +140,26 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(privateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            listOf(Pair(coinA.module, amountADesired), Pair(coinB.module, amountBDesired))
+        )
+
         mViolasRPCService.sendTransaction(
             addLiquidityTransactionPayload,
-            Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = coinA.module,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
     }
@@ -155,7 +172,7 @@ class ExchangeManager {
         amountBDesired: Long,
         liquidityAmount: Long
     ) {
-        val typeTagA = TypeTagStructTag(
+        val typeTagA = TypeTag.newStructTag(
             StructTag(
                 AccountAddress(coinA.address.hexStringToByteArray()),
                 coinA.module,
@@ -163,7 +180,7 @@ class ExchangeManager {
                 arrayListOf()
             )
         )
-        val typeTagB = TypeTagStructTag(
+        val typeTagB = TypeTag.newStructTag(
             StructTag(
                 AccountAddress(coinB.address.hexStringToByteArray()),
                 coinB.module,
@@ -201,10 +218,26 @@ class ExchangeManager {
                 if (swapPosition) amountAMin else amountBMin
             )
 
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(privateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            null
+        )
+
         mViolasRPCService.sendTransaction(
             removeLiquidityTransactionPayload,
-            Account(KeyPair.fromSecretKey(privateKey)),
-            gasCurrencyCode = coinA.module,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
     }
@@ -219,9 +252,26 @@ class ExchangeManager {
         val withdrawRewardTransactionPayload =
             mViolasExchangeContract.optionWithdrawRewardTransactionPayload()
 
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(privateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            null
+        )
+
         mViolasRPCService.sendTransaction(
-            payload = withdrawRewardTransactionPayload,
-            payerAccount = Account(KeyPair.fromSecretKey(privateKey)),
+            withdrawRewardTransactionPayload,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
     }

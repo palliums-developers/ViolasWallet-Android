@@ -1,20 +1,19 @@
 package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.content.ContextProvider
-import com.quincysx.crypto.CoinType
 import com.quincysx.crypto.bitcoin.BitcoinOutputStream
 import com.quincysx.crypto.bitcoin.script.Script
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.TransferUnknownException
+import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.biz.bean.DiemAppToken
 import com.violas.wallet.biz.btc.TransactionManager
 import com.violas.wallet.biz.exchange.AccountNotFindAddressException
-import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
-import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
-import com.violas.wallet.common.SimpleSecurity
-import com.violas.wallet.common.getBitcoinCoinType
-import com.violas.wallet.common.getViolasChainId
+import com.violas.wallet.biz.transaction.DiemTxnManager
+import com.violas.wallet.biz.transaction.ViolasTxnManager
+import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.ui.main.market.bean.*
@@ -33,7 +32,11 @@ class BTCToMappingAssetsProcessor(
 ) : IProcessor {
 
     private val mViolasRpcService by lazy {
-        DataRepository.getViolasChainRpcService()
+        DataRepository.getViolasRpcService()
+    }
+
+    private val mDiemRpcService by lazy {
+        DataRepository.getDiemRpcService()
     }
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
@@ -54,58 +57,46 @@ class BTCToMappingAssetsProcessor(
     ): String {
         tokenTo as StableTokenVo
 
-        val sendAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
-            ?: throw AccountNotFindAddressException()
-
-        // 开始检查 Violas 账户的基本信息
         val payeeAddress =
             payee ?: AccountManager.getAccountByCoinNumber(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
-        // 检查收款地址激活状态
-        val accountState =
-            mViolasRpcService.getAccountState(payeeAddress) ?: throw AccountPayeeNotFindException()
-
-        // 检查收款地址 Token 注册状态
-        var isPublishToken = false
-        accountState.balances?.forEach {
-            if (it.currency.equals(tokenTo.module, true)) {
-                isPublishToken = true
+        if (tokenTo.coinNumber == getViolasCoinType().coinNumber()) {
+            // 检查Violas收款人账户
+            ViolasTxnManager().getReceiverAccountState(
+                payeeAddress,
+                DiemAppToken.convert(tokenTo)
+            ) {
+                mViolasRpcService.getAccountState(it)
+            }
+        } else if (tokenTo.coinNumber == getDiemCoinType().coinNumber()) {
+            // 检查Diem收款人账户
+            DiemTxnManager().getReceiverAccountState(
+                payeeAddress,
+                DiemAppToken.convert(tokenTo)
+            ) {
+                mDiemRpcService.getAccountState(it)
             }
         }
-        if (!isPublishToken) {
-            throw AccountPayeeTokenNotActiveException(
-                CoinType.parseCoinNumber(tokenTo.coinNumber),
-                payeeAddress,
-                tokenTo
-            )
-        }
 
-        val simpleSecurity =
-            SimpleSecurity.instance(ContextProvider.getContext())
-
-        val fromAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
+        val senderAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
             ?: throw AccountNotFindAddressException()
-        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
-            ?: throw RuntimeException("password error")
+        val privateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(pwd, senderAccount.privateKey) ?: throw WrongPasswordException()
 
-        val mTransactionManager: TransactionManager =
-            TransactionManager(arrayListOf(sendAccount.address))
-        val checkBalance = mTransactionManager.checkBalance(amountIn / 100000000.0, 3)
-        val violasOutputScript = ViolasOutputScript()
+        val mTransactionManager = TransactionManager(arrayListOf(senderAccount.address))
+        val checkBalance =
+            mTransactionManager.checkBalance(amountIn / 100000000.0, 3)
+        if (!checkBalance) throw LackOfBalanceException()
 
-        if (!checkBalance) {
-            throw LackOfBalanceException()
-        }
-
-        return suspendCancellableCoroutine { coroutin ->
+        return suspendCancellableCoroutine { coroutine ->
             val subscribe = mTransactionManager.obtainTransaction(
                 privateKey,
-                sendAccount.publicKey.hexStringToByteArray(),
+                senderAccount.publicKey.hexStringToByteArray(),
                 checkBalance,
                 supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
-                sendAccount.address,
-                violasOutputScript.requestExchange(
+                senderAccount.address,
+                ViolasOutputScript().requestExchange(
                     supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.label ?: "",
                     payeeAddress.hexStringToByteArray(),
                     contractAddress.hexStringToByteArray(),
@@ -120,11 +111,11 @@ class BTCToMappingAssetsProcessor(
                     throw TransferUnknownException()
                 }
             }.subscribe({
-                coroutin.resume(it)
+                coroutine.resume(it)
             }, {
-                coroutin.resumeWithException(it)
+                coroutine.resumeWithException(it)
             })
-            coroutin.invokeOnCancellation {
+            coroutine.invokeOnCancellation {
                 subscribe.dispose()
             }
         }
@@ -150,34 +141,24 @@ class BTCToMappingAssetsProcessor(
     ): String {
         toIAssetMark as DiemCurrencyAssetMark
 
-        val sendAccount = AccountManager.getAccountByCoinNumber(fromIAssetMark.coinNumber())
+        val senderAccount = AccountManager.getAccountByCoinNumber(fromIAssetMark.coinNumber())
             ?: throw AccountNotFindAddressException()
+        val privateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(pwd, senderAccount.privateKey) ?: throw WrongPasswordException()
 
-        val simpleSecurity =
-            SimpleSecurity.instance(ContextProvider.getContext())
+        val mTransactionManager = TransactionManager(arrayListOf(senderAccount.address))
+        val checkBalance =
+            mTransactionManager.checkBalance(500 / 100000000.0, 3)
+        if (!checkBalance) throw LackOfBalanceException()
 
-        val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetMark.coinNumber())
-            ?: throw AccountNotFindAddressException()
-        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
-            ?: throw RuntimeException("password error")
-
-        val mTransactionManager: TransactionManager =
-            TransactionManager(arrayListOf(sendAccount.address))
-        val checkBalance = mTransactionManager.checkBalance(500 / 100000000.0, 3)
-        val violasOutputScript = ViolasOutputScript()
-
-        if (!checkBalance) {
-            throw LackOfBalanceException()
-        }
-
-        return suspendCancellableCoroutine { coroutin ->
+        return suspendCancellableCoroutine { coroutine ->
             val subscribe = mTransactionManager.obtainTransaction(
                 privateKey,
-                sendAccount.publicKey.hexStringToByteArray(),
+                senderAccount.publicKey.hexStringToByteArray(),
                 checkBalance,
                 supportMappingPair[toIAssetMark.mark()]?.receiverAddress ?: "",
-                sendAccount.address,
-                violasOutputScript.cancelExchange(
+                senderAccount.address,
+                ViolasOutputScript().cancelExchange(
                     typeTag,
                     originPayeeAddress.hexStringToByteArray(),
                     sequence = sequence?.toLong() ?: 0
@@ -191,11 +172,11 @@ class BTCToMappingAssetsProcessor(
                     throw TransferUnknownException()
                 }
             }.subscribe({
-                coroutin.resume(it)
+                coroutine.resume(it)
             }, {
-                coroutin.resumeWithException(it)
+                coroutine.resumeWithException(it)
             })
-            coroutin.invokeOnCancellation {
+            coroutine.invokeOnCancellation {
                 subscribe.dispose()
             }
         }

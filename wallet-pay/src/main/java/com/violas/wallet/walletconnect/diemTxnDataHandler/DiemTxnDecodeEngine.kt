@@ -1,32 +1,23 @@
-package com.violas.wallet.walletconnect.violasTransferDataHandler
+package com.violas.wallet.walletconnect.diemTxnDataHandler
 
 import com.google.gson.*
 import com.violas.wallet.walletconnect.TransactionDataType
-import org.palliums.violascore.serialization.toHex
-import org.palliums.violascore.transaction.RawTransaction
+import org.palliums.libracore.serialization.toHex
+import org.palliums.libracore.transaction.RawTransaction
 import java.lang.reflect.Type
 
 
-class ViolasTransferDecodeEngine(
+class DiemTxnDecodeEngine(
     private val mRawTransaction: RawTransaction
 ) {
-    private val mDecode: ArrayList<TransferDecode> =
+    private val mDecoders: ArrayList<DiemTxnDecoder> =
         arrayListOf(
-            TransferP2PWithDataDecode(mRawTransaction),
-            TransferViolasAddCurrencyToAccountDecode(mRawTransaction),
-            TransferExchangeSwapDecode(mRawTransaction),
-            TransferExchangeAddLiquidityDecode(mRawTransaction),
-            TransferExchangeRemoveLiquidityDecode(mRawTransaction),
-            TransferBankDepositDecode(mRawTransaction),
-            TransferBankRedeemDecode(mRawTransaction),
-            TransferBankRepayBorrowDecode(mRawTransaction),
-            TransferBankBorrowDecode(mRawTransaction),
-            TransferExchangeWithdrawRewardDecode(mRawTransaction),
-            TransferBankWithdrawRewardDecode(mRawTransaction)
+            DiemPeerToPeerWithMetadataDecoder(mRawTransaction),
+            DiemAddCurrencyToAccountDecoder(mRawTransaction)
         )
 
     fun decode(): Pair<TransactionDataType, String> {
-        mDecode.forEach {
+        mDecoders.forEach {
             if (it.isHandle()) {
                 return Pair(it.getTransactionDataType(), Gson().toJson(it.handle()))
             }
@@ -36,7 +27,7 @@ class ViolasTransferDecodeEngine(
             ByteArrayToHexStringTypeAdapter()
         ).create()
         return Pair(
-            TransactionDataType.None,
+            TransactionDataType.UNKNOWN,
             gson.toJson(mRawTransaction.payload?.payload)
         )
     }

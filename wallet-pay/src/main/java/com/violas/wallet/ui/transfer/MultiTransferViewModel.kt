@@ -135,8 +135,8 @@ class MultiTransferViewModel : ViewModel() {
 
                 mTransferManager.transferBtc(
                     transactionManager = mTransactionManager,
-                    address = mPayeeAddressLiveData.value ?: "",
-                    amount = mAmountLiveData.value?.toDouble() ?: 0.0,
+                    payeeAddress = mPayeeAddressLiveData.value ?: "",
+                    transferAmount = mAmountLiveData.value?.toDouble() ?: 0.0,
                     privateKey = privateKey,
                     accountDO = account,
                     progress = mFeeProgressLiveData.value ?: DEF_FEE_PROGRESS,

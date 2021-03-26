@@ -1,27 +1,17 @@
 package com.violas.wallet.biz.exchange
 
 import com.quincysx.crypto.CoinType
+import com.violas.wallet.biz.ReceiverAccountCurrencyNotAddException
+import com.violas.wallet.biz.ReceiverAccountNotActivationException
 import com.violas.wallet.biz.exchange.processor.IProcessor
 import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
 import org.palliums.libracore.http.LibraException
 import org.palliums.violascore.http.ViolasException
-import java.lang.RuntimeException
 import java.util.*
 
-// 收款地址未激活
-class AccountPayeeNotFindException : RuntimeException()
-
-// 该本班无法处理的交易
+// 该版本无法处理的交易
 class UnsupportedTradingPairsException : RuntimeException()
-
-// 收款地址 Token 未激活
-class AccountPayeeTokenNotActiveException(
-    val coinType: CoinType,
-    val address: String,
-    val assetsMark: ITokenVo
-) :
-    RuntimeException()
 
 class AccountNotFindAddressException : RuntimeException()
 
@@ -41,8 +31,8 @@ internal class AssetsSwapEngine {
     @Throws(
         LibraException::class,
         ViolasException::class,
-        AccountPayeeNotFindException::class,
-        AccountPayeeTokenNotActiveException::class,
+        ReceiverAccountNotActivationException::class,
+        ReceiverAccountCurrencyNotAddException::class,
         UnsupportedTradingPairsException::class
     )
     suspend fun swap(
@@ -75,8 +65,8 @@ internal class AssetsSwapEngine {
     @Throws(
         LibraException::class,
         ViolasException::class,
-        AccountPayeeNotFindException::class,
-        AccountPayeeTokenNotActiveException::class,
+        ReceiverAccountNotActivationException::class,
+        ReceiverAccountCurrencyNotAddException::class,
         UnsupportedTradingPairsException::class
     )
     suspend fun cancel(
@@ -89,9 +79,9 @@ internal class AssetsSwapEngine {
         sequence: String?
     ): String {
         processors.forEach {
-            if (it.hasHandleCancel(fromIAssetMark,toIAssetMark)) {
+            if (it.hasHandleCancel(fromIAssetMark, toIAssetMark)) {
                 return it.cancel(
-                    pwd, fromIAssetMark,toIAssetMark, typeTag, payeeAddress, tranId, sequence
+                    pwd, fromIAssetMark, toIAssetMark, typeTag, payeeAddress, tranId, sequence
                 )
             }
         }

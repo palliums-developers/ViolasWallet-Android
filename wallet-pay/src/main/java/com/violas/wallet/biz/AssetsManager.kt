@@ -126,7 +126,7 @@ class AssetsManager {
             diemCoinAsset as DiemCoinAssetVo
 
             try {
-                val violasRpcService = DataRepository.getViolasChainRpcService()
+                val violasRpcService = DataRepository.getViolasRpcService()
                 violasRpcService.getAccountState(diemCoinAsset.address)?.let { accountState ->
                     diemCoinAsset.authKey = accountState.authenticationKey
                     diemCoinAsset.delegatedKeyRotationCapability =

@@ -17,7 +17,7 @@ interface ViewController {
 
     fun dismissProgress()
 
-    fun showToast(@StringRes msgId: Int, duration: Int = Toast.LENGTH_SHORT)
+    fun showToast(@StringRes msgId: Int, duration: Int = Toast.LENGTH_LONG)
 
-    fun showToast(msg: String, duration: Int = Toast.LENGTH_SHORT)
+    fun showToast(msg: String, duration: Int = Toast.LENGTH_LONG)
 }

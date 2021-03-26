@@ -8,10 +8,10 @@ import com.quincysx.crypto.CoinType
  * 传递给转账确认页面的数据类型
  */
 enum class TransactionDataType(val value: Int) {
-    Transfer(0),
-    None(1),
-    PUBLISH(2),
-    BITCOIN_TRANSFER(3),
+    UNKNOWN(0),
+    BITCOIN_TRANSFER(1),
+    PEER_TO_PEER_WITH_METADATA(2),
+    ADD_CURRENCY_TO_ACCOUNT(3),
     VIOLAS_EXCHANGE_SWAP(4),
     VIOLAS_EXCHANGE_ADD_LIQUIDITY(5),
     VIOLAS_EXCHANGE_REMOVE_LIQUIDITY(6),
@@ -25,14 +25,11 @@ enum class TransactionDataType(val value: Int) {
     companion object {
         fun decode(value: Int): TransactionDataType {
             return when (value) {
-                Transfer.value -> {
-                    Transfer
+                PEER_TO_PEER_WITH_METADATA.value -> {
+                    PEER_TO_PEER_WITH_METADATA
                 }
-                None.value -> {
-                    None
-                }
-                PUBLISH.value -> {
-                    PUBLISH
+                ADD_CURRENCY_TO_ACCOUNT.value -> {
+                    ADD_CURRENCY_TO_ACCOUNT
                 }
                 BITCOIN_TRANSFER.value -> {
                     BITCOIN_TRANSFER
@@ -46,14 +43,26 @@ enum class TransactionDataType(val value: Int) {
                 VIOLAS_EXCHANGE_REMOVE_LIQUIDITY.value -> {
                     VIOLAS_EXCHANGE_REMOVE_LIQUIDITY
                 }
-                VIOLAS_BANK_DEPOSIT.value -> VIOLAS_BANK_DEPOSIT
-                VIOLAS_BANK_REDEEM.value -> VIOLAS_BANK_REDEEM
-                VIOLAS_BANK_BORROW.value -> VIOLAS_BANK_BORROW
-                VIOLAS_BANK_REPAY_BORROW.value -> VIOLAS_BANK_REPAY_BORROW
-                VIOLAS_EXCHANGE_WITHDRAW_REWARD.value -> VIOLAS_EXCHANGE_WITHDRAW_REWARD
-                VIOLAS_BANK_WITHDRAW_REWARD.value -> VIOLAS_BANK_WITHDRAW_REWARD
+                VIOLAS_BANK_DEPOSIT.value -> {
+                    VIOLAS_BANK_DEPOSIT
+                }
+                VIOLAS_BANK_REDEEM.value -> {
+                    VIOLAS_BANK_REDEEM
+                }
+                VIOLAS_BANK_BORROW.value -> {
+                    VIOLAS_BANK_BORROW
+                }
+                VIOLAS_BANK_REPAY_BORROW.value -> {
+                    VIOLAS_BANK_REPAY_BORROW
+                }
+                VIOLAS_EXCHANGE_WITHDRAW_REWARD.value -> {
+                    VIOLAS_EXCHANGE_WITHDRAW_REWARD
+                }
+                VIOLAS_BANK_WITHDRAW_REWARD.value -> {
+                    VIOLAS_BANK_WITHDRAW_REWARD
+                }
                 else -> {
-                    None
+                    UNKNOWN
                 }
             }
         }

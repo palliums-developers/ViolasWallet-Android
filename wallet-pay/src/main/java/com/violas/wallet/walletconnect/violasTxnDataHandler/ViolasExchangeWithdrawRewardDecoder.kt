@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.violasTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.violas.wallet.common.isViolasTestNet
@@ -9,8 +9,8 @@ import org.palliums.violascore.transaction.TransactionPayload
 /**
  * 资金池提取激励奖励解码器
  */
-class TransferExchangeWithdrawRewardDecode(private val transaction: RawTransaction) :
-    TransferDecode {
+class ViolasExchangeWithdrawRewardDecoder(private val transaction: RawTransaction) :
+    ViolasTxnDecoder {
     private val mViolasExchangeContract by lazy {
         ViolasExchangeContract(isViolasTestNet())
     }

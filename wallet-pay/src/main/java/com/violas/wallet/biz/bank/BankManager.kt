@@ -3,6 +3,7 @@ package com.violas.wallet.biz.bank
 import com.palliums.content.ContextProvider
 import com.palliums.violas.error.ViolasException
 import com.palliums.violas.smartcontract.ViolasBankContract
+import com.violas.wallet.biz.transaction.ViolasTxnManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.getViolasChainId
 import com.violas.wallet.common.isViolasTestNet
@@ -13,11 +14,11 @@ import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.palliums.violascore.crypto.KeyPair
 import org.palliums.violascore.transaction.AccountAddress
 import org.palliums.violascore.transaction.storage.StructTag
-import org.palliums.violascore.transaction.storage.TypeTagStructTag
+import org.palliums.violascore.transaction.storage.TypeTag
 import org.palliums.violascore.wallet.Account
 
 class BankManager {
-    private val mViolasRPCService by lazy { DataRepository.getViolasChainRpcService() }
+    private val mViolasRPCService by lazy { DataRepository.getViolasRpcService() }
     private val mBankService by lazy { DataRepository.getBankService() }
     private val mViolasBankContract by lazy { ViolasBankContract(isViolasTestNet()) }
 
@@ -35,24 +36,38 @@ class BankManager {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, payerAccountDO.privateKey)!!
 
-        val typeTagFrom = TypeTagStructTag(
-            StructTag(
-                AccountAddress(assetMark.address.hexStringToByteArray()),
-                assetMark.module,
-                assetMark.name,
-                arrayListOf()
-            )
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(payerPrivateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            null
         )
 
-        val optionBorrowTransactionPayload = mViolasBankContract.optionBorrowTransactionPayload(
-            typeTagFrom,
+        val borrowTransactionPayload = mViolasBankContract.optionBorrowTransactionPayload(
+            TypeTag.newStructTag(
+                StructTag(
+                    AccountAddress(assetMark.address.hexStringToByteArray()),
+                    assetMark.module,
+                    assetMark.name,
+                    arrayListOf()
+                )
+            ),
             amount
         )
 
         val generateTransaction = mViolasRPCService.generateTransaction(
-            optionBorrowTransactionPayload,
-            Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module,
+            borrowTransactionPayload,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
         mBankService.submitBorrowTransaction(
@@ -78,25 +93,38 @@ class BankManager {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, payerAccountDO.privateKey)!!
 
-        val typeTagFrom = TypeTagStructTag(
-            StructTag(
-                AccountAddress(assetMark.address.hexStringToByteArray()),
-                assetMark.module,
-                assetMark.name,
-                arrayListOf()
-            )
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(payerPrivateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            listOf(Pair(assetMark.module, amount))
         )
 
-        val optionRepayBorrowTransactionPayload =
-            mViolasBankContract.optionRepayBorrowTransactionPayload(
-                typeTagFrom,
-                amount
-            )
+        val repayBorrowTransactionPayload = mViolasBankContract.optionRepayBorrowTransactionPayload(
+            TypeTag.newStructTag(
+                StructTag(
+                    AccountAddress(assetMark.address.hexStringToByteArray()),
+                    assetMark.module,
+                    assetMark.name,
+                    arrayListOf()
+                )
+            ),
+            amount
+        )
 
         val generateTransaction = mViolasRPCService.generateTransaction(
-            optionRepayBorrowTransactionPayload,
-            Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module,
+            repayBorrowTransactionPayload,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
         mBankService.submitRepayBorrowTransaction(
@@ -122,25 +150,38 @@ class BankManager {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, payerAccountDO.privateKey)!!
 
-        val typeTagFrom = TypeTagStructTag(
-            StructTag(
-                AccountAddress(assetMark.address.hexStringToByteArray()),
-                assetMark.module,
-                assetMark.name,
-                arrayListOf()
-            )
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(payerPrivateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            listOf(Pair(assetMark.module, amount))
         )
 
-        val optionLockBorrowTransactionPayload =
-            mViolasBankContract.optionLockTransactionPayload(
-                typeTagFrom,
-                amount
-            )
+        val lockBorrowTransactionPayload = mViolasBankContract.optionLockTransactionPayload(
+            TypeTag.newStructTag(
+                StructTag(
+                    AccountAddress(assetMark.address.hexStringToByteArray()),
+                    assetMark.module,
+                    assetMark.name,
+                    arrayListOf()
+                )
+            ),
+            amount
+        )
 
         val generateTransaction = mViolasRPCService.generateTransaction(
-            optionLockBorrowTransactionPayload,
-            Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module,
+            lockBorrowTransactionPayload,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
         mBankService.submitDepositTransaction(
@@ -166,25 +207,38 @@ class BankManager {
         val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
             .decrypt(password, payerAccountDO.privateKey)!!
 
-        val typeTagFrom = TypeTagStructTag(
-            StructTag(
-                AccountAddress(assetMark.address.hexStringToByteArray()),
-                assetMark.module,
-                assetMark.name,
-                arrayListOf()
-            )
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(payerPrivateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            null
         )
 
-        val optionRedeemBorrowTransactionPayload =
-            mViolasBankContract.optionRedeemTransactionPayload(
-                typeTagFrom,
-                amount
-            )
+        val redeemBorrowTransactionPayload = mViolasBankContract.optionRedeemTransactionPayload(
+            TypeTag.newStructTag(
+                StructTag(
+                    AccountAddress(assetMark.address.hexStringToByteArray()),
+                    assetMark.module,
+                    assetMark.name,
+                    arrayListOf()
+                )
+            ),
+            amount
+        )
 
         val generateTransaction = mViolasRPCService.generateTransaction(
-            optionRedeemBorrowTransactionPayload,
-            Account(KeyPair.fromSecretKey(payerPrivateKey)),
-            gasCurrencyCode = typeTagFrom.value.module,
+            redeemBorrowTransactionPayload,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
         mBankService.submitRedeemTransaction(
@@ -206,9 +260,26 @@ class BankManager {
         val withdrawRewardTransactionPayload =
             mViolasBankContract.optionWithdrawRewardTransactionPayload()
 
+        // 检查发送人账户
+        val senderAccount = Account(KeyPair.fromSecretKey(privateKey))
+        val violasTxnManager = ViolasTxnManager()
+        val senderAccountState = violasTxnManager.getSenderAccountState(senderAccount) {
+            mViolasRPCService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = violasTxnManager.calculateGasInfo(
+            senderAccountState,
+            null
+        )
+
         mViolasRPCService.sendTransaction(
-            payload = withdrawRewardTransactionPayload,
-            payerAccount = Account(KeyPair.fromSecretKey(privateKey)),
+            withdrawRewardTransactionPayload,
+            senderAccount,
+            sequenceNumber = senderAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getViolasChainId()
         )
     }

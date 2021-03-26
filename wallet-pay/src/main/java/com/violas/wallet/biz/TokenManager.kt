@@ -7,6 +7,9 @@ import com.palliums.violas.http.ViolasMultiTokenRepository
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.bean.AssertOriginateToken
+import com.violas.wallet.biz.bean.DiemCurrency
+import com.violas.wallet.biz.transaction.DiemTxnManager
+import com.violas.wallet.biz.transaction.ViolasTxnManager
 import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountType
@@ -21,19 +24,12 @@ class TokenManager {
     private val mTokenStorage by lazy { DataRepository.getTokenStorage() }
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
 
-    private val mViolasService by lazy {
-        DataRepository.getViolasService()
-    }
-
     private val mViolasMultiTokenService by lazy {
         ViolasMultiTokenRepository(
             DataRepository.getMultiTokenContractService(),
             ViolasMultiTokenContract(isViolasTestNet())
         )
     }
-
-    fun getViolasMultiTokenContract() =
-        mViolasMultiTokenService.getMultiTokenContract()
 
     /**
      * 本地兼容的币种
@@ -44,12 +40,12 @@ class TokenManager {
             DataRepository.getViolasService().getCurrencies()?.forEach {
                 list.add(
                     AssertOriginateToken(
-                        tokenMark = TokenMark(it.module, it.address, it.name),
+                        currency = DiemCurrency(it.module, it.name, it.address),
                         name = it.showName,
                         fullName = it.showName,
                         isToken = true,
                         logo = it.showLogo,
-                        coinType = getViolasCoinType().coinNumber()
+                        coinNumber = getViolasCoinType().coinNumber()
                     )
                 )
             }
@@ -62,18 +58,18 @@ class TokenManager {
     /**
      * 本地兼容的币种
      */
-    private suspend fun loadNetWorkSupportLibraToken(): List<AssertOriginateToken> {
+    private suspend fun loadNetWorkSupportDiemToken(): List<AssertOriginateToken> {
         val list = mutableListOf<AssertOriginateToken>()
         try {
             DataRepository.getDiemBizService().getCurrencies()?.forEach {
                 list.add(
                     AssertOriginateToken(
-                        tokenMark = TokenMark(it.module, it.address, it.name),
+                        currency = DiemCurrency(it.module, it.name, it.address),
                         name = it.showName,
                         fullName = it.showName,
                         isToken = true,
                         logo = it.showLogo,
-                        coinType = getDiemCoinType().coinNumber()
+                        coinNumber = getDiemCoinType().coinNumber()
                     )
                 )
             }
@@ -95,12 +91,12 @@ class TokenManager {
         mTokenStorage.findByName(accountId, tokenName)
 
     data class CoinTokenMark(
-        val tokenMark: TokenMark?,
+        val currency: DiemCurrency?,
         val accountId: Long
     ) {
         override fun hashCode(): Int {
             var result = accountId.hashCode()
-            return result * 31 + tokenMark.hashCode()
+            return result * 31 + currency.hashCode()
         }
     }
 
@@ -114,17 +110,17 @@ class TokenManager {
         accounts.forEach { account ->
 
             if (account.accountType == AccountType.Normal) {
-                val coinTypes = CoinType.parseCoinNumber(account.coinNumber)
+                val coinType = CoinType.parseCoinNumber(account.coinNumber)
                 resultTokenList.add(
                     0, AssertOriginateToken(
                         id = 0,
-                        account_id = account.id,
+                        accountId = account.id,
                         enable = true,
                         isToken = false,
-                        name = coinTypes.coinName(),
-                        fullName = coinTypes.chainName(),
-                        coinType = coinTypes.coinNumber(),
-                        amount = 0,
+                        name = coinType.coinName(),
+                        fullName = coinType.chainName(),
+                        coinNumber = coinType.coinNumber(),
+                        amount = account.amount,
                         logo = account.logo
                     )
                 )
@@ -139,25 +135,25 @@ class TokenManager {
                     loadSupportToken = loadNetWorkSupportViolasToken()
                 }
                 getDiemCoinType().coinNumber() -> {
-                    loadSupportToken = loadNetWorkSupportLibraToken()
+                    loadSupportToken = loadNetWorkSupportDiemToken()
                 }
             }
 
-            val localSupportTokenMap = HashMap<TokenMark?, Int>()
+            val localSupportTokenMap = HashMap<DiemCurrency?, Int>()
 
             val localToken = mTokenStorage.findByAccountId(account.id)
             localToken.map {
                 supportTokenMap[CoinTokenMark(
-                    TokenMark(it.module, it.address, it.name),
+                    DiemCurrency(it.module, it.name, it.address),
                     it.accountId
                 )] = it
             }
 
             loadSupportToken?.forEach { token ->
-                localSupportTokenMap[token.tokenMark] = 0
-                token.account_id = account.id
+                localSupportTokenMap[token.currency] = 0
+                token.accountId = account.id
 //                token.logo = logo
-                supportTokenMap[CoinTokenMark(token.tokenMark, account.id)]?.let {
+                supportTokenMap[CoinTokenMark(token.currency, account.id)]?.let {
                     token.enable = it.enable
                 }
             }
@@ -176,11 +172,11 @@ class TokenManager {
         mTokenStorage.insert(
             TokenDo(
                 enable = checked,
-                accountId = assertOriginateToken.account_id,
+                accountId = assertOriginateToken.accountId,
                 assetsName = assertOriginateToken.name,
-                name = assertOriginateToken.tokenMark?.name ?: "",
-                address = assertOriginateToken.tokenMark?.address ?: "",
-                module = assertOriginateToken.tokenMark?.module ?: "",
+                name = assertOriginateToken.currency?.name ?: "",
+                address = assertOriginateToken.currency?.address ?: "",
+                module = assertOriginateToken.currency?.module ?: "",
                 logo = assertOriginateToken.logo
             )
         )
@@ -213,26 +209,42 @@ class TokenManager {
     suspend fun publishToken(
         coinType: CoinType,
         privateKey: ByteArray,
-        tokenMark: TokenMark
+        currency: DiemCurrency
     ): Boolean {
         when (coinType.coinNumber()) {
             getViolasCoinType().coinNumber() -> {
-                val violasChainRpcService = DataRepository.getViolasChainRpcService()
+                val violasRpcService = DataRepository.getViolasRpcService()
+                val violasTxnManager = ViolasTxnManager()
 
-                val transactionResult = violasChainRpcService.addCurrency(
+                // 检查发送人账户
+                val senderAccount = Account(KeyPair.fromSecretKey(privateKey))
+                val senderAccountState =
+                    violasTxnManager.getSenderAccountState(senderAccount) {
+                        violasRpcService.getAccountState(it)
+                    }
+
+                // 计算gas info
+                val gasInfo = violasTxnManager.calculateGasInfo(
+                    senderAccountState,
+                    null
+                )
+
+                val transactionResult = violasRpcService.addCurrency(
                     ContextProvider.getContext(),
-                    Account(
-                        KeyPair.fromSecretKey(privateKey)
-                    ),
-                    tokenMark.address,
-                    tokenMark.module,
-                    tokenMark.name,
+                    senderAccount,
+                    currency.address,
+                    currency.module,
+                    currency.name,
+                    sequenceNumber = senderAccountState.sequenceNumber,
+                    gasCurrencyCode = gasInfo.gasCurrencyCode,
+                    maxGasAmount = gasInfo.maxGasAmount,
+                    gasUnitPrice = gasInfo.gasUnitPrice,
                     chainId = getViolasChainId()
                 )
 
                 for (item in 1 until 4) {
                     delay(item * 1000L)
-                    val transaction = violasChainRpcService.getTransaction(
+                    val transaction = violasRpcService.getTransaction(
                         transactionResult.payerAddress,
                         transactionResult.sequenceNumber
                     )
@@ -243,22 +255,40 @@ class TokenManager {
             }
 
             getDiemCoinType().coinNumber() -> {
-                val libraService = DataRepository.getDiemRpcService()
+                val diemRpcService = DataRepository.getDiemRpcService()
+                val diemTxnManager = DiemTxnManager()
 
-                val transactionResult = libraService.addCurrency(
+                // 检查发送人账户
+                val senderAccount = org.palliums.libracore.wallet.Account(
+                    org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
+                )
+                val senderAccountState =
+                    diemTxnManager.getSenderAccountState(senderAccount) {
+                        diemRpcService.getAccountState(it)
+                    }
+
+                // 计算gas info
+                val gasInfo = diemTxnManager.calculateGasInfo(
+                    senderAccountState,
+                    null
+                )
+
+                val transactionResult = diemRpcService.addCurrency(
                     ContextProvider.getContext(),
-                    org.palliums.libracore.wallet.Account(
-                        org.palliums.libracore.crypto.KeyPair.fromSecretKey(privateKey)
-                    ),
-                    tokenMark.address,
-                    tokenMark.module,
-                    tokenMark.name,
+                    senderAccount,
+                    currency.address,
+                    currency.module,
+                    currency.name,
+                    sequenceNumber = senderAccountState.sequenceNumber,
+                    gasCurrencyCode = gasInfo.gasCurrencyCode,
+                    maxGasAmount = gasInfo.maxGasAmount,
+                    gasUnitPrice = gasInfo.gasUnitPrice,
                     chainId = getDiemChainId()
                 )
 
                 for (item in 1 until 4) {
                     delay(item * 1000L)
-                    val transaction = libraService.getTransaction(
+                    val transaction = diemRpcService.getTransaction(
                         transactionResult.payerAddress,
                         transactionResult.sequenceNumber
                     )
@@ -275,9 +305,13 @@ class TokenManager {
 
     @Throws(RuntimeException::class)
     @WorkerThread
-    suspend fun publishToken(accountId: Long, account: ByteArray, tokenMark: TokenMark): Boolean {
+    suspend fun publishToken(
+        accountId: Long,
+        privateKey: ByteArray,
+        currency: DiemCurrency
+    ): Boolean {
         mAccountStorage.findById(accountId)?.let {
-            return publishToken(CoinType.parseCoinNumber(it.coinNumber), account, tokenMark)
+            return publishToken(CoinType.parseCoinNumber(it.coinNumber), privateKey, currency)
         }
         return false
     }
@@ -287,14 +321,14 @@ class TokenManager {
         return mViolasMultiTokenService.getRegisterToken(address)
     }
 
-    suspend fun isPublish(accountId: Long, tokenMark: TokenMark): Boolean {
+    suspend fun isPublish(accountId: Long, diemCurrency: DiemCurrency): Boolean {
         return mAccountStorage.findById(accountId)?.let {
             var isPublish = false
             when (it.coinNumber) {
                 getViolasCoinType().coinNumber() -> {
-                    DataRepository.getViolasChainRpcService()
+                    DataRepository.getViolasRpcService()
                         .getAccountState(it.address)?.balances?.forEach { accountBalance ->
-                            if (tokenMark.module == accountBalance.currency) {
+                            if (diemCurrency.module == accountBalance.currency) {
                                 isPublish = true
                             }
                         }
@@ -302,7 +336,7 @@ class TokenManager {
                 getDiemCoinType().coinNumber() -> {
                     DataRepository.getDiemRpcService()
                         .getAccountState(it.address)?.balances?.forEach { accountBalance ->
-                            if (tokenMark.module == accountBalance.currency) {
+                            if (diemCurrency.module == accountBalance.currency) {
                                 isPublish = true
                             }
                         }

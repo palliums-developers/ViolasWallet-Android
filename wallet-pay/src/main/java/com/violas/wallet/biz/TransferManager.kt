@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.palliums.utils.getString
 import com.palliums.violas.error.ViolasException
+import com.quincysx.crypto.CoinType
 import com.violas.wallet.R
+import com.violas.wallet.biz.bean.DiemAppToken
 import com.violas.wallet.biz.btc.TransactionManager
+import com.violas.wallet.biz.transaction.DiemTxnManager
+import com.violas.wallet.biz.transaction.ViolasTxnManager
 import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.database.entity.AccountDO
@@ -37,14 +41,20 @@ class TransferUnknownException :
 class LackOfBalanceException :
     RuntimeException(getString(R.string.transfer_tips_insufficient_balance_or_assets_unconfirmed))
 
-class AccountNoActivationException :
+class SenderAccountNotActivationException :
     RuntimeException(getString(R.string.transfer_tips_account_no_activation))
 
-class ReceiveAccountNoActivationException :
+class SenderAccountNoControlException :
+    RuntimeException(getString(R.string.transfer_tips_account_no_control))
+
+class ReceiverAccountNotActivationException :
     RuntimeException(getString(R.string.transfer_tips_receive_account_no_activation))
 
-class AccountNoControlException :
-    RuntimeException(getString(R.string.transfer_tips_account_no_control))
+class ReceiverAccountCurrencyNotAddException(
+    val coinType: CoinType,
+    val address: String,
+    val appToken: DiemAppToken
+) : RuntimeException()
 
 class NodeNotResponseException :
     RuntimeException(getString(R.string.transfer_tips_node_not_response))
@@ -58,16 +68,24 @@ class TransferManager {
                 LackOfBalanceException()
             }
             is ViolasException.AccountNoActivation -> {
-                AccountNoActivationException()
+                SenderAccountNotActivationException()
             }
             is ViolasException.AccountNoControl -> {
-                AccountNoControlException()
+                SenderAccountNoControlException()
             }
             is ViolasException.ReceiveAccountNoActivation -> {
-                ReceiveAccountNoActivationException()
+                ReceiverAccountNotActivationException()
             }
             is ViolasException.NodeResponseException -> {
                 NodeNotResponseException()
+            }
+            is LackOfBalanceException,
+            is NodeNotResponseException,
+            is SenderAccountNotActivationException,
+            is SenderAccountNoControlException,
+            is ReceiverAccountNotActivationException,
+            is ReceiverAccountCurrencyNotAddException -> {
+                e
             }
             else -> TransferUnknownException()
         }
@@ -80,16 +98,24 @@ class TransferManager {
                 LackOfBalanceException()
             }
             is LibraException.AccountNoActivation -> {
-                AccountNoActivationException()
+                SenderAccountNotActivationException()
             }
             is LibraException.AccountNoControl -> {
-                AccountNoControlException()
+                SenderAccountNoControlException()
             }
             is LibraException.ReceiveAccountNoActivation -> {
-                ReceiveAccountNoActivationException()
+                ReceiverAccountNotActivationException()
             }
             is LibraException.NodeResponseException -> {
                 NodeNotResponseException()
+            }
+            is LackOfBalanceException,
+            is NodeNotResponseException,
+            is SenderAccountNotActivationException,
+            is SenderAccountNoControlException,
+            is ReceiverAccountNotActivationException,
+            is ReceiverAccountCurrencyNotAddException -> {
+                e
             }
             else -> TransferUnknownException()
         }
@@ -145,7 +171,7 @@ class TransferManager {
                     context,
                     payeeAddress,
                     payeeSubAddress,
-                    amount,
+                    (amount * 1000000L).toLong(),
                     privateKey,
                     accountDO,
                     tokenId,
@@ -158,7 +184,7 @@ class TransferManager {
                 transferViolas(
                     context,
                     payeeAddress,
-                    amount,
+                    (amount * 1000000L).toLong(),
                     privateKey,
                     accountDO,
                     tokenId,
@@ -172,22 +198,22 @@ class TransferManager {
     @SuppressLint("CheckResult")
     fun transferBtc(
         transactionManager: TransactionManager,
-        address: String,
-        amount: Double,
+        payeeAddress: String,
+        transferAmount: Double,
         privateKey: ByteArray,
         accountDO: AccountDO,
         progress: Int,
         success: (String) -> Unit,
         error: (Throwable) -> Unit
     ) {
-        transactionManager.checkBalance(amount, 1, progress)
+        transactionManager.checkBalance(transferAmount, 1, progress)
             .flatMap {
                 if (it) {
                     transactionManager.obtainTransaction(
                         privateKey,
                         accountDO.publicKey.hexToBytes(),
                         it,
-                        address,
+                        payeeAddress,
                         accountDO.address
                     )
                 } else {
@@ -213,10 +239,10 @@ class TransferManager {
 
     private suspend fun transferDiem(
         context: Context,
-        address: String,
-        subAddress: String?,
-        amount: Double,
-        decryptPrivateKey: ByteArray,
+        payeeAddress: String,
+        payeeSubAddress: String?,
+        transferAmount: Long,
+        privateKey: ByteArray,
         account: AccountDO,
         tokenId: Long,
         success: (String) -> Unit,
@@ -229,19 +255,43 @@ class TransferManager {
                 return
             }
 
-            val transactionMetadata = if (subAddress.isNullOrBlank()) {
+            val diemRpcService = DataRepository.getDiemRpcService()
+            val diemTxnManager = DiemTxnManager()
+
+            // 检查收款人账户
+            diemTxnManager.getReceiverAccountState(
+                payeeAddress,
+                DiemAppToken.convert(token)
+            ) {
+                diemRpcService.getAccountState(it)
+            }
+
+            // 检查付款人账户
+            val payerAccount = Account(Ed25519KeyPair(privateKey))
+            val payerAccountState =
+                diemTxnManager.getSenderAccountState(payerAccount) {
+                    diemRpcService.getAccountState(it)
+                }
+
+            // 计算gas info
+            val gasInfo = diemTxnManager.calculateGasInfo(
+                payerAccountState,
+                listOf(Pair(token.module, transferAmount))
+            )
+
+            val transactionMetadata = if (payeeSubAddress.isNullOrBlank()) {
                 null
             } else {
-                TransactionMetadata.createGeneralMetadataToSubAddress(SubAddress(subAddress))
+                TransactionMetadata.createGeneralMetadataToSubAddress(SubAddress(payeeSubAddress))
             }
             val metadata = transactionMetadata?.metadata ?: byteArrayOf()
             val metadataSignature = transactionMetadata?.signatureMessage ?: byteArrayOf()
 
-            DataRepository.getDiemRpcService().sendTransaction(
+            diemRpcService.sendTransaction(
                 TransactionPayload.optionTransactionPayload(
                     context,
-                    address,
-                    (amount * 1000000L).toLong(),
+                    payeeAddress,
+                    transferAmount,
                     metadata,
                     metadataSignature,
                     TypeTag.newStructTag(
@@ -253,8 +303,11 @@ class TransferManager {
                         )
                     )
                 ),
-                Account(Ed25519KeyPair(decryptPrivateKey)),
-                gasCurrencyCode = token.module,
+                payerAccount,
+                sequenceNumber = payerAccountState.sequenceNumber,
+                gasCurrencyCode = gasInfo.gasCurrencyCode,
+                maxGasAmount = gasInfo.maxGasAmount,
+                gasUnitPrice = gasInfo.gasUnitPrice,
                 chainId = getDiemChainId()
             )
             success.invoke("")
@@ -265,9 +318,9 @@ class TransferManager {
 
     private suspend fun transferViolas(
         context: Context,
-        address: String,
-        amount: Double,
-        decryptPrivateKey: ByteArray,
+        payeeAddress: String,
+        transferAmount: Long,
+        privateKey: ByteArray,
         account: AccountDO,
         tokenId: Long,
         success: (String) -> Unit,
@@ -279,17 +332,45 @@ class TransferManager {
                 error.invoke(LibraException.CurrencyNotExistException())
                 return
             }
-            DataRepository.getViolasChainRpcService().sendCurrency(
+
+            val violasRpcService = DataRepository.getViolasRpcService()
+            val violasTxnManager = ViolasTxnManager()
+
+            // 检查收款人账户
+            violasTxnManager.getReceiverAccountState(
+                payeeAddress,
+                DiemAppToken.convert(token)
+            ) {
+                violasRpcService.getAccountState(it)
+            }
+
+            // 检查付款人账户
+            val payerAccount = org.palliums.violascore.wallet.Account(
+                org.palliums.violascore.crypto.Ed25519KeyPair(privateKey)
+            )
+            val payerAccountState =
+                violasTxnManager.getSenderAccountState(payerAccount) {
+                    violasRpcService.getAccountState(it)
+                }
+
+            // 计算gas info
+            val gasInfo = violasTxnManager.calculateGasInfo(
+                payerAccountState,
+                listOf(Pair(token.module, transferAmount))
+            )
+
+            violasRpcService.sendCurrency(
                 context,
-                payerAccount = org.palliums.violascore.wallet.Account(
-                    org.palliums.violascore.crypto.Ed25519KeyPair(decryptPrivateKey)
-                ),
-                payeeAddress = address,
-                transferAmount = (amount * 1000000L).toLong(),
+                payerAccount,
+                payeeAddress = payeeAddress,
+                transferAmount = transferAmount,
                 currencyAddress = token.address,
                 currencyModule = token.module,
                 currencyName = token.name,
-                gasCurrencyCode = token.module,
+                sequenceNumber = payerAccountState.sequenceNumber,
+                gasCurrencyCode = gasInfo.gasCurrencyCode,
+                maxGasAmount = gasInfo.maxGasAmount,
+                gasUnitPrice = gasInfo.gasUnitPrice,
                 chainId = getViolasChainId()
             )
             success.invoke("")

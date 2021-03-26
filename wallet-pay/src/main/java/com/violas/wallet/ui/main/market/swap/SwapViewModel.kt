@@ -9,7 +9,9 @@ import com.palliums.violas.bean.TokenMark
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.AccountManager
 import com.violas.wallet.biz.TokenManager
+import com.violas.wallet.biz.WrongPasswordException
 import com.violas.wallet.biz.bean.AssertOriginateToken
+import com.violas.wallet.biz.bean.DiemAppToken
 import com.violas.wallet.biz.exchange.AssetsSwapManager
 import com.violas.wallet.biz.exchange.SupportMappingSwapPairManager
 import com.violas.wallet.common.SimpleSecurity
@@ -240,35 +242,28 @@ class SwapViewModel() : BaseViewModel() {
     suspend fun publishToken(
         pwd: ByteArray,
         coinType: CoinType,
-        assetsMark: ITokenVo
+        appToken: DiemAppToken
     ): Boolean {
-        val identityByCoinType =
-            AccountManager.getAccountByCoinNumber(coinType.coinNumber()) ?: throw RuntimeException()
+        val accountDO = AccountManager.getAccountByCoinNumber(coinType.coinNumber())
+            ?: throw RuntimeException()
+        val privateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(pwd, accountDO.privateKey) ?: throw WrongPasswordException()
 
-        assetsMark as StableTokenVo
         val tokenManager = TokenManager()
-
-        val simpleSecurity =
-            SimpleSecurity.instance(ContextProvider.getContext())
-
-        val privateKey = simpleSecurity.decrypt(pwd, identityByCoinType.privateKey)
-            ?: throw RuntimeException("password error")
-
-        val tokenMark = TokenMark(assetsMark.module, assetsMark.address, assetsMark.name)
         val hasSucceed = tokenManager.publishToken(
             coinType,
             privateKey,
-            tokenMark
+            appToken.currency
         )
         if (hasSucceed) {
             tokenManager.insert(
                 true, AssertOriginateToken(
-                    tokenMark,
-                    account_id = identityByCoinType.id,
-                    name = assetsMark.displayName,
-                    fullName = assetsMark.displayName,
+                    appToken.currency,
+                    accountId = accountDO.id,
+                    name = appToken.name,
+                    fullName = appToken.fullName,
                     isToken = true,
-                    logo = assetsMark.logo
+                    logo = appToken.logo
                 )
             )
         }

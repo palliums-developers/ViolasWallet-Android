@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.violasTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import com.palliums.violas.smartcontract.ViolasBankContract
 import com.violas.wallet.common.isViolasTestNet
@@ -8,7 +8,7 @@ import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 
-class TransferBankBorrowDecode(private val transaction: RawTransaction) : TransferDecode {
+class ViolasBankBorrowDecoder(private val transaction: RawTransaction) : ViolasTxnDecoder {
     private val mViolasBankContract by lazy {
         ViolasBankContract(isViolasTestNet())
     }

@@ -2,15 +2,17 @@ package com.violas.wallet.biz.exchange.processor
 
 import com.palliums.content.ContextProvider
 import com.violas.wallet.biz.AccountManager
+import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.biz.bean.DiemAppToken
 import com.violas.wallet.biz.exchange.AccountNotFindAddressException
-import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
-import com.violas.wallet.biz.exchange.AccountPayeeTokenNotActiveException
 import com.violas.wallet.biz.exchange.MappingInfo
+import com.violas.wallet.biz.transaction.DiemTxnManager
+import com.violas.wallet.biz.transaction.ViolasTxnManager
 import com.violas.wallet.common.*
 import com.violas.wallet.repository.DataRepository
+import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.ui.main.market.bean.IAssetMark
 import com.violas.wallet.ui.main.market.bean.ITokenVo
-import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
 import com.violas.wallet.ui.main.market.bean.StableTokenVo
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import org.json.JSONObject
@@ -19,19 +21,19 @@ import org.palliums.libracore.transaction.AccountAddress
 import org.palliums.libracore.transaction.TransactionPayload
 import org.palliums.libracore.transaction.optionTransactionPayload
 import org.palliums.libracore.transaction.storage.StructTag
-import org.palliums.libracore.transaction.storage.TypeTagStructTag
+import org.palliums.libracore.transaction.storage.TypeTag
 import org.palliums.libracore.wallet.Account
 
-class LibraToMappingAssetsProcessor(
+class DiemToMappingAssetsProcessor(
     private val supportMappingPair: HashMap<String, MappingInfo>
 ) : IProcessor {
 
-    private val mLibraRpcService by lazy {
+    private val mDiemRpcService by lazy {
         DataRepository.getDiemRpcService()
     }
 
     private val mViolasRpcService by lazy {
-        DataRepository.getViolasChainRpcService()
+        DataRepository.getViolasRpcService()
     }
 
     override fun hasHandleSwap(tokenFrom: ITokenVo, tokenTo: ITokenVo): Boolean {
@@ -56,50 +58,37 @@ class LibraToMappingAssetsProcessor(
             payee ?: AccountManager.getAccountByCoinNumber(tokenTo.coinNumber)?.address
             ?: throw AccountNotFindAddressException()
 
-        // 检查 Libra 的稳定币有没有 Publish
         if (tokenTo.coinNumber == getViolasCoinType().coinNumber()) {
             tokenTo as StableTokenVo
-            // 开始检查 Violas 账户的基本信息
-            // 检查收款地址激活状态
-            val accountState =
-                mViolasRpcService.getAccountState(payeeAddress)
-                    ?: throw AccountPayeeNotFindException()
 
-            // 检查收款地址 Token 注册状态
-            var isPublishToken = false
-            accountState.balances?.forEach {
-                if (it.currency.equals(tokenTo.module, true)) {
-                    isPublishToken = true
-                }
-            }
-            if (!isPublishToken) {
-                throw AccountPayeeTokenNotActiveException(
-                    getViolasCoinType(),
-                    payeeAddress,
-                    tokenTo
-                )
+            // 检查Violas收款人账户
+            ViolasTxnManager().getReceiverAccountState(
+                payeeAddress,
+                DiemAppToken.convert(tokenTo)
+            ) {
+                mViolasRpcService.getAccountState(it)
             }
         }
 
-        // 开始发起 Libra 交易
-        val simpleSecurity =
-            SimpleSecurity.instance(ContextProvider.getContext())
-
         val fromAccount = AccountManager.getAccountByCoinNumber(tokenFrom.coinNumber)
             ?: throw AccountNotFindAddressException()
-        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
-            ?: throw RuntimeException("password error")
-        val account = Account(KeyPair.fromSecretKey(privateKey))
+        val privateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(pwd, fromAccount.privateKey) ?: throw WrongPasswordException()
+        val payerAccount = Account(KeyPair.fromSecretKey(privateKey))
 
-        val typeTagFrom = TypeTagStructTag(
-            StructTag(
-                AccountAddress(tokenFrom.address.hexStringToByteArray()),
-                tokenFrom.module,
-                tokenFrom.name,
-                arrayListOf()
-            )
+        // 检查Diem付款人账户
+        val diemTxnManager = DiemTxnManager()
+        val payerAccountState = diemTxnManager.getSenderAccountState(payerAccount) {
+            mDiemRpcService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val gasInfo = diemTxnManager.calculateGasInfo(
+            payerAccountState,
+            listOf(Pair(tokenFrom.module, amountIn))
         )
 
+        // 构建跨链兑换协议数据
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "libra")
         subExchangeDate.put(
@@ -116,19 +105,28 @@ class LibraToMappingAssetsProcessor(
         subExchangeDate.put("out_amount", amountOutMin)
         subExchangeDate.put("times", 10)
 
-        val optionTokenSwapTransactionPayload =
-            TransactionPayload.optionTransactionPayload(
-                ContextProvider.getContext(),
-                supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
-                amountIn,
-                metaData = subExchangeDate.toString().toByteArray(),
-                typeTag = typeTagFrom
+        val transferTransactionPayload = TransactionPayload.optionTransactionPayload(
+            ContextProvider.getContext(),
+            supportMappingPair[IAssetMark.convert(tokenTo).mark()]?.receiverAddress ?: "",
+            amountIn,
+            metaData = subExchangeDate.toString().toByteArray(),
+            typeTag = TypeTag.newStructTag(
+                StructTag(
+                    AccountAddress(tokenFrom.address.hexStringToByteArray()),
+                    tokenFrom.module,
+                    tokenFrom.name,
+                    arrayListOf()
+                )
             )
+        )
 
-        return mLibraRpcService.sendTransaction(
-            optionTokenSwapTransactionPayload,
-            account,
-            gasCurrencyCode = typeTagFrom.value.module,
+        return mDiemRpcService.sendTransaction(
+            transferTransactionPayload,
+            payerAccount,
+            sequenceNumber = payerAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getDiemChainId()
         ).sequenceNumber.toString()
     }
@@ -153,27 +151,26 @@ class LibraToMappingAssetsProcessor(
     ): String {
         fromIAssetMark as DiemCurrencyAssetMark
 
-        val simpleSecurity =
-            SimpleSecurity.instance(ContextProvider.getContext())
-
         val fromAccount = AccountManager.getAccountByCoinNumber(fromIAssetMark.coinNumber())
             ?: throw AccountNotFindAddressException()
-        val privateKey = simpleSecurity.decrypt(pwd, fromAccount.privateKey)
-            ?: throw RuntimeException("password error")
-        // 开始发起 Violas 交易
-        val account = Account(
-            KeyPair.fromSecretKey(privateKey)
+        val privateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(pwd, fromAccount.privateKey) ?: throw WrongPasswordException()
+        val payerAccount = Account(KeyPair.fromSecretKey(privateKey))
+
+        // 检查Diem付款人账户
+        val diemTxnManager = DiemTxnManager()
+        val payerAccountState = diemTxnManager.getSenderAccountState(payerAccount) {
+            mDiemRpcService.getAccountState(it)
+        }
+
+        // 计算gas info
+        val amount = 1L
+        val gasInfo = diemTxnManager.calculateGasInfo(
+            payerAccountState,
+            listOf(Pair(fromIAssetMark.module, amount))
         )
 
-        val typeTagFrom = TypeTagStructTag(
-            StructTag(
-                AccountAddress.DEFAULT,
-                fromIAssetMark.module,
-                fromIAssetMark.name,
-                arrayListOf()
-            )
-        )
-
+        // 构建取消跨链兑换协议数据
         val subExchangeDate = JSONObject()
         subExchangeDate.put("flag", "violas")
         subExchangeDate.put(
@@ -183,19 +180,28 @@ class LibraToMappingAssetsProcessor(
         subExchangeDate.put("tran_id", tranId)
         subExchangeDate.put("state", "stop")
 
-        val optionTokenSwapTransactionPayload =
-            TransactionPayload.optionTransactionPayload(
-                ContextProvider.getContext(),
-                supportMappingPair[toIAssetMark.mark()]?.receiverAddress ?: "",
-                1,
-                metaData = subExchangeDate.toString().toByteArray(),
-                typeTag = typeTagFrom
+        val transferTransactionPayload = TransactionPayload.optionTransactionPayload(
+            ContextProvider.getContext(),
+            supportMappingPair[toIAssetMark.mark()]?.receiverAddress ?: "",
+            amount,
+            metaData = subExchangeDate.toString().toByteArray(),
+            typeTag = TypeTag.newStructTag(
+                StructTag(
+                    AccountAddress(fromIAssetMark.address.hexStringToByteArray()),
+                    fromIAssetMark.module,
+                    fromIAssetMark.name,
+                    arrayListOf()
+                )
             )
+        )
 
-        return mLibraRpcService.sendTransaction(
-            optionTokenSwapTransactionPayload,
-            account,
-            gasCurrencyCode = typeTagFrom.value.module,
+        return mDiemRpcService.sendTransaction(
+            transferTransactionPayload,
+            payerAccount,
+            sequenceNumber = payerAccountState.sequenceNumber,
+            gasCurrencyCode = gasInfo.gasCurrencyCode,
+            maxGasAmount = gasInfo.maxGasAmount,
+            gasUnitPrice = gasInfo.gasUnitPrice,
             chainId = getDiemChainId()
         ).sequenceNumber.toString()
     }

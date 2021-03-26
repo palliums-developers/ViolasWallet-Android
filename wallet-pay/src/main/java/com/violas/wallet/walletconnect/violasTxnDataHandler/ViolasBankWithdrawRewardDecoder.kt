@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.violasTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import com.palliums.violas.smartcontract.ViolasBankContract
 import com.violas.wallet.common.isViolasTestNet
@@ -9,7 +9,7 @@ import org.palliums.violascore.transaction.TransactionPayload
 /**
  * 数字银行提取激励奖励解码器
  */
-class TransferBankWithdrawRewardDecode(private val transaction: RawTransaction) : TransferDecode {
+class ViolasBankWithdrawRewardDecoder(private val transaction: RawTransaction) : ViolasTxnDecoder {
     private val mViolasBankContract by lazy {
         ViolasBankContract(isViolasTestNet())
     }

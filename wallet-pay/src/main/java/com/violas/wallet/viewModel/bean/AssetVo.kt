@@ -8,8 +8,8 @@ import com.violas.wallet.repository.database.entity.AccountType
 
 // todo 暂时使用 Serializable
 sealed class AssetVo {
-    val amountWithUnit: AmountWithUnit = AmountWithUnit("0.00", "")
-    val fiatAmountWithUnit: FiatAmountWithUnit = FiatAmountWithUnit("0.00", "$", "")
+    val amountWithUnit by lazy { AmountWithUnit("0.00", "") }
+    val fiatAmountWithUnit by lazy { FiatAmountWithUnit("0.00", "$", "") }
     private var assetsName: String = ""
 
     fun getAssetsName() = assetsName

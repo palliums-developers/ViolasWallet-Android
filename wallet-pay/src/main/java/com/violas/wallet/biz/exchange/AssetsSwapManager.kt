@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.quincysx.crypto.CoinType
 import com.violas.wallet.biz.exchange.processor.BTCToMappingAssetsProcessor
-import com.violas.wallet.biz.exchange.processor.LibraToMappingAssetsProcessor
+import com.violas.wallet.biz.exchange.processor.DiemToMappingAssetsProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasToAssetsMappingProcessor
 import com.violas.wallet.biz.exchange.processor.ViolasTokenToViolasTokenProcessor
 import com.violas.wallet.common.getBitcoinCoinType
@@ -56,7 +56,7 @@ class AssetsSwapManager(
                     )
                 )
                 mAssetsSwapEngine.addProcessor(
-                    LibraToMappingAssetsProcessor(
+                    DiemToMappingAssetsProcessor(
                         supportMappingSwapPairManager.getMappingTokensInfo(getDiemCoinType())
                     )
                 )

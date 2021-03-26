@@ -19,7 +19,7 @@ interface MappingProcessor {
         payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
-        amount: Long,
+        mappingAmount: Long,
         coinPair: MappingCoinPairDTO
     ): String
 }

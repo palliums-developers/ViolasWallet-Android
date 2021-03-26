@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.violasTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import org.palliums.violascore.transaction.TransactionPayload
 import org.palliums.violascore.transaction.storage.TypeTagStructTag

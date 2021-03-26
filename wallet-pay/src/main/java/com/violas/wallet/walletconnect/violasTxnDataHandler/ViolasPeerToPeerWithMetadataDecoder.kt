@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.libraTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import com.palliums.content.ContextProvider
 import com.quincysx.crypto.utils.Base64
@@ -6,22 +6,22 @@ import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
 import com.violas.wallet.walletconnect.TransactionDataType
 import com.violas.wallet.walletconnect.TransferDataType
 import org.palliums.libracore.move.Move
-import org.palliums.libracore.transaction.RawTransaction
-import org.palliums.libracore.transaction.TransactionPayload
+import org.palliums.violascore.transaction.RawTransaction
+import org.palliums.violascore.transaction.TransactionPayload
 
-class TransferP2PWithDataDecode(private val transaction: RawTransaction) : TransferDecode {
+class ViolasPeerToPeerWithMetadataDecoder(private val transaction: RawTransaction) : ViolasTxnDecoder {
 
     override fun isHandle(): Boolean {
         val payload = transaction.payload?.payload
         return payload is TransactionPayload.Script && payload.code.contentEquals(
             Move.decode(
-                ContextProvider.getContext().assets.open("move/libra_peer_to_peer_with_metadata.mv")
+                ContextProvider.getContext().assets.open("move/violas_peer_to_peer_with_metadata.mv")
             )
         )
     }
 
     override fun getTransactionDataType(): TransactionDataType {
-        return TransactionDataType.Transfer
+        return TransactionDataType.PEER_TO_PEER_WITH_METADATA
     }
 
     override fun handle(): TransferDataType {

@@ -29,7 +29,7 @@ class ViewFillers {
         viewData: String
     ): View? = withContext(Dispatchers.IO) {
         return@withContext when (viewType) {
-            TransactionDataType.None.value -> {
+            TransactionDataType.UNKNOWN.value -> {
                 val create = GsonBuilder().setPrettyPrinting().create()
 
                 val je: JsonElement = JsonParser.parseString(viewData)
@@ -41,7 +41,7 @@ class ViewFillers {
                 }
                 view
             }
-            TransactionDataType.PUBLISH.value -> {
+            TransactionDataType.ADD_CURRENCY_TO_ACCOUNT.value -> {
                 println("transfer data: $viewData")
                 val mPublishDataType = Gson().fromJson(
                     viewData,
@@ -55,7 +55,7 @@ class ViewFillers {
                 }
                 view
             }
-            TransactionDataType.Transfer.value -> {
+            TransactionDataType.PEER_TO_PEER_WITH_METADATA.value -> {
                 println("transfer data: $viewData")
                 val mTransferDataType = Gson().fromJson(
                     viewData,

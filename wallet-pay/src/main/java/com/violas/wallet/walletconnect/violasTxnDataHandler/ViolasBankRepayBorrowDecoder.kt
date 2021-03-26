@@ -1,14 +1,14 @@
-package com.violas.wallet.walletconnect.violasTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import com.palliums.violas.smartcontract.ViolasBankContract
 import com.violas.wallet.common.isViolasTestNet
-import com.violas.wallet.walletconnect.BankDepositDatatype
+import com.violas.wallet.walletconnect.BankRepayBorrowDatatype
 import com.violas.wallet.walletconnect.TransactionDataType
 import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 
-class TransferBankDepositDecode(private val transaction: RawTransaction) : TransferDecode {
+class ViolasBankRepayBorrowDecoder(private val transaction: RawTransaction) : ViolasTxnDecoder {
     private val mViolasBankContract by lazy {
         ViolasBankContract(isViolasTestNet())
     }
@@ -17,15 +17,15 @@ class TransferBankDepositDecode(private val transaction: RawTransaction) : Trans
         val payload = transaction.payload?.payload
 
         return payload is TransactionPayload.Script && payload.code.contentEquals(
-            mViolasBankContract.getLock2Contract()
+            mViolasBankContract.getRepayBorrow2Contract()
         )
     }
 
     override fun getTransactionDataType(): TransactionDataType {
-        return TransactionDataType.VIOLAS_BANK_DEPOSIT
+        return TransactionDataType.VIOLAS_BANK_REPAY_BORROW
     }
 
-    override fun handle(): BankDepositDatatype {
+    override fun handle(): BankRepayBorrowDatatype {
         val payload = transaction.payload?.payload as TransactionPayload.Script
         return try {
             val coinName = decodeCoinName(
@@ -33,14 +33,14 @@ class TransferBankDepositDecode(private val transaction: RawTransaction) : Trans
                 payload
             )
 
-            BankDepositDatatype(
+            BankRepayBorrowDatatype(
                 transaction.sender.toHex(),
                 payload.args[0].decodeToValue() as Long,
                 coinName
             )
         } catch (e: ProcessedRuntimeException) {
             throw ProcessedRuntimeException(
-                "bank_deposit contract parameter list(amount: Number,\n" +
+                "bank_repay_borrow contract parameter list(amount: Number,\n" +
                         "    metadata: Bytes)"
             )
         }

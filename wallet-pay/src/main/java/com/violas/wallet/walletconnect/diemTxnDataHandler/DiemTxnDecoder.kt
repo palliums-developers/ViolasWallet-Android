@@ -1,8 +1,9 @@
-package com.violas.wallet.walletconnect.libraTransferDataHandler
+package com.violas.wallet.walletconnect.diemTxnDataHandler
 
 import com.violas.wallet.walletconnect.TransactionDataType
 
-interface TransferDecode {
+interface DiemTxnDecoder {
+
     fun isHandle(): Boolean
 
     fun getTransactionDataType(): TransactionDataType

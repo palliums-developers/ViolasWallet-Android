@@ -19,7 +19,7 @@ class MessageHandlerChain(
     init {
         mHandlerChain.add(ViolasGetAccountsMessageHandler(iMessageHandler))
         mHandlerChain.add(ViolasSendTransactionMessageHandler())
-        mHandlerChain.add(LibraSendTransactionMessageHandler())
+        mHandlerChain.add(DiemSendTransactionMessageHandler())
         mHandlerChain.add(ViolasSendRawTransactionMessageHandler())
         mHandlerChain.add(ViolasSignTransactionMessageHandler())
         mHandlerChain.add(ViolasSignRawTransactionMessageHandler())

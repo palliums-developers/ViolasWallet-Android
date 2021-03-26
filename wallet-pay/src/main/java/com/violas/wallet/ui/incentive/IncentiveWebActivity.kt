@@ -85,36 +85,21 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
          * 打开激励挖矿首页
          */
         suspend fun startIncentiveHomePage(context: Context) {
-            val url2 = "https://wallet.violas.io/homepage/home/miningAwards?language=${
-                getLanguageCode()
-            }&address=${getViolasAddress() ?: ""}"
-
-            val url = getViolasIncentiveHomeUrl(getLanguageCode(), getViolasAddress())
-            start(context, url)
+            start(context, getViolasIncentiveHomeUrl(getLanguageCode(), getViolasAddress()))
         }
 
         /**
          * 打开邀请好友首页
          */
         suspend fun startInviteHomePage(context: Context) {
-            val url2 = "https://wallet.violas.io/homepage/home/inviteRewards?language=${
-                getLanguageCode()
-            }&address=${getViolasAddress() ?: ""}"
-
-            val url = getViolasIncentiveInviteUrl(getLanguageCode(), getViolasAddress())
-            start(context, url)
+            start(context, getViolasIncentiveInviteUrl(getLanguageCode(), getViolasAddress()))
         }
 
         /**
          * 打开激励挖矿规则页面
          */
         suspend fun startIncentiveRules(context: Context) {
-            val url2 = "https://wallet.violas.io/homepage/home/ruleDescription?language=${
-                getLanguageCode()
-            }&address=${getViolasAddress() ?: ""}"
-
-            val url = getViolasIncentiveRulesUrl(getLanguageCode(), getViolasAddress())
-            start(context, url)
+            start(context, getViolasIncentiveRulesUrl(getLanguageCode(), getViolasAddress()))
         }
     }
 

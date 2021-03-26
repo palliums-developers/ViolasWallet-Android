@@ -8,7 +8,7 @@ import com.google.gson.JsonArray
 import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.walletconnect.TransactionSwapVo
-import com.violas.wallet.walletconnect.violasTransferDataHandler.ViolasTransferDecodeEngine
+import com.violas.wallet.walletconnect.violasTxnDataHandler.ViolasTxnDecodeEngine
 import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
 import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.models.WCMethod
@@ -152,7 +152,7 @@ class ViolasSignTransactionMessageHandler : IMessageHandler<JsonArray> {
         }
 
         val decode = try {
-            ViolasTransferDecodeEngine(generateRawTransaction).decode()
+            ViolasTxnDecodeEngine(generateRawTransaction).decode()
         } catch (e: ProcessedRuntimeException) {
             throw WalletConnectErrorMessage(
                 requestID,

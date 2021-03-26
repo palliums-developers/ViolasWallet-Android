@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.repository.DataRepository
-import com.violas.wallet.walletconnect.libraTransferDataHandler.LibraTransferDecodeEngine
+import com.violas.wallet.walletconnect.diemTxnDataHandler.DiemTxnDecodeEngine
 import com.violas.wallet.walletconnect.TransactionSwapVo
 import com.violas.walletconnect.exceptions.InvalidJsonRpcParamsException
 import com.violas.walletconnect.jsonrpc.JsonRpcError
@@ -23,9 +23,9 @@ import org.palliums.libracore.transaction.TransactionPayload
 import org.palliums.libracore.transaction.storage.StructTag
 import org.palliums.libracore.transaction.storage.TypeTag
 
-class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
+class DiemSendTransactionMessageHandler : IMessageHandler<JsonArray> {
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
-    private val mLibraService by lazy { DataRepository.getDiemRpcService() }
+    private val mDiemRpcService by lazy { DataRepository.getDiemRpcService() }
 
     private val mBuilder = GsonBuilder()
     private val mGson = mBuilder
@@ -150,7 +150,7 @@ class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
         Log.e("WalletConnect", Gson().toJson(payload))
 
         val generateRawTransaction = runBlocking {
-            mLibraService.generateRawTransaction(
+            mDiemRpcService.generateRawTransaction(
                 TransactionPayload(payload),
                 tx.from,
                 sequenceNumber,
@@ -163,7 +163,7 @@ class LibraSendTransactionMessageHandler : IMessageHandler<JsonArray> {
         }
 
         val decode = try {
-            LibraTransferDecodeEngine(generateRawTransaction).decode()
+            DiemTxnDecodeEngine(generateRawTransaction).decode()
         } catch (e: ProcessedRuntimeException) {
             throw WalletConnectErrorMessage(
                 requestID,

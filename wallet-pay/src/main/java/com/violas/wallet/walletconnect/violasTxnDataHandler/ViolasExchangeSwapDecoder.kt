@@ -1,4 +1,4 @@
-package com.violas.wallet.walletconnect.violasTransferDataHandler
+package com.violas.wallet.walletconnect.violasTxnDataHandler
 
 import com.palliums.violas.smartcontract.ViolasExchangeContract
 import com.quincysx.crypto.utils.Base64
@@ -9,8 +9,8 @@ import com.violas.wallet.walletconnect.messageHandler.ProcessedRuntimeException
 import org.palliums.violascore.transaction.RawTransaction
 import org.palliums.violascore.transaction.TransactionPayload
 
-class TransferExchangeSwapDecode(private val transaction: RawTransaction) :
-    TransferDecode {
+class ViolasExchangeSwapDecoder(private val transaction: RawTransaction) :
+    ViolasTxnDecoder {
     private val mViolasExchangeContract by lazy {
         ViolasExchangeContract(isViolasTestNet())
     }

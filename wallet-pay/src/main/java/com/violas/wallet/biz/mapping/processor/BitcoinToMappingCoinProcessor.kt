@@ -3,10 +3,11 @@ package com.violas.wallet.biz.mapping.processor
 import com.palliums.content.ContextProvider
 import com.palliums.net.await
 import com.violas.wallet.biz.LackOfBalanceException
+import com.violas.wallet.biz.WrongPasswordException
+import com.violas.wallet.biz.bean.DiemAppToken
 import com.violas.wallet.biz.btc.TransactionManager
-import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
 import com.violas.wallet.biz.exchange.processor.ViolasOutputScript
-import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
+import com.violas.wallet.biz.transaction.ViolasTxnManager
 import com.violas.wallet.common.SimpleSecurity
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getViolasCoinType
@@ -25,8 +26,8 @@ import org.palliums.violascore.http.ViolasRpcService
  * desc:
  */
 class BitcoinToMappingCoinProcessor(
-    private val contractAddress: String,
-    private val violasRpcService: ViolasRpcService
+    private val mContractAddress: String,
+    private val mViolasRpcService: ViolasRpcService
 ) : MappingProcessor {
 
     override fun hasMappable(coinPair: MappingCoinPairDTO): Boolean {
@@ -40,41 +41,31 @@ class BitcoinToMappingCoinProcessor(
         payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
-        amount: Long,
+        mappingAmount: Long,
         coinPair: MappingCoinPairDTO
     ): String {
         if (checkPayeeAccount) {
-            // 检查收款账户激活状态
-            val payeeAccountState = violasRpcService.getAccountState(payeeAccountDO!!.address)
-                ?: throw AccountPayeeNotFindException()
-
-            // 检查收款账户 Token 注册状态
-            var isPublishToken = false
-            payeeAccountState.balances?.forEach {
-                if (it.currency.equals(coinPair.toCoin.assets.module, true)) {
-                    isPublishToken = true
-                }
-            }
-            if (!isPublishToken) {
-                throw PayeeAccountCoinNotActiveException(
-                    payeeAccountDO,
-                    coinPair.toCoin.assets
-                )
+            // 检查Violas收款人账户
+            ViolasTxnManager().getReceiverAccountState(
+                payeeAddress ?: payeeAccountDO!!.address,
+                DiemAppToken.convert(coinPair.toCoin.assets)
+            ) {
+                mViolasRpcService.getAccountState(it)
             }
         }
 
-        val payerPrivateKey = SimpleSecurity.instance(ContextProvider.getContext())
-            .decrypt(password, payerAccountDO.privateKey)!!
+        val privateKey = SimpleSecurity.instance(ContextProvider.getContext())
+            .decrypt(password, payerAccountDO.privateKey) ?: throw WrongPasswordException()
 
         val transactionManager = TransactionManager(arrayListOf(payerAccountDO.address))
         val checkBalance =
-            transactionManager.checkBalance(amount / 100000000.0, 3)
+            transactionManager.checkBalance(mappingAmount / 100000000.0, 3)
         if (!checkBalance) {
             throw LackOfBalanceException()
         }
 
         return transactionManager.obtainTransaction(
-            payerPrivateKey,
+            privateKey,
             payerAccountDO.publicKey.hexStringToByteArray(),
             checkBalance,
             coinPair.receiverAddress,
@@ -82,7 +73,7 @@ class BitcoinToMappingCoinProcessor(
             ViolasOutputScript().requestMapping(
                 coinPair.mappingType,
                 payeeAccountDO!!.address.hexStringToByteArray(),
-                contractAddress.hexStringToByteArray()
+                mContractAddress.hexStringToByteArray()
             )
         ).flatMap {
             BitcoinChainApi.get().pushTx(it.signBytes.toHex())

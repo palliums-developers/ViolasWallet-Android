@@ -33,7 +33,7 @@ class ViolasSendRawTransactionMessageHandler : IMessageHandler<JsonArray> {
             true,
             -1L,
             getViolasCoinType(),
-            TransactionDataType.None.value,
+            TransactionDataType.UNKNOWN.value,
             ""
         )
     }

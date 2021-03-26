@@ -16,20 +16,23 @@ import com.palliums.net.LoadState
 import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.ReceiverAccountCurrencyNotAddException
+import com.violas.wallet.biz.ReceiverAccountNotActivationException
+import com.violas.wallet.biz.bean.DiemAppToken
+import com.violas.wallet.biz.bean.DiemCurrency
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsCommand
-import com.violas.wallet.biz.exchange.AccountPayeeNotFindException
-import com.violas.wallet.biz.mapping.PayeeAccountCoinNotActiveException
 import com.violas.wallet.biz.mapping.UnsupportedMappingCoinPairException
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getEthereumCoinType
 import com.violas.wallet.common.getViolasDappUrl
 import com.violas.wallet.repository.database.entity.AccountDO
+import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.bean.CoinAssetMark
-import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.bean.DiemCurrencyAssetMark
+import com.violas.wallet.ui.main.market.bean.ITokenVo
 import com.violas.wallet.ui.main.market.selectToken.CoinsBridge
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog
 import com.violas.wallet.ui.main.market.selectToken.SelectTokenDialog.Companion.ACTION_MAPPING_SELECT
@@ -386,17 +389,17 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                         showToast(R.string.mapping_tips_unsupported_token)
                     }
 
-                    is AccountPayeeNotFindException -> {
+                    is ReceiverAccountNotActivationException -> {
                         showToast(R.string.chain_tips_payee_account_not_active)
                     }
 
-                    is PayeeAccountCoinNotActiveException -> {
+                    is ReceiverAccountCurrencyNotAddException -> {
                         showPublishTokenDialog(
                             payeeAddress,
                             payeeAccountDO,
                             payerAccountDO,
                             password,
-                            e
+                            e.appToken
                         )
                     }
 
@@ -414,11 +417,11 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
         payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
-        exception: PayeeAccountCoinNotActiveException
+        appToken: DiemAppToken
     ) {
         PublishTokenDialog()
             .setAddCurrencyPage(false)
-            .setCurrencyName(exception.assets.displayName)
+            .setCurrencyName(appToken.name)
             .setConfirmListener {
                 it.dismiss()
 
@@ -427,8 +430,8 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
                     try {
                         if (mappingViewModel.publishToken(
                                 password,
-                                exception.accountDO,
-                                exception.assets
+                                payeeAccountDO!!,
+                                appToken
                             )
                         ) {
                             mapping(

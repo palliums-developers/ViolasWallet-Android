@@ -2,7 +2,7 @@ package com.violas.wallet.biz.mapping
 
 import com.palliums.violas.smartcontract.ViolasMultiTokenContract
 import com.violas.wallet.biz.mapping.processor.BitcoinToMappingCoinProcessor
-import com.violas.wallet.biz.mapping.processor.LibraToMappingCoinProcessor
+import com.violas.wallet.biz.mapping.processor.DiemToMappingCoinProcessor
 import com.violas.wallet.biz.mapping.processor.ViolasToOriginalCoinProcessor
 import com.violas.wallet.common.isViolasTestNet
 import com.violas.wallet.repository.DataRepository
@@ -19,7 +19,7 @@ class MappingManager {
 
     private val contract = ViolasMultiTokenContract(isViolasTestNet())
     private val engine = MappingEngine()
-    private val violasRpcService = DataRepository.getViolasChainRpcService()
+    private val violasRpcService = DataRepository.getViolasRpcService()
     private val libraRpcService = DataRepository.getDiemRpcService()
 
     init {
@@ -30,7 +30,7 @@ class MappingManager {
                 violasRpcService
             )
         )
-        engine.addProcessor(LibraToMappingCoinProcessor(violasRpcService))
+        engine.addProcessor(DiemToMappingCoinProcessor(violasRpcService))
         engine.addProcessor(ViolasToOriginalCoinProcessor(libraRpcService))
     }
 
@@ -40,7 +40,7 @@ class MappingManager {
         payeeAccountDO: AccountDO?,
         payerAccountDO: AccountDO,
         password: ByteArray,
-        amount: Long,
+        mappingAmount: Long,
         coinPair: MappingCoinPairDTO
     ): String {
         return engine.mapping(
@@ -49,7 +49,7 @@ class MappingManager {
             payeeAccountDO,
             payerAccountDO,
             password,
-            amount,
+            mappingAmount,
             coinPair
         )
     }
