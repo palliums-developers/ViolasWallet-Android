@@ -10,10 +10,11 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.bank.AccountInfoDTO
 import com.violas.wallet.repository.http.bank.BorrowingProductSummaryDTO
 import com.violas.wallet.repository.http.bank.DepositProductSummaryDTO
-import com.violas.wallet.utils.convertAmountToUSD
+import com.violas.wallet.utils.keepTwoDecimal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 
 /**
  * Created by elephant on 2020/8/21 17:05.
@@ -60,22 +61,22 @@ class BankViewModel : BaseViewModel() {
         val handleAmount: (Boolean, AccountInfoDTO?) -> Unit = { showAmount, accountInfo ->
             if (showAmount) {
                 totalDepositLiveData.value =
-                    "≈ ${convertAmountToUSD((accountInfo?.totalDeposit ?: 0.toDouble()) * 100)}"
+                    "≈ ${keepTwoDecimal(accountInfo?.totalDeposit)}"
                 borrowableLiveData.value =
                     "≈ ${
-                        convertAmountToUSD(
-                            if (accountInfo != null && accountInfo.borrowableLimit > accountInfo.borrowed)
-                                (accountInfo.borrowableLimit - accountInfo.borrowed) * 100
+                        keepTwoDecimal(
+                            if (accountInfo != null
+                                && accountInfo.borrowableLimit > accountInfo.borrowed
+                            )
+                                accountInfo.borrowableLimit.subtract(accountInfo.borrowed)
                             else
-                                0.toDouble()
+                                BigDecimal.ZERO
                         )
-                    }/${
-                        convertAmountToUSD((accountInfo?.borrowableLimit ?: 0.toDouble()) * 100)
-                    }"
+                    }/${keepTwoDecimal(accountInfo?.borrowableLimit)}"
                 totalEarningsLiveData.value =
-                    "≈ ${convertAmountToUSD((accountInfo?.totalEarnings ?: 0.toDouble()) * 100)}"
+                    "≈ ${keepTwoDecimal(accountInfo?.totalEarnings)}"
                 yesterdayEarningsLiveData.value =
-                    "${convertAmountToUSD((accountInfo?.yesterdayEarnings ?: 0.toDouble()) * 100)} $"
+                    "${keepTwoDecimal(accountInfo?.yesterdayEarnings)} $"
             } else {
                 totalDepositLiveData.value = "≈ ******"
                 borrowableLiveData.value = "≈ ******"

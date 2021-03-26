@@ -262,13 +262,10 @@ fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
     }
 }
 
-fun convertAmountToUSD(amount: Double, stripTrailingZeros: Boolean = true): String {
-    return BigDecimal(amount)
-        .divide(BigDecimal(100), 2, RoundingMode.DOWN).apply {
-            if (stripTrailingZeros) {
-                stripTrailingZeros()
-            }
-        }
+fun keepTwoDecimal(amount: BigDecimal?): String {
+    return (amount ?: BigDecimal.ZERO)
+        .setScale(2, RoundingMode.DOWN)
+        .stripTrailingZeros()
         .toPlainString()
 }
 

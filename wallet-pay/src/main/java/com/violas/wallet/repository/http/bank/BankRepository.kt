@@ -4,12 +4,8 @@ import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.palliums.net.await
-import com.palliums.violas.http.LoginWebDTO
-import com.palliums.violas.http.Response
-import io.reactivex.Observable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.http.Field
 
 class BankRepository(private val api: BankApi) {
 
@@ -20,7 +16,6 @@ class BankRepository(private val api: BankApi) {
         address: String
     ) =
         api.getAccountInfo(address).await().data
-            ?: AccountInfoDTO(0.toDouble(), 0.toDouble(), 0.toDouble(), 0.toDouble(), 0.toDouble())
 
     /**
      * 获取存款产品列表

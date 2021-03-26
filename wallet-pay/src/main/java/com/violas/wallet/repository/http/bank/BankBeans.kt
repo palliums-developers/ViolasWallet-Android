@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import java.math.BigDecimal
 
 
 /**
@@ -17,15 +18,15 @@ import kotlinx.android.parcel.Parcelize
 @Keep
 data class AccountInfoDTO(
     @SerializedName("amount")
-    var totalDeposit: Double,           // 存款总额
+    var totalDeposit: BigDecimal,           // 存款总额
     @SerializedName("borrow")
-    var borrowed: Double,               // 已借
+    var borrowed: BigDecimal,               // 已借
     @SerializedName("borrow_limit")
-    var borrowableLimit: Double,        // 可借总额
+    var borrowableLimit: BigDecimal,        // 可借总额
     @SerializedName("total")
-    var totalEarnings: Double,          // 总收益
+    var totalEarnings: BigDecimal,          // 总收益
     @SerializedName("yesterday")
-    var yesterdayEarnings: Double       // 昨日收益
+    var yesterdayEarnings: BigDecimal       // 昨日收益
 )
 //endregion
 
