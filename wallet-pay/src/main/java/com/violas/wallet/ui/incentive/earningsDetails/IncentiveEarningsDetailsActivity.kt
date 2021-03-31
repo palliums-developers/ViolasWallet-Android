@@ -36,6 +36,10 @@ class IncentiveEarningsDetailsActivity : BaseAppActivity() {
 
     private lateinit var violasAddress: String
 
+    override fun getTitleStyle(): Int {
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_NAV_BAR
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_incentive_earnings_details
     }

@@ -50,6 +50,10 @@ class BankBorrowingDetailsActivity : BaseAppActivity() {
     private lateinit var violasAddress: String
     private lateinit var borrowingInfo: BorrowingInfoDTO
 
+    override fun getTitleStyle(): Int {
+        return PAGE_STYLE_LIGHT_MODE_PRIMARY_NAV_BAR
+    }
+
     override fun getLayoutResId(): Int {
         return R.layout.activity_bank_borrowing_details
     }
