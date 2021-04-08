@@ -33,7 +33,7 @@ import java.math.RoundingMode
 class SwapViewModel() : BaseViewModel() {
     companion object {
         // 最低价格浮动汇率
-        const val MINIMUM_PRICE_FLUCTUATION = 1 / 100.0
+        const val MINIMUM_PRICE_FLUCTUATION = 5 / 1000.0
     }
 
     // 输入输出选择的Token

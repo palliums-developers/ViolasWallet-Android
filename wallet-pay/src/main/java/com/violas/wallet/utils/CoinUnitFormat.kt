@@ -37,26 +37,6 @@ fun getCoinDecimal(coinType: CoinType): Int {
     }
 }
 
-fun convertViolasTokenUnit(amount: Long): String {
-    return convertViolasTokenUnit(amount.toString())
-}
-
-fun convertViolasTokenUnit(amount: String): String {
-    val amountBigDecimal = BigDecimal(amount)
-    return if (amountBigDecimal > BigDecimal.ZERO) {
-        amountBigDecimal
-            .divide(BigDecimal(1000000), 6, RoundingMode.HALF_UP)
-            .stripTrailingZeros()
-            .toPlainString()
-    } else {
-        "0"
-    }
-}
-
-fun convertViolasTokenPrice(price: String): String {
-    return BigDecimal(price).stripTrailingZeros().toPlainString()
-}
-
 fun convertDisplayUnitToAmount(amount: String, coinType: CoinType): Long {
     return convertDisplayUnitToAmount(amount.toDoubleOrNull() ?: 0.0, coinType)
 }
@@ -93,7 +73,7 @@ fun convertAmountToDisplayUnit(amount: String, coinType: CoinType): Pair<String,
     }
     val amountStr = if (amountBigDecimal > BigDecimal.ZERO) {
         amountBigDecimal
-            .divide(unitBigDecimal, scale, RoundingMode.HALF_UP)
+            .divide(unitBigDecimal, scale, RoundingMode.DOWN)
             .stripTrailingZeros()
             .toPlainString()
     } else {
@@ -135,7 +115,7 @@ fun convertAmountToDisplayAmount(
     amountBigDecimal: BigDecimal,
     coinType: CoinType = getViolasCoinType(),
     decimalScale: Int? = null,
-    roundingMode: RoundingMode = RoundingMode.HALF_UP
+    roundingMode: RoundingMode = RoundingMode.DOWN
 ): BigDecimal {
     return if (amountBigDecimal > BigDecimal.ZERO)
         amountBigDecimal
@@ -265,7 +245,6 @@ fun getAmountPrefix(amountBigDecimal: BigDecimal, input: Boolean): String {
 fun keepTwoDecimal(amount: BigDecimal?): String {
     return (amount ?: BigDecimal.ZERO)
         .setScale(2, RoundingMode.DOWN)
-        .stripTrailingZeros()
         .toPlainString()
 }
 

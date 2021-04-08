@@ -9,80 +9,36 @@
     android:paddingVertical="@dimen/dp_17">
 
     <TextView
-        android:id="@+id/tvTransferAmountLabel"
+        android:id="@+id/tvMintAmountLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/wallet_connect_transfer_label_amount"
+        android:text="@string/wallet_connect_mint_label_extract_reward"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.palliums.widget.NumberTextView
-        android:id="@+id/tvTransferAmount"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/tvMintAmountDesc"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_8"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textSize="@dimen/fs_16"
-        android:textStyle="bold"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintEnd_toStartOf="@id/tvTransferAmountUnit"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTransferAmountLabel"
-        tools:text="1234.999999" />
-
-    <TextView
-        android:id="@+id/tvTransferAmountUnit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_2"
         android:fontFamily="@string/font_family_title"
         android:textSize="@dimen/fs_16"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvTransferAmount"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvTransferAmount"
-        tools:text="VLS" />
-
-    <TextView
-        android:id="@+id/tvTransferPayeeLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_16"
-        android:text="@string/wallet_connect_transfer_label_payee"
-        android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/fs_12"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTransferAmount" />
-
-    <TextView
-        android:id="@+id/tvTransferPayeeAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_8"
-        android:ellipsize="middle"
-        android:fontFamily="@string/font_family_title"
-        android:singleLine="true"
-        android:textSize="@dimen/fs_16"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTransferPayeeLabel"
-        tools:text="f76f1612f9818f68f4b7324fa046b613" />
+        app:layout_constraintTop_toBottomOf="@id/tvMintAmountLabel"
+        tools:text="@string/wallet_connect_mint_desc_extract_bank_reward" />
 
     <View
         android:id="@+id/vDivider"
         android:layout_width="@dimen/dp_0"
         android:layout_height="?attr/dividerThickness"
-        android:layout_marginTop="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_17"
         android:background="?attr/colorDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTransferPayeeAddress" />
+        app:layout_constraintTop_toBottomOf="@id/tvMintAmountDesc" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineStart"
@@ -99,20 +55,20 @@
         app:layout_constraintGuide_percent="0.35" />
 
     <TextView
-        android:id="@+id/tvTransferFeesLabel"
+        android:id="@+id/tvMintGasFeesLabel"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_17"
+        android:text="@string/common_label_gas_fees_colon"
         android:textColor="?android:attr/textColorTertiary"
         android:textSize="@dimen/fs_14"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/guidelineStart"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vDivider"
-        tools:text="@string/common_label_gas_fees_colon" />
+        app:layout_constraintTop_toBottomOf="@id/vDivider" />
 
     <com.palliums.widget.NumberTextView
-        android:id="@+id/tvTransferFeesAmount"
+        android:id="@+id/tvMintGasFeesAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -121,23 +77,23 @@
         android:textSize="@dimen/fs_14"
         android:textStyle="bold"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvTransferFeesLabel"
-        app:layout_constraintEnd_toStartOf="@id/tvTransferFeesUnit"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvMintGasFeesLabel"
+        app:layout_constraintEnd_toStartOf="@id/tvMintGasFeesUnit"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="@id/guidelineEnd"
         tools:text="0.999999" />
 
     <TextView
-        android:id="@+id/tvTransferFeesUnit"
+        android:id="@+id/tvMintGasFeesUnit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_2"
         android:fontFamily="@string/font_family_title"
         android:textSize="@dimen/fs_14"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvTransferFeesLabel"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvMintGasFeesLabel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvTransferFeesAmount"
+        app:layout_constraintStart_toEndOf="@id/tvMintGasFeesAmount"
         tools:text="VLS" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,37 +8,6 @@
     android:paddingHorizontal="@dimen/dp_14"
     android:paddingVertical="@dimen/dp_17">
 
-    <TextView
-        android:id="@+id/tvNoneTxnContentLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/wallet_connect_none_label_txn_content"
-        android:textColor="?android:attr/textColorTertiary"
-        android:textSize="@dimen/fs_12"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvNoneTxnContent"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_8"
-        android:fontFamily="@string/font_family_title"
-        android:textSize="@dimen/fs_16"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvNoneTxnContentLabel" />
-
-    <View
-        android:id="@+id/vDivider"
-        android:layout_width="@dimen/dp_0"
-        android:layout_height="?attr/dividerThickness"
-        android:layout_marginTop="@dimen/dp_16"
-        android:background="?attr/colorDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvNoneTxnContent" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineStart"
         android:layout_width="match_parent"
@@ -54,7 +23,41 @@
         app:layout_constraintGuide_percent="0.35" />
 
     <TextView
-        android:id="@+id/tvNoneGasFeesLabel"
+        android:id="@+id/tvAddCurrencyLabel"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:text="@string/wallet_connect_add_currency_label"
+        android:textColor="?android:attr/textColorTertiary"
+        android:textSize="@dimen/fs_14"
+        app:layout_constraintBottom_toBottomOf="@id/tvAddCurrencyName"
+        app:layout_constraintEnd_toEndOf="@id/guidelineStart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvAddCurrencyName" />
+
+    <TextView
+        android:id="@+id/tvAddCurrencyName"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"
+        android:fontFamily="@string/font_family_title"
+        android:textSize="@dimen/fs_16"
+        app:layout_constraintBottom_toTopOf="@id/vDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineEnd"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="vBTC" />
+
+    <View
+        android:id="@+id/vDivider"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="?attr/dividerThickness"
+        android:layout_marginTop="@dimen/dp_16"
+        android:background="?attr/colorDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAddCurrencyName" />
+
+    <TextView
+        android:id="@+id/tvAddGasFeesLabel"
         android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_17"
@@ -67,7 +70,7 @@
         app:layout_constraintTop_toBottomOf="@id/vDivider" />
 
     <com.palliums.widget.NumberTextView
-        android:id="@+id/tvNoneGasFeesAmount"
+        android:id="@+id/tvAddGasFeesAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
@@ -76,23 +79,23 @@
         android:textSize="@dimen/fs_14"
         android:textStyle="bold"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvNoneGasFeesLabel"
-        app:layout_constraintEnd_toStartOf="@id/tvNoneGasFeesUnit"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddGasFeesLabel"
+        app:layout_constraintEnd_toStartOf="@id/tvAddGasFeesUnit"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="@id/guidelineEnd"
         tools:text="0.999999" />
 
     <TextView
-        android:id="@+id/tvNoneGasFeesUnit"
+        android:id="@+id/tvAddGasFeesUnit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_2"
         android:fontFamily="@string/font_family_title"
         android:textSize="@dimen/fs_14"
-        app:layout_constraintBaseline_toBaselineOf="@id/tvNoneGasFeesLabel"
+        app:layout_constraintBaseline_toBaselineOf="@id/tvAddGasFeesLabel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvNoneGasFeesAmount"
+        app:layout_constraintStart_toEndOf="@id/tvAddGasFeesAmount"
         tools:text="VLS" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

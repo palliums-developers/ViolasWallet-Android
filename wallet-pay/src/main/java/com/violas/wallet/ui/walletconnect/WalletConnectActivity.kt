@@ -26,7 +26,6 @@ import com.violas.wallet.repository.database.entity.AccountDO
 import com.violas.wallet.repository.http.bitcoinChainApi.request.BitcoinChainApi
 import com.violas.wallet.utils.authenticateAccount
 import com.violas.wallet.walletconnect.*
-import com.violas.wallet.walletconnect.messageHandler.TransferBitcoinDataType
 import com.violas.walletconnect.extensions.hexStringToByteArray
 import com.violas.walletconnect.extensions.toHex
 import com.violas.walletconnect.jsonrpc.JsonRpcError
@@ -89,12 +88,13 @@ class WalletConnectActivity : BaseAppActivity() {
     }
 
     private val mAccountStorage by lazy { DataRepository.getAccountStorage() }
-    private val mWalletConnect by lazy {
-        WalletConnect.getInstance(this)
-    }
+    private val mWalletConnect by lazy { WalletConnect.getInstance(this) }
+
+    private lateinit var mTransactionSwapVo: TransactionSwapVo
 
     // 是否处理了请求
-    private var mRequestHandle = false
+    private var mRequestHandled = false
+    private var mRequestProcessing = false
 
     override fun getLayoutResId(): Int {
         return R.layout.activity_wallet_connect
@@ -112,56 +112,76 @@ class WalletConnectActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         launch(Dispatchers.IO) {
-            val mTransactionSwapVo =
-                intent.getParcelableExtra<TransactionSwapVo>(CONNECT_DATA)
-            if (mTransactionSwapVo == null) {
+            val transactionSwapVo = intent.getParcelableExtra<TransactionSwapVo>(CONNECT_DATA)
+            if (transactionSwapVo == null) {
                 finish()
+                return@launch
             }
 
-            showDisplay(mTransactionSwapVo)
+            mTransactionSwapVo = transactionSwapVo
+            showDisplay()
 
             withContext(Dispatchers.Main) {
-                btnConfirmLogin.setOnClickListener {
-                    confirmAuthorization(mTransactionSwapVo)
+                btnConfirm.setOnClickListener {
+                    confirmAuthorization()
                 }
                 ivClose.setOnClickListener {
-                    cancelAuthorization(mTransactionSwapVo)
+                    cancelAuthorization()
                 }
             }
         }
     }
 
-    private fun cancelAuthorization(mTransactionSwapVo: TransactionSwapVo) {
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        launch(Dispatchers.IO) {
+            if (mRequestProcessing) return@launch
+            val transactionSwapVo = intent?.getParcelableExtra<TransactionSwapVo>(CONNECT_DATA)
+                ?: return@launch
+
+            showProgress()
+            delay(1000)
+            mTransactionSwapVo = transactionSwapVo
+            showDisplay()
+            dismissProgress()
+        }
+    }
+
+    private fun cancelAuthorization() {
         launch {
+            mRequestProcessing = true
+            val transactionSwapVo = mTransactionSwapVo
             try {
                 val success = mWalletConnect.sendErrorMessage(
-                    mTransactionSwapVo.requestID,
+                    transactionSwapVo.requestID,
                     JsonRpcError.userRefused()
                 )
                 if (success) {
-                    mRequestHandle = true
-                    withContext(Dispatchers.Main) {
-                        finish()
-                    }
+                    mRequestHandled = true
+                    finish()
                 } else {
+                    mRequestProcessing = false
                     showToast(R.string.common_http_socket_timeout)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                mRequestProcessing = false
                 showToast(R.string.common_http_socket_timeout)
             }
         }
     }
 
-    private fun confirmAuthorization(transactionSwapVo: TransactionSwapVo) =
+    private fun confirmAuthorization() =
         launch(Dispatchers.IO) {
+            mRequestProcessing = true
+            val transactionSwapVo = mTransactionSwapVo
             var signedTx: String? = null
             try {
                 if (!transactionSwapVo.isSigned) {
                     val account = mAccountStorage.findById(transactionSwapVo.accountId)
                     when (account?.coinNumber) {
                         getDiemCoinType().coinNumber() -> {
-                            // <editor-fold defaultstate="collapsed" desc="处理 Libra 交易">
+                            // <editor-fold defaultstate="collapsed" desc="处理 Diem 交易">
                             val rawTransactionHex = transactionSwapVo.hexTx
                             val hashByteArray =
                                 org.palliums.libracore.transaction.RawTransaction.hashByteArray(
@@ -206,24 +226,24 @@ class WalletConnectActivity : BaseAppActivity() {
 
                             val privateKey = showPasswordSignTx(account) ?: return@launch
 
-                            val fromJson = Gson().fromJson<TransferBitcoinDataType>(
+                            val data = Gson().fromJson<BitcoinTransferData>(
                                 transactionSwapVo.viewData,
-                                TransferBitcoinDataType::class.java
+                                BitcoinTransferData::class.java
                             )
                             val mTransactionManager: TransactionManager =
-                                TransactionManager(arrayListOf(fromJson.form))
+                                TransactionManager(arrayListOf(data.payerAddress))
                             val checkBalance =
-                                mTransactionManager.checkBalance(fromJson.amount / 100000000.0, 3)
+                                mTransactionManager.checkBalance(data.amount / 100000000.0, 3)
 
                             if (!checkBalance) {
                                 throw LackOfBalanceException()
                             }
 
                             val script = try {
-                                if (fromJson.data.isEmpty()) {
+                                if (data.data.isEmpty()) {
                                     null
                                 } else
-                                    Script(fromJson.data.hexStringToByteArray())
+                                    Script(data.data.hexStringToByteArray())
                             } catch (e: java.lang.Exception) {
                                 null
                             }
@@ -233,8 +253,8 @@ class WalletConnectActivity : BaseAppActivity() {
                                     privateKey,
                                     account.publicKey.hexStringToByteArray(),
                                     checkBalance,
-                                    fromJson.to,
-                                    fromJson.changeForm,
+                                    data.payeeAddress,
+                                    data.changeForm,
                                     script
                                 ).flatMap {
                                     try {
@@ -289,7 +309,7 @@ class WalletConnectActivity : BaseAppActivity() {
                 }
 
                 CommandActuator.postDelay(RefreshAssetsCommand(), 2000)
-                mRequestHandle = true
+                mRequestHandled = true
                 finish()
                 dismissProgress()
             } catch (e: Exception) {
@@ -307,11 +327,16 @@ class WalletConnectActivity : BaseAppActivity() {
                         JsonRpcError.lackOfBalanceError()
                     is ResponseExceptions ->
                         if (e.code != -1) JsonRpcError(e.code, e.msg) else null
-                    else ->
+                    else -> {
+                        withContext(Dispatchers.Main) {
+                            mRequestProcessing = false
+                        }
                         null
+                    }
+
                 }?.let {
                     mWalletConnect.sendErrorMessage(transactionSwapVo.requestID, it)
-                    mRequestHandle = true
+                    mRequestHandled = true
                     close()
                 }
             }
@@ -332,10 +357,14 @@ class WalletConnectActivity : BaseAppActivity() {
             }
         }
 
-    private suspend fun showDisplay(transactionSwapVo: TransactionSwapVo) = launch(Dispatchers.IO) {
+    private suspend fun showDisplay() = launch(Dispatchers.IO) {
+        val transactionSwapVo = mTransactionSwapVo
         ViewFillers().getView(
             this@WalletConnectActivity,
             viewGroupContent,
+            tvTitle,
+            transactionSwapVo.coinType,
+            transactionSwapVo.isSend,
             transactionSwapVo.viewType,
             transactionSwapVo.viewData
         )?.let {
@@ -347,7 +376,7 @@ class WalletConnectActivity : BaseAppActivity() {
     }
 
     override fun onDestroy() {
-        if (!mRequestHandle) {
+        if (!mRequestHandled) {
             GlobalScope.launch {
                 intent.getParcelableExtra<TransactionSwapVo>(CONNECT_DATA)?.let {
                     mWalletConnect.sendErrorMessage(it.requestID, JsonRpcError.userRefused())

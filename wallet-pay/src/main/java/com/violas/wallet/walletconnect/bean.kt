@@ -69,49 +69,33 @@ enum class TransactionDataType(val value: Int) {
     }
 }
 
-data class BankDepositDatatype(
-    val form: String,
-    val amount: Long,
-    val coinName: String
+data class AddCurrencyToAccountData(
+    val senderAddress: String,
+    val currency: String
 )
 
-data class BankRedeemDatatype(
-    val form: String,
+data class DiemTransferData(
+    val payerAddress: String,
+    val payeeAddress: String,
+    val currency: String,
     val amount: Long,
-    val coinName: String
-)
-
-data class BankBorrowDatatype(
-    val form: String,
-    val amount: Long,
-    val coinName: String
-)
-
-data class BankRepayBorrowDatatype(
-    val form: String,
-    val amount: Long,
-    val coinName: String
-)
-
-data class TransferDataType(
-    val form: String,
-    val to: String,
-    val amount: Long,
-    val coinName: String,
     // base64
     val data: String
 )
 
-data class PublishDataType(
-    val form: String,
-    val coinName: String
+data class BitcoinTransferData(
+    val payerAddress: String,
+    val payeeAddress: String,
+    val amount: Long,
+    val changeForm: String,
+    val data: String
 )
 
-data class ExchangeSwapDataType(
-    val form: String,
-    val payee: String,
-    val inCoinName: String,
-    val outCoinName: String,
+data class ExchangeSwapData(
+    val payerAddress: String,
+    val payeeAddressOut: String,
+    val currencyIn: String,
+    val currencyOut: String,
     val amountIn: Long,
     val amountOutMin: Long,
     val path: List<Int>,
@@ -119,23 +103,47 @@ data class ExchangeSwapDataType(
     val data: String
 )
 
-data class ExchangeAddLiquidityDataType(
-    val form: String,
-    val inCoinName: String,
-    val outCoinName: String,
-    val amountIn: Long,
-    val amountInMin: Long,
-    val amountOut: Long,
-    val amountOutMin: Long
+data class ExchangeAddLiquidityData(
+    val payerAddress: String,
+    val currencyA: String,
+    val currencyB: String,
+    val amountADesired: Long,
+    val amountBDesired: Long,
+    val amountAMin: Long,
+    val amountBMin: Long
 )
 
-data class ExchangeRemoveLiquidityDataType(
-    val form: String,
-    val inCoinName: String,
-    val outCoinName: String,
+data class ExchangeRemoveLiquidityData(
+    val payerAddress: String,
+    val currencyA: String,
+    val currencyB: String,
     val liquidity: Long,
-    val amountInMin: Long,
-    val amountOutMin: Long
+    val amountAMin: Long,
+    val amountBMin: Long
+)
+
+data class BankDepositData(
+    val senderAddress: String,
+    val currency: String,
+    val amount: Long
+)
+
+data class BankRedeemData(
+    val senderAddress: String,
+    val currency: String,
+    val amount: Long
+)
+
+data class BankBorrowData(
+    val senderAddress: String,
+    val currency: String,
+    val amount: Long
+)
+
+data class BankRepayBorrowData(
+    val senderAddress: String,
+    val currency: String,
+    val amount: Long
 )
 
 /**

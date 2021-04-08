@@ -22,8 +22,8 @@
     <string name="common_label_balance_with_unit_format">余额：%1$s %2$s</string>
     <string name="common_label_balance_format">余额：%1$s</string>
     <string name="common_label_available_balance">可用余额&#160;：</string>
-    <string name="common_label_gas_fees">矿工费用</string>
-    <string name="common_label_gas_fees_colon">矿工费用：</string>
+    <string name="common_label_gas_fees">燃料费用</string>
+    <string name="common_label_gas_fees_colon">燃料费用：</string>
     <string name="common_label_miner_fees">矿工费用</string>
     <string name="common_label_miner_fees_colon">矿工费用：</string>
     <string name="common_label_time">时间</string>
@@ -556,29 +556,45 @@
 
     <!--WalletConnect-->
     <string name="wallet_connect_common_desc_all_amount">全部</string>
-    <string name="wallet_connect_login_title">网页 ViolasPay 登录确认</string>
+    <string name="wallet_connect_login_title">网页ViolasPay 登录确认</string>
     <string name="wallet_connect_login_declare">*其使用行为同样适用《用户协议》和《隐私政策》</string>
-    <string name="wallet_connect_login_desc_login">网页 ViolasPay 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>
-    <string name="wallet_connect_login_desc_login_format">网页 %1$s 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>
+    <string name="wallet_connect_login_desc_login">网页ViolasPay 正在申请访问你的钱包地址，你确认将钱包地址公开给此网站吗?</string>
     <string name="wallet_connect_login_desc_logged">您已有登录状态的网页钱包，确认登录将强制退出之前的网页钱包</string>
     <string name="wallet_connect_login_action_confirm_login">确认登录</string>
     <string name="wallet_connect_login_action_cancel_login">取消登录</string>
     <string name="wallet_connect_management_title">网页钱包已登录</string>
     <string name="wallet_connect_management_action">退出网页钱包</string>
-    <string name="wallet_connect_txn_title">交易确认</string>
-    <string name="wallet_connect_txn_label_sender_address">地址：</string>
+    <string name="wallet_connect_txn_title">网页ViolasPay 交易确认</string>
+    <string name="wallet_connect_sign_title">网页ViolasPay 签字确认</string>
+    <string name="wallet_connect_add_currency_title">网页ViolasPay 添加币种确认</string>
     <string name="wallet_connect_add_currency_label">注册币种</string>
-    <string name="wallet_connect_transfer_label_amount">金额：</string>
-    <string name="wallet_connect_transfer_label_receiver_address">转账地址：</string>
+    <string name="wallet_connect_transfer_title">网页ViolasPay 转账确认</string>
+    <string name="wallet_connect_transfer_label_amount">金额</string>
+    <string name="wallet_connect_transfer_label_payee">收款地址</string>
+    <string name="wallet_connect_swap_title">网页ViolasPay 兑换确认</string>
     <string name="wallet_connect_swap_label_from">输入</string>
     <string name="wallet_connect_swap_label_to">输出</string>
     <string name="wallet_connect_swap_label_path">路径</string>
+    <string name="wallet_connect_pool_title_add_liquidity">网页ViolasPay 资金池转入确认</string>
+    <string name="wallet_connect_pool_title_remove_liquidity">网页ViolasPay 资金池转出确认</string>
     <string name="wallet_connect_pool_label_input">转入</string>
     <string name="wallet_connect_pool_label_output">转出</string>
-    <string name="wallet_connect_bank_label_deposit_biz_name">我要存</string>
-    <string name="wallet_connect_bank_label_withdrawal_biz_name">提取数量</string>
-    <string name="wallet_connect_bank_label_borrow_biz_name">我要借</string>
-    <string name="wallet_connect_bank_label_repayment_biz_name">我要还</string>
+    <string name="wallet_connect_bank_title_deposit">网页ViolasPay 数字银行存款签字确认</string>
+    <string name="wallet_connect_bank_title_withdrawal">网页ViolasPay 数字银行提款签字确认</string>
+    <string name="wallet_connect_bank_title_borrow">网页ViolasPay 数字银行借款签字确认</string>
+    <string name="wallet_connect_bank_title_repayment">网页ViolasPay 数字银行还款签字确认</string>
+    <string name="wallet_connect_bank_label_deposit_amount">我要存</string>
+    <string name="wallet_connect_bank_label_withdrawal_amount">我要提</string>
+    <string name="wallet_connect_bank_label_borrow_amount">我要借</string>
+    <string name="wallet_connect_bank_label_repayment_amount">我要还</string>
+    <string name="wallet_connect_bank_desc_withdrawal_all_format">%1$s全部存款</string>
+    <string name="wallet_connect_bank_desc_repayment_all_format">%1$s全部借款</string>
+    <string name="wallet_connect_mint_title_extract_pool_reward">网页ViolasPay 提取资金池挖矿奖励确认</string>
+    <string name="wallet_connect_mint_title_extract_bank_reward">网页ViolasPay 提取数字银行挖矿奖励确认</string>
+    <string name="wallet_connect_mint_label_extract_reward">我要提</string>
+    <string name="wallet_connect_mint_desc_extract_pool_reward">资金池所有挖矿奖励</string>
+    <string name="wallet_connect_mint_desc_extract_bank_reward">数字银行所有挖矿奖励</string>
+    <string name="wallet_connect_none_label_txn_content">交易内容</string>
 
     <!--二维码扫描-->
     <string name="qr_code_result_title">扫码结果</string>

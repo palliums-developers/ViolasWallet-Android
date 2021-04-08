@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.microsoft.appcenter.crashes.Crashes
-import com.violas.wallet.walletconnect.messageHandler.MessageHandlerChain
+import com.violas.wallet.walletconnect.messageHandle.MessageHandlerChain
 import com.violas.walletconnect.OnMessageHandler
 import com.violas.walletconnect.WCClient
 import com.violas.walletconnect.WCSessionStoreItem
