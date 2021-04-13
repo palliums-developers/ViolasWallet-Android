@@ -209,7 +209,7 @@
             android:fontFamily="@string/font_family_title"
             android:gravity="start|center_vertical"
             android:paddingStart="@dimen/dp_11"
-            android:paddingEnd="@dimen/dp_35"
+            android:paddingEnd="@dimen/dp_30"
             android:text="@string/incentive_home_bank_action"
             android:textColor="?attr/colorPrimary"
             android:textSize="@dimen/fs_12"
