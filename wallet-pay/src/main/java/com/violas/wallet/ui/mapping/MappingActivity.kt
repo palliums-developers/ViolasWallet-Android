@@ -16,10 +16,10 @@ import com.palliums.net.LoadState
 import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
+import com.violas.wallet.biz.LackOfBalanceException
 import com.violas.wallet.biz.ReceiverAccountCurrencyNotAddException
 import com.violas.wallet.biz.ReceiverAccountNotActivationException
 import com.violas.wallet.biz.bean.DiemAppToken
-import com.violas.wallet.biz.bean.DiemCurrency
 import com.violas.wallet.biz.command.CommandActuator
 import com.violas.wallet.biz.command.RefreshAssetsCommand
 import com.violas.wallet.biz.mapping.UnsupportedMappingCoinPairException
@@ -27,7 +27,6 @@ import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getEthereumCoinType
 import com.violas.wallet.common.getViolasDappUrl
 import com.violas.wallet.repository.database.entity.AccountDO
-import com.violas.wallet.repository.http.mapping.MappingCoinPairDTO
 import com.violas.wallet.repository.subscribeHub.BalanceSubscribeHub
 import com.violas.wallet.repository.subscribeHub.BalanceSubscriber
 import com.violas.wallet.ui.main.market.bean.CoinAssetMark
@@ -391,6 +390,10 @@ class MappingActivity : BaseAppActivity(), CoinsBridge {
 
                     is ReceiverAccountNotActivationException -> {
                         showToast(R.string.chain_tips_payee_account_not_active)
+                    }
+
+                    is LackOfBalanceException ->{
+                        showToast(R.string.transfer_tips_insufficient_balance_or_assets_unconfirmed)
                     }
 
                     is ReceiverAccountCurrencyNotAddException -> {
