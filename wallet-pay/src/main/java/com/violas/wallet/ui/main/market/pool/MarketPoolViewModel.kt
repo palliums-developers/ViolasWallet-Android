@@ -518,8 +518,16 @@ class MarketPoolViewModel : BaseViewModel(), Handler.Callback {
                 logInfo(TAG) { "syncLiquidityReserve. coin pair unchanged => $coinPairUnchanged" }
 
                 if (syncWorkUnstopped && coinPairUnchanged) {
-                    noLiquidityReserve = liquidityReserve == null
-                    liquidityReserveLiveData.value = liquidityReserve
+                    if (liquidityReserve == null
+                        || liquidityReserve.coinA.amount <= BigDecimal.ZERO
+                        || liquidityReserve.coinB.amount <= BigDecimal.ZERO
+                    ) {
+                        noLiquidityReserve = true
+                        liquidityReserveLiveData.value = null
+                    } else {
+                        noLiquidityReserve = false
+                        liquidityReserveLiveData.value = liquidityReserve
+                    }
                 }
 
                 if (showLoadingAndTips) {
