@@ -67,7 +67,7 @@ public class MultiLanguageUtility {
     public void setConfiguration() {
         Locale targetLocale = getLanguageLocale();
         Configuration configuration = mContext.getResources().getConfiguration();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             configuration.setLocale(targetLocale);
         } else {
             configuration.locale = targetLocale;
@@ -75,6 +75,7 @@ public class MultiLanguageUtility {
         Resources resources = mContext.getResources();
         DisplayMetrics dm = resources.getDisplayMetrics();
         resources.updateConfiguration(configuration, dm);//语言更换生效的代码!
+        mContext.createConfigurationContext(configuration);
     }
 
     /**
@@ -118,7 +119,7 @@ public class MultiLanguageUtility {
      */
     public void updateLanguage(int languageType) {
         LanguageShared.getInstance(mContext).putInt(MultiLanguageUtility.SAVE_LANGUAGE, languageType);
-        MultiLanguageUtility.getInstance().setConfiguration();
+        //MultiLanguageUtility.getInstance().setConfiguration();
     }
 
     public void notification() {
@@ -160,15 +161,15 @@ public class MultiLanguageUtility {
     }
 
     public static Context attachBaseContext(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return createConfigurationResources(context);
         } else {
             MultiLanguageUtility.getInstance().setConfiguration();
             return context;
-        }
+        }*/
+        return createConfigurationResources(context);
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
     private static Context createConfigurationResources(Context context) {
         Resources resources = context.getResources();
         Configuration configuration = resources.getConfiguration();

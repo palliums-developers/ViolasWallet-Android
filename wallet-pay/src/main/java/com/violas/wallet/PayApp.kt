@@ -131,8 +131,7 @@ class PayApp : App() {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(newBase)
         MultiLanguageUtility.init(newBase)
-        MultiLanguageUtility.attachBaseContext(newBase)
+        super.attachBaseContext(MultiLanguageUtility.attachBaseContext(newBase))
     }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.palliums.content.App
+import com.palliums.content.ContextProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -34,7 +35,6 @@ class ChangeLanguageViewModel(val context: Application) : AndroidViewModel(conte
 
     fun saveCurrentLanguage(key: Int) {
         viewModelScope.launch {
-            MultiLanguageUtility.getInstance().updateLanguage(key)
             newSelectKey = key
         }
     }
@@ -42,7 +42,11 @@ class ChangeLanguageViewModel(val context: Application) : AndroidViewModel(conte
     fun finish() {
         viewModelScope.launch {
             if (selectKey != newSelectKey) {
+                MultiLanguageUtility.getInstance().updateLanguage(newSelectKey)
+                val newBase = MultiLanguageUtility.attachBaseContext(ContextProvider.getContext())
+                ContextProvider.init(newBase)
                 MultiLanguageUtility.getInstance().notification()
+
                 App.activityStore.forEach {
                     if (it::class.java == ChangeLanguageActivity::class.java) {
                         return@forEach

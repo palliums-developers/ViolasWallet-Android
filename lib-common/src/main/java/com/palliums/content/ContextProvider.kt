@@ -1,6 +1,7 @@
 package com.palliums.content
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 
 /**
@@ -14,7 +15,7 @@ object ContextProvider {
     private lateinit var context: Context
 
     fun init(context: Context) {
-        this.context = context.applicationContext
+        this.context = if (context is Application) context else context.applicationContext
     }
 
     fun getContext(): Context {
