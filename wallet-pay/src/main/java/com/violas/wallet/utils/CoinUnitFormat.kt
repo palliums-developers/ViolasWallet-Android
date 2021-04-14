@@ -50,11 +50,14 @@ fun convertDisplayUnitToAmount(amount: Double, coinType: CoinType): Long {
 }
 
 fun convertAmountToDisplayUnit(amount: Long, coinType: CoinType): Pair<String, String> {
-    return convertAmountToDisplayUnit(amount.toString(), coinType)
+    return convertAmountToDisplayUnit(BigDecimal(amount), coinType)
 }
 
 fun convertAmountToDisplayUnit(amount: String, coinType: CoinType): Pair<String, String> {
-    val amountBigDecimal = BigDecimal(amount)
+    return convertAmountToDisplayUnit(amount.toBigDecimalOrNull() ?: BigDecimal.ZERO, coinType)
+}
+
+fun convertAmountToDisplayUnit(amount: BigDecimal, coinType: CoinType): Pair<String, String> {
     val scale: Int
     val unitBigDecimal = when (coinType) {
         getViolasCoinType(),
@@ -71,8 +74,8 @@ fun convertAmountToDisplayUnit(amount: String, coinType: CoinType): Pair<String,
             BigDecimal("100000000")
         }
     }
-    val amountStr = if (amountBigDecimal > BigDecimal.ZERO) {
-        amountBigDecimal
+    val amountStr = if (amount > BigDecimal.ZERO) {
+        amount
             .divide(unitBigDecimal, scale, RoundingMode.DOWN)
             .stripTrailingZeros()
             .toPlainString()

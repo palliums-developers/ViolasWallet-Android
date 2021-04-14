@@ -259,8 +259,8 @@
     <string name="market_pool_title_select_pool_token">Select Pair</string>
     <string name="market_pool_action_add_liquidity">Add Liquidity</string>
     <string name="market_pool_action_remove_liquidity">Remove Liquidity</string>
-    <string name="market_pool_action_deposit">Deposit</string>
-    <string name="market_pool_action_withdrawal">Withdrawal</string>
+    <string name="market_pool_action_deposit">Add</string>
+    <string name="market_pool_action_withdrawal">Remove</string>
     <string name="market_pool_action_select_pool_token">Select Pair</string>
     <string name="market_pool_label_input">Input</string>
     <string name="market_pool_label_output">Output</string>

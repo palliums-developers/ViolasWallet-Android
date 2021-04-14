@@ -8,12 +8,10 @@ import com.palliums.paging.PagingViewAdapter
 import com.palliums.utils.formatDate
 import com.palliums.utils.getColor
 import com.palliums.utils.getResourceId
-import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.utils.convertAmountToDisplayUnit
 import com.violas.wallet.utils.getAmountPrefix
 import kotlinx.android.synthetic.main.item_transaction_record.view.*
-import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -81,20 +79,27 @@ class TransactionRecordViewHolder(
                 it.toAddress ?: it.fromAddress
             }
             itemView.tvAddress.text = if (showAddress.length > 12)
-                "${showAddress.substring(0, 6)}...${showAddress.substring(
-                    showAddress.length - 6,
-                    showAddress.length
-                )}"
+                "${showAddress.substring(0, 6)}...${
+                    showAddress.substring(
+                        showAddress.length - 6,
+                        showAddress.length
+                    )
+                }"
             else
                 showAddress
 
             itemView.tvTime.text = formatDate(it.time, mSimpleDateFormat)
 
-            val amount = BigDecimal(it.amount)
-            val amountPrefix =
-                getAmountPrefix(amount, it.transactionType == TransactionType.COLLECTION)
-            val amountWithUnit = convertAmountToDisplayUnit(it.amount, it.coinType)
-            itemView.tvAmount.text = "$amountPrefix${amountWithUnit.first}"
+            val amount = it.amount.toBigDecimalOrNull()
+            if (amount != null) {
+                val amountPrefix =
+                    getAmountPrefix(amount, it.transactionType == TransactionType.COLLECTION)
+                val amountWithUnit = convertAmountToDisplayUnit(it.amount, it.coinType)
+                itemView.tvAmount.text = "$amountPrefix${amountWithUnit.first}"
+            } else {
+                itemView.tvAmount.setText(R.string.common_desc_value_null)
+            }
+
             itemView.tvAmount.setTextColor(
                 getColor(
                     getResourceId(
@@ -111,7 +116,7 @@ class TransactionRecordViewHolder(
 
                             else -> {
                                 itemView.tvDesc.visibility = View.VISIBLE
-                                itemView.tvDesc.text = getString(R.string.txn_details_state_processing)
+                                itemView.tvDesc.setText(R.string.txn_details_state_processing)
                                 itemView.tvDesc.setTextColor(
                                     getColor(
                                         getResourceId(

@@ -212,15 +212,23 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
 
         tvTime.text = formatDate(transactionRecord.time, pattern = "yyyy-MM-dd HH:mm:ss")
 
-        val amountWithUnit =
-            convertAmountToDisplayUnit(transactionRecord.amount, transactionRecord.coinType)
-        tvAmount.text =
-            "${amountWithUnit.first} ${transactionRecord.tokenDisplayName ?: amountWithUnit.second}"
+        val amount = transactionRecord.amount.toBigDecimalOrNull()
+        if(amount != null){
+            val amountWithUnit = convertAmountToDisplayUnit(amount, transactionRecord.coinType)
+            tvAmount.text =
+                "${amountWithUnit.first} ${transactionRecord.tokenDisplayName ?: amountWithUnit.second}"
+        }else{
+            tvAmount.setText(R.string.common_desc_value_null)
+        }
 
-        val gasWithUnit =
-            convertAmountToDisplayUnit(transactionRecord.gas, transactionRecord.coinType)
-        tvGas.text =
-            "${gasWithUnit.first} ${transactionRecord.gasTokenDisplayName ?: gasWithUnit.second}"
+        val gas = transactionRecord.gas.toBigDecimalOrNull()
+        if(gas != null){
+            val gasWithUnit = convertAmountToDisplayUnit(gas, transactionRecord.coinType)
+            tvGas.text =
+                "${gasWithUnit.first} ${transactionRecord.gasTokenDisplayName ?: gasWithUnit.second}"
+        }else{
+            tvGas.setText(R.string.common_desc_value_null)
+        }
 
         if (transactionRecord.toAddress.isNullOrBlank()) {
             noneContent(tvReceiptAddress)
