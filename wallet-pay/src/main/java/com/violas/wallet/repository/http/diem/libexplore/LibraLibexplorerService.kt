@@ -6,6 +6,7 @@ import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
+import com.violas.wallet.utils.getDiemOrderTime
 import java.util.*
 
 /**
@@ -66,7 +67,7 @@ class LibraLibexplorerService(
                 coinType = getDiemCoinType(),
                 transactionType = realTransactionType,
                 transactionState = transactionState,
-                time = dto.expirationTime,
+                time = getDiemOrderTime(dto.expirationTime),
                 fromAddress = dto.from,
                 toAddress = dto.to,
                 amount = dto.value,

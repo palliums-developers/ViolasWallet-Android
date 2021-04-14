@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
-import com.palliums.utils.formatDate
+import com.palliums.utils.formatDateWithNotNeedCorrectDate
 import com.palliums.utils.getColor
 import com.palliums.utils.getResourceId
 import com.violas.wallet.R
@@ -88,13 +88,13 @@ class TransactionRecordViewHolder(
             else
                 showAddress
 
-            itemView.tvTime.text = formatDate(it.time, mSimpleDateFormat)
+            itemView.tvTime.text = formatDateWithNotNeedCorrectDate(it.time, mSimpleDateFormat)
 
             val amount = it.amount.toBigDecimalOrNull()
             if (amount != null) {
                 val amountPrefix =
                     getAmountPrefix(amount, it.transactionType == TransactionType.COLLECTION)
-                val amountWithUnit = convertAmountToDisplayUnit(it.amount, it.coinType)
+                val amountWithUnit = convertAmountToDisplayUnit(amount, it.coinType)
                 itemView.tvAmount.text = "$amountPrefix${amountWithUnit.first}"
             } else {
                 itemView.tvAmount.setText(R.string.common_desc_value_null)

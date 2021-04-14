@@ -144,7 +144,7 @@
     <!--交易详情-->
     <string name="txn_details_title">Details</string>
     <string name="txn_details_menu">Share</string>
-    <string name="txn_details_desc">This address was not added</string>
+    <string name="txn_details_desc">This address not added</string>
     <string name="txn_details_action_1">Add Now</string>
     <string name="txn_details_action_2">Browser for more detailed information ></string>
     <string name="txn_details_label_1">Amount:&#160;</string>

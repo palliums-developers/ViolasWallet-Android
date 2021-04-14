@@ -19,6 +19,7 @@ import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.PoolRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.getAmountPrefix
+import com.violas.wallet.utils.getDiemOrderTime
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_pool_record.view.*
 import kotlinx.coroutines.Dispatchers
@@ -114,8 +115,8 @@ class PoolRecordActivity : BasePagingActivity<PoolRecordDTO>() {
 
         override fun onViewBind(itemPosition: Int, itemData: PoolRecordDTO?) {
             itemData?.let {
-                itemView.tvTime.text = formatDate(
-                    correctDateLength(it.confirmedTime) - 1000,
+                itemView.tvTime.text = formatDateWithNotNeedCorrectDate(
+                    getDiemOrderTime(it.expirationTime, it.confirmedTime),
                     simpleDateFormat
                 )
 

@@ -47,14 +47,13 @@ class MappingRecordViewModel : PagingViewModel<MappingRecordDTO>() {
         pageKey: Any?,
         onSuccess: (List<MappingRecordDTO>, Any?) -> Unit
     ) {
-        val mappingRecords =
-            mappingService.getMappingRecords(
-                violasWalletAddress,
-                libraWalletAddress,
-                bitcoinWalletAddress,
-                pageSize,
-                (pageNumber - 1) * pageSize
-            )
+        val mappingRecords = mappingService.getMappingRecords(
+            violasWalletAddress,
+            libraWalletAddress,
+            bitcoinWalletAddress,
+            pageSize,
+            (pageNumber - 1) * pageSize
+        )
         onSuccess.invoke(mappingRecords ?: emptyList(), null)
     }
 }

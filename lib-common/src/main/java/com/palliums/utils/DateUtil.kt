@@ -40,6 +40,16 @@ fun formatDate(
     return dateFormat.format(correctDateLength(date))
 }
 
+fun formatDateWithNotNeedCorrectDate(
+    date: Long,
+    simpleDateFormat: SimpleDateFormat? = null,
+    pattern: String? = null
+): String {
+    val dateFormat = simpleDateFormat
+        ?: SimpleDateFormat(pattern ?: "MM.dd HH:mm:ss", Locale.ENGLISH)
+    return dateFormat.format(date)
+}
+
 fun isExpired(expirationDate: Long): Boolean {
     return System.currentTimeMillis() > correctDateLength(expirationDate)
 }

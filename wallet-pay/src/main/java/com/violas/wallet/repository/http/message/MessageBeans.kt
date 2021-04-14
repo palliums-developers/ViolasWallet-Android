@@ -124,7 +124,7 @@ data class TransactionMsgDetailsDTO(
     @SerializedName(value = "expiration_time")
     val expirationTime: Long = 0,
     @SerializedName(value = "confirmed_time")
-    val confirmedTime: Long = 0,
+    val confirmedTime: Long?,
     @SerializedName(value = "sequence_number")
     val sequence_number: Long = 0,
     @SerializedName(value = "version")

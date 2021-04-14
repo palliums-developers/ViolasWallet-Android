@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.bitcoin.trezor
 
+import com.palliums.utils.correctDateLength
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getBitcoinConfirmations
 import com.violas.wallet.common.getBitcoinTxnDetailsUrl
@@ -111,7 +112,7 @@ class BitcoinTrezorService(
                 coinType = getBitcoinCoinType(),
                 transactionType = transactionType,
                 transactionState = transactionState,
-                time = dto.blockTime,
+                time = correctDateLength(dto.blockTime),
                 fromAddress = fromAddress,
                 toAddress = toAddress,
                 amount = showAmount.toString(),

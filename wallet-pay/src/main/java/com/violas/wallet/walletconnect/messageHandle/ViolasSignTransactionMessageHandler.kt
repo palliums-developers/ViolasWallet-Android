@@ -14,7 +14,7 @@ import com.violas.walletconnect.jsonrpc.JsonRpcError
 import com.violas.walletconnect.models.WCMethod
 import com.violas.walletconnect.models.violas.WCViolasSignTransaction
 import kotlinx.coroutines.runBlocking
-import org.palliums.violascore.common.CURRENCY_DEFAULT_CODE
+import org.palliums.violascore.common.*
 import org.palliums.violascore.serialization.LCSInputStream
 import org.palliums.violascore.serialization.hexToBytes
 import org.palliums.violascore.serialization.toHex
@@ -43,11 +43,12 @@ class ViolasSignTransactionMessageHandler : IMessageHandler<JsonArray> {
             tx.from
         ) ?: throw InvalidParameterErrorMessage(requestID, "Account does not exist.")
 
-        val sequenceNumber = tx.sequenceNumber ?: -1
+        val sequenceNumber = tx.sequenceNumber ?: SEQUENCE_NUMBER_UNKNOWN
         val gasCurrencyCode = tx.gasCurrencyCode ?: CURRENCY_DEFAULT_CODE
-        val maxGasAmount = tx.maxGasAmount ?: 1_000_000
-        val gasUnitPrice = tx.gasUnitPrice ?: 0
-        val expirationTime = tx.expirationTime ?: System.currentTimeMillis() + 1000
+        val maxGasAmount = tx.maxGasAmount ?: MAX_GAS_AMOUNT_DEFAULT
+        val gasUnitPrice = tx.gasUnitPrice ?: GAS_UNIT_PRICE_MIN
+        val expirationTime =
+            tx.expirationTime ?: System.currentTimeMillis() + EXPIRATION_DELAYED_DEFAULT
         val chainId = tx.chainId
 
         val payload = TransactionPayload.Script(

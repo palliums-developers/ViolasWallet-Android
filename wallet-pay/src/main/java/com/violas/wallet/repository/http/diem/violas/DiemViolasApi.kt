@@ -60,7 +60,7 @@ data class TransactionRecordDTO(
     @SerializedName(value = "receiver")
     val receiver: String? = null,
     @SerializedName(value = "amount")
-    val amount: String = "",
+    val amount: String? = null,
     @SerializedName(value = "currency")
     val currency: String = "",
     @SerializedName(value = "gas")
@@ -70,7 +70,7 @@ data class TransactionRecordDTO(
     @SerializedName(value = "expiration_time")
     val expirationTime: Long = 0,
     @SerializedName(value = "confirmed_time")
-    val confirmedTime: Long = 0,
+    val confirmedTime: Long?,
     @SerializedName(value = "sequence_number")
     val sequence_number: Long = 0,
     @SerializedName(value = "version")

@@ -9,9 +9,7 @@ import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.exchange.PoolRecordDTO
-import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import com.violas.wallet.utils.convertAmountToExchangeRate
-import com.violas.wallet.utils.getAmountPrefix
+import com.violas.wallet.utils.*
 import kotlinx.android.synthetic.main.activity_pool_details.*
 import java.math.BigDecimal
 
@@ -87,10 +85,12 @@ class PoolDetailsActivity : BaseAppActivity() {
                 getString(R.string.common_desc_value_null)
             } else {
                 val amount = BigDecimal(record.liquidityAmount)
-                "${getAmountPrefix(
-                    amount,
-                    record.isAddLiquidity()
-                )}${convertAmountToDisplayAmountStr(amount)}"
+                "${
+                    getAmountPrefix(
+                        amount,
+                        record.isAddLiquidity()
+                    )
+                }${convertAmountToDisplayAmountStr(amount)}"
             }
 
         tvExchangeRate.text =
@@ -107,13 +107,14 @@ class PoolDetailsActivity : BaseAppActivity() {
             else
                 "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
-        tvOrderTime.text = formatDate(
-            correctDateLength(record.confirmedTime) - 1000,
-            pattern = "yyyy-MM-dd HH:mm:ss"
+        val pattern = "yyyy-MM-dd HH:mm:ss"
+        tvOrderTime.text = formatDateWithNotNeedCorrectDate(
+            getDiemOrderTime(record.expirationTime),
+            pattern = pattern
         )
-        tvDealTime.text = formatDate(
-            record.confirmedTime,
-            pattern = "yyyy-MM-dd HH:mm:ss"
+        tvDealTime.text = formatDateWithNotNeedCorrectDate(
+            getDiemDealTime(record.expirationTime),
+            pattern = pattern
         )
 
         tvProcessingDesc.setTextColor(

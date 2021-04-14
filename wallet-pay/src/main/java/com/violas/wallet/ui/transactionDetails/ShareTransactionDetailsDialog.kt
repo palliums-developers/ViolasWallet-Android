@@ -210,23 +210,26 @@ class ShareTransactionDetailsDialog : DialogFragment(), CoroutineScope by Custom
             }
         }
 
-        tvTime.text = formatDate(transactionRecord.time, pattern = "yyyy-MM-dd HH:mm:ss")
+        tvTime.text = formatDateWithNotNeedCorrectDate(
+            transactionRecord.time,
+            pattern = "yyyy-MM-dd HH:mm:ss"
+        )
 
         val amount = transactionRecord.amount.toBigDecimalOrNull()
-        if(amount != null){
+        if (amount != null) {
             val amountWithUnit = convertAmountToDisplayUnit(amount, transactionRecord.coinType)
             tvAmount.text =
                 "${amountWithUnit.first} ${transactionRecord.tokenDisplayName ?: amountWithUnit.second}"
-        }else{
+        } else {
             tvAmount.setText(R.string.common_desc_value_null)
         }
 
         val gas = transactionRecord.gas.toBigDecimalOrNull()
-        if(gas != null){
+        if (gas != null) {
             val gasWithUnit = convertAmountToDisplayUnit(gas, transactionRecord.coinType)
             tvGas.text =
                 "${gasWithUnit.first} ${transactionRecord.gasTokenDisplayName ?: gasWithUnit.second}"
-        }else{
+        } else {
             tvGas.setText(R.string.common_desc_value_null)
         }
 

@@ -6,6 +6,7 @@ import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
+import com.violas.wallet.utils.getDiemOrderTime
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 
@@ -84,8 +85,8 @@ class DiemViolasService(
                 transactionState = transactionState,
                 fromAddress = dto.sender,
                 toAddress = dto.receiver,
-                time = dto.confirmedTime,
-                amount = dto.amount,
+                time = getDiemOrderTime(dto.expirationTime, dto.confirmedTime),
+                amount = dto.amount ?: "",
                 tokenId = tokenId,
                 tokenDisplayName = tokenDisplayName,
                 gas = dto.gas,

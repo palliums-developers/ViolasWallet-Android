@@ -25,6 +25,7 @@ import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
+import com.violas.wallet.utils.getDiemOrderTime
 import kotlinx.android.synthetic.main.item_transaction_message.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -150,7 +151,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
                     coinType = getViolasCoinType(),
                     transactionState = transactionState,
                     transactionType = transactionType,
-                    time = msgDetails.expirationTime,
+                    time = getDiemOrderTime(msgDetails.expirationTime, msgDetails.confirmedTime),
                     fromAddress = msgDetails.sender,
                     toAddress = msgDetails.receiver,
                     amount = msgDetails.amount,

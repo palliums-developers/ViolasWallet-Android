@@ -1,5 +1,6 @@
 package com.violas.wallet.repository.http.bitcoin.bitmain
 
+import com.palliums.utils.correctDateLength
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getBitcoinConfirmations
 import com.violas.wallet.common.getBitcoinTxnDetailsUrl
@@ -111,7 +112,7 @@ class BitmainService(
                 coinType = getBitcoinCoinType(),
                 transactionType = transactionType,
                 transactionState = transactionState,
-                time = dto.block_time,
+                time = correctDateLength(dto.block_time),
                 fromAddress = fromAddress,
                 toAddress = toAddress,
                 amount = showAmount.toString(),

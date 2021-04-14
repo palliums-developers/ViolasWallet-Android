@@ -6,16 +6,15 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import com.palliums.extensions.expandTouchArea
-import com.palliums.utils.formatDate
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.getResourceId
-import com.palliums.utils.start
+import com.palliums.utils.*
 import com.violas.wallet.R
 import com.violas.wallet.base.BaseAppActivity
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.repository.http.exchange.ViolasSwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
 import com.violas.wallet.utils.convertAmountToExchangeRate
+import com.violas.wallet.utils.getDiemDealTime
+import com.violas.wallet.utils.getDiemOrderTime
 import kotlinx.android.synthetic.main.activity_swap_details.*
 
 /**
@@ -89,10 +88,7 @@ class SwapDetailsActivity : BaseAppActivity() {
             if (record.inputCoinAmount.isNullOrBlank() || record.outputCoinAmount.isNullOrBlank())
                 getString(R.string.common_desc_value_null)
             else
-                convertAmountToExchangeRate(
-                    record.inputCoinAmount,
-                    record.outputCoinAmount
-                ).let {
+                convertAmountToExchangeRate(record.inputCoinAmount, record.outputCoinAmount).let {
                     if (it == null) getString(R.string.common_desc_value_null) else "1:${it.toPlainString()}"
                 }
 
@@ -105,8 +101,14 @@ class SwapDetailsActivity : BaseAppActivity() {
                 "${convertAmountToDisplayAmountStr(record.gasCoinAmount)} ${record.gasCoinName}"
 
         val pattern = "yyyy-MM-dd HH:mm:ss"
-        tvOrderTime.text = formatDate(record.time, pattern = pattern)
-        tvDealTime.text = getString(R.string.common_desc_value_null)
+        tvOrderTime.text = formatDateWithNotNeedCorrectDate(
+            getDiemOrderTime(record.expirationTime, record.confirmedTime),
+            pattern = pattern
+        )
+        tvDealTime.text = formatDateWithNotNeedCorrectDate(
+            getDiemDealTime(record.expirationTime, record.confirmedTime),
+            pattern = pattern
+        )
 
         // 兑换中
         if (record.status.isNullOrBlank()) {
@@ -145,7 +147,7 @@ class SwapDetailsActivity : BaseAppActivity() {
             record.status.equals("Executed", true) -> {
                 tvResultDesc.setText(R.string.swap_txn_state_succeeded)
                 tvResultDesc.setTextColor(
-                    getColorByAttrId(android.R.attr.textColor, this)
+                    getColorByAttrId(R.attr.textColorSuccess, this)
                 )
                 ivResultIcon.setBackgroundResource(
                     getResourceId(R.attr.iconRecordStateSucceeded, this)

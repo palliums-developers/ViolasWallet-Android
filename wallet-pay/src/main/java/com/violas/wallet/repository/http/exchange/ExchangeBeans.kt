@@ -189,9 +189,9 @@ data class PoolRecordDTO(
     val status: String?,
 
     @SerializedName(value = "date")
-    val time: Long,
+    val expirationTime: Long,
     @SerializedName(value = "confirmed_time")
-    val confirmedTime: Long,
+    val confirmedTime: Long?,
     @SerializedName(value = "version")
     val version: Long
 ) : Parcelable {
@@ -268,9 +268,9 @@ data class ViolasSwapRecordDTO(
     val gasCoinAmount: String?,
 
     @SerializedName(value = "date")
-    val time: Long,
+    val expirationTime: Long,
     @SerializedName(value = "confirmed_time")
-    val confirmedTime: Long,
+    val confirmedTime: Long?,
     @SerializedName(value = "version")
     val version: Long,
     @SerializedName(value = "status")

@@ -10,9 +10,7 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.extensions.expandTouchArea
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
-import com.palliums.utils.formatDate
-import com.palliums.utils.getColorByAttrId
-import com.palliums.utils.getString
+import com.palliums.utils.*
 import com.palliums.widget.status.IStatusLayout
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
@@ -21,6 +19,7 @@ import com.violas.wallet.common.getViolasCoinType
 import com.violas.wallet.repository.DataRepository
 import com.violas.wallet.repository.http.exchange.ViolasSwapRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
+import com.violas.wallet.utils.getDiemOrderTime
 import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.item_market_swap_record.view.*
 import kotlinx.coroutines.Dispatchers
@@ -124,7 +123,10 @@ class SwapRecordActivity : BasePagingActivity<ViolasSwapRecordDTO>() {
 
         override fun onViewBind(itemPosition: Int, itemData: ViolasSwapRecordDTO?) {
             itemData?.let {
-                itemView.tvTime.text = formatDate(it.time, simpleDateFormat)
+                itemView.tvTime.text = formatDateWithNotNeedCorrectDate(
+                    getDiemOrderTime(it.expirationTime, it.confirmedTime),
+                    simpleDateFormat
+                )
 
                 itemView.tvInputCoin.text =
                     if (it.inputDisplayName.isNullOrBlank() || it.inputCoinAmount.isNullOrBlank()) {
