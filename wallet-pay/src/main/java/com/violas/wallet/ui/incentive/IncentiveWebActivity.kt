@@ -104,7 +104,7 @@ class IncentiveWebActivity : BaseBridgeWebActivity(), EasyPermissions.Permission
     }
 
     private val mTitle by lazy { intent.getStringExtra(EXTRA_KEY_TITLE) }
-    private val mUrl by lazy { intent.getStringExtra(EXTRA_KEY_URL) }
+    private val mUrl by lazy { intent.getStringExtra(EXTRA_KEY_URL) ?: "" }
     private val mGson by lazy { Gson() }
     private val mBankManager by lazy { BankManager() }
     private val mExchangeManager by lazy { ExchangeManager() }

@@ -307,7 +307,7 @@
     <string name="home_bank_label_total_deposit">Total Deposit&#160;($)&#160;</string>
     <string name="home_bank_label_total_borrowable">Total Borrowable&#160;($)&#160;</string>
     <string name="home_bank_label_total_earnings">Total Earnings&#160;($)&#160;</string>
-    <string name="home_bank_label_yesterday_earnings">Yesterday\'s Earnings&#160;</string>
+    <string name="home_bank_label_yesterday_earnings">Yesterday&#160;</string>
     <string name="home_bank_tab_deposit_market">Deposit Pool</string>
     <string name="home_bank_tab_borrowing_market">Borrowing Pool</string>
     <string name="home_bank_menu_deposit_order">Deposit Orders</string>

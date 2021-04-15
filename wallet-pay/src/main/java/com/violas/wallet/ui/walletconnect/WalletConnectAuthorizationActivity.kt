@@ -58,7 +58,7 @@ class WalletConnectAuthorizationActivity : BaseAppActivity() {
     }
 
     private val mMsg by lazy {
-        intent.getStringExtra(CONNECT_MSG)
+        intent.getStringExtra(CONNECT_MSG) ?: ""
     }
 
     override fun getTitleStyle() = PAGE_STYLE_NOT_TITLE

@@ -57,29 +57,29 @@ open class App : Application(), ViewModelStoreOwner {
     private fun initActivityStack() {
         this.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
 
-            override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 activityStore.add(activity)
             }
 
-            override fun onActivityStarted(activity: Activity?) {
+            override fun onActivityStarted(activity: Activity) {
             }
 
-            override fun onActivityResumed(activity: Activity?) {
-
-            }
-
-            override fun onActivityPaused(activity: Activity?) {
+            override fun onActivityResumed(activity: Activity) {
 
             }
 
-            override fun onActivityStopped(activity: Activity?) {
+            override fun onActivityPaused(activity: Activity) {
+
             }
 
-            override fun onActivityDestroyed(activity: Activity?) {
+            override fun onActivityStopped(activity: Activity) {
+            }
+
+            override fun onActivityDestroyed(activity: Activity) {
                 activityStore.remove(activity)
             }
 
-            override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
             }
         })
     }
