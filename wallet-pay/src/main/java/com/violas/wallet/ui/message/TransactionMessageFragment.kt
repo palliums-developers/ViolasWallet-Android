@@ -10,6 +10,7 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.extensions.getShowErrorMessage
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
+import com.palliums.utils.correctDateLength
 import com.palliums.utils.formatDate
 import com.palliums.utils.getDrawableByAttrId
 import com.palliums.widget.status.IStatusLayout
@@ -25,7 +26,6 @@ import com.violas.wallet.ui.transactionDetails.TransactionDetailsActivity
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
-import com.violas.wallet.utils.getDiemOrderTime
 import kotlinx.android.synthetic.main.item_transaction_message.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -151,7 +151,7 @@ class TransactionMessageFragment : BasePagingFragment<TransactionMessageDTO>() {
                     coinType = getViolasCoinType(),
                     transactionState = transactionState,
                     transactionType = transactionType,
-                    time = getDiemOrderTime(msgDetails.expirationTime, msgDetails.confirmedTime),
+                    time = correctDateLength(msgDetails.confirmedTime ?: msgDetails.expirationTime),
                     fromAddress = msgDetails.sender,
                     toAddress = msgDetails.receiver,
                     amount = msgDetails.amount,

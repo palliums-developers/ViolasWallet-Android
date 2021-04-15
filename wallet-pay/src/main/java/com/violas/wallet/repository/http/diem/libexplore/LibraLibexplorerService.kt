@@ -1,12 +1,12 @@
 package com.violas.wallet.repository.http.diem.libexplore
 
+import com.palliums.utils.correctDateLength
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getDiemTxnDetailsUrl
 import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
-import com.violas.wallet.utils.getDiemOrderTime
 import java.util.*
 
 /**
@@ -67,7 +67,7 @@ class LibraLibexplorerService(
                 coinType = getDiemCoinType(),
                 transactionType = realTransactionType,
                 transactionState = transactionState,
-                time = getDiemOrderTime(dto.expirationTime),
+                time = correctDateLength(dto.expirationTime),
                 fromAddress = dto.from,
                 toAddress = dto.to,
                 amount = dto.value,

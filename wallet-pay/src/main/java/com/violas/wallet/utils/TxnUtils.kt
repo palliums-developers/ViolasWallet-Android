@@ -14,12 +14,12 @@ fun getDiemOrderTime(expirationTime: Long, confirmedTime: Long? = null): Long {
     return if (confirmedTime != null)
         correctDateLength(confirmedTime) - 1000
     else
-        correctDateLength(expirationTime) - EXPIRATION_DELAYED_DEFAULT * 1000 - 500
+        correctDateLength(expirationTime) - EXPIRATION_DELAYED_DEFAULT * 1000 + 500
 }
 
 fun getDiemDealTime(expirationTime: Long, confirmedTime: Long? = null): Long {
     return if (confirmedTime != null)
         correctDateLength(confirmedTime)
     else
-        correctDateLength(expirationTime) - (EXPIRATION_DELAYED_DEFAULT - 1) * 1000 - 500
+        correctDateLength(expirationTime) - (EXPIRATION_DELAYED_DEFAULT - 1) * 1000 + 500
 }

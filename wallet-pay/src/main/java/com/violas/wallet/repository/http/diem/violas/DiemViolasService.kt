@@ -1,12 +1,12 @@
 package com.violas.wallet.repository.http.diem.violas
 
+import com.palliums.utils.correctDateLength
 import com.violas.wallet.common.getDiemCoinType
 import com.violas.wallet.common.getDiemTxnDetailsUrl
 import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
-import com.violas.wallet.utils.getDiemOrderTime
 import com.violas.wallet.viewModel.WalletAppViewModel
 import com.violas.wallet.viewModel.bean.DiemCurrencyAssetVo
 
@@ -85,7 +85,7 @@ class DiemViolasService(
                 transactionState = transactionState,
                 fromAddress = dto.sender,
                 toAddress = dto.receiver,
-                time = getDiemOrderTime(dto.expirationTime, dto.confirmedTime),
+                time = correctDateLength(dto.confirmedTime ?: dto.expirationTime),
                 amount = dto.amount ?: "",
                 tokenId = tokenId,
                 tokenDisplayName = tokenDisplayName,

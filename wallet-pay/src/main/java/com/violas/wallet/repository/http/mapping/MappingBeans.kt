@@ -71,5 +71,5 @@ data class MappingRecordDTO(
     @SerializedName(value = "state")
     val state: String?,
     @SerializedName(value = "expiration_time")
-    val time: Long
+    val orderTime: Long
 )

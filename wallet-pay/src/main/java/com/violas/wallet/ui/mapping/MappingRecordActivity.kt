@@ -9,16 +9,13 @@ import com.palliums.base.BaseViewHolder
 import com.palliums.paging.PagingViewAdapter
 import com.palliums.paging.PagingViewModel
 import com.palliums.utils.formatDate
-import com.palliums.utils.formatDateWithNotNeedCorrectDate
 import com.palliums.utils.getColorByAttrId
 import com.palliums.utils.getString
 import com.violas.wallet.R
 import com.violas.wallet.base.BasePagingActivity
-import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getEthereumCoinType
 import com.violas.wallet.repository.http.mapping.MappingRecordDTO
 import com.violas.wallet.utils.convertAmountToDisplayAmountStr
-import com.violas.wallet.utils.getDiemOrderTime
 import com.violas.wallet.utils.str2CoinType
 import kotlinx.android.synthetic.main.item_mapping_record.view.*
 import kotlinx.coroutines.launch
@@ -97,13 +94,7 @@ class MappingRecordActivity : BasePagingActivity<MappingRecordDTO>() {
 
         override fun onViewBind(itemPosition: Int, itemData: MappingRecordDTO?) {
             itemData?.let {
-                itemView.tvTime.text = if (str2CoinType(it.inputChainName) == getBitcoinCoinType())
-                    formatDate(it.time, simpleDateFormat)
-                else
-                    formatDateWithNotNeedCorrectDate(
-                        getDiemOrderTime(it.time),
-                        simpleDateFormat
-                    )
+                itemView.tvTime.text = formatDate(it.orderTime, simpleDateFormat)
 
                 itemView.tvInputCoin.text =
                     if (it.inputCoinDisplayName.isNullOrBlank()

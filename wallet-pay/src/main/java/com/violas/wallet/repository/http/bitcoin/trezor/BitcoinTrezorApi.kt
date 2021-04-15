@@ -86,7 +86,6 @@ data class TransactionRecordDTO(
     val confirmations: Long,
     val fees: String,
     val hex: String,
-    val lockTime: Long,
     val txid: String,
     val value: String,
     val valueIn: String,
@@ -110,7 +109,6 @@ data class TransactionRecordDTO(
         val hex: String,
         val isAddress: Boolean,
         val n: Long,
-        val spent: Boolean,
         val value: String
     )
 }

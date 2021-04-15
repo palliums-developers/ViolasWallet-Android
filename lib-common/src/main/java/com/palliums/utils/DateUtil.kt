@@ -14,20 +14,22 @@ import java.util.*
  * 修正日期长度
  */
 fun correctDateLength(dateStr: String): String {
-    return if (dateStr.length == 10)
-        "${dateStr}000"
-    else
-        dateStr
+    return when (dateStr.length) {
+        10 -> "${dateStr}000"
+        16 -> dateStr.substring(0, 13)
+        else -> dateStr
+    }
 }
 
 /**
  * 修正日期长度
  */
 fun correctDateLength(date: Long): Long {
-    return if (date.toString().length == 10)
-        date * 1000
-    else
-        date
+    return when (date.toString().length) {
+        10 -> date * 1000
+        16 -> date / 1000
+        else -> date
+    }
 }
 
 fun formatDate(
