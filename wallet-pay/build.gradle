@@ -63,6 +63,7 @@ android {
 
     buildTypes {
         release {
+//            debuggable true
             minifyEnabled true
             zipAlignEnabled true
             pseudoLocalesEnabled true
