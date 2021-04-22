@@ -63,16 +63,14 @@ class BankViewModel : BaseViewModel() {
                 totalDepositLiveData.value =
                     "≈ ${keepTwoDecimal(accountInfo?.totalDeposit)}"
                 borrowableLiveData.value =
-                    "≈ ${
+                    "≈ ${keepTwoDecimal(accountInfo?.borrowableLimit)}/${
                         keepTwoDecimal(
-                            if (accountInfo != null
-                                && accountInfo.borrowableLimit > accountInfo.borrowed
-                            )
-                                accountInfo.borrowableLimit.subtract(accountInfo.borrowed)
+                            if (accountInfo != null)
+                                accountInfo.borrowableLimit.add(accountInfo.borrowed)
                             else
                                 BigDecimal.ZERO
                         )
-                    }/${keepTwoDecimal(accountInfo?.borrowableLimit)}"
+                    }"
                 totalEarningsLiveData.value =
                     "≈ ${keepTwoDecimal(accountInfo?.totalEarnings)}"
                 yesterdayEarningsLiveData.value =

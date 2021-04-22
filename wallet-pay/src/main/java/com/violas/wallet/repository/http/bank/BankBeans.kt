@@ -20,9 +20,9 @@ data class AccountInfoDTO(
     @SerializedName("amount")
     var totalDeposit: BigDecimal,           // 存款总额
     @SerializedName("borrow")
-    var borrowed: BigDecimal,               // 已借
+    var borrowed: BigDecimal,               // 已借额
     @SerializedName("borrow_limit")
-    var borrowableLimit: BigDecimal,        // 可借总额
+    var borrowableLimit: BigDecimal,        // 剩余可借额
     @SerializedName("total")
     var totalEarnings: BigDecimal,          // 总收益
     @SerializedName("yesterday")
