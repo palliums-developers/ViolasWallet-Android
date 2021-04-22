@@ -21,5 +21,5 @@ object ApiBaseUrl {
     const val BITMAIN_BASE_URL = "https://developer-btc-chain.api.btc.com/appkey-e6e2ce95d8df"
 
     // Trezor base url
-    const val TREZOR_BASE_URL = "https://tbtc1.trezor.io/api"
+    const val TREZOR_BASE_URL = "https://btc1.trezor.io/api"
 }
