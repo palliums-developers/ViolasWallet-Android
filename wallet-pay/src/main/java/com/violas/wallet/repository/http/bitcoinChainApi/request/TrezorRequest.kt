@@ -6,12 +6,7 @@ import com.violas.wallet.repository.http.bitcoinChainApi.bean.UTXO
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.POST
 import retrofit2.http.Path
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
@@ -68,9 +63,9 @@ class TrezorRequest(private val testNet: Boolean) :
 
     override fun requestUrl(): String {
         return if (testNet) {
-            return "https://tbtc1.trezor.io/api/"
+            "https://tbtc1.trezor.io/api/"
         } else {
-            return "https://btc1.trezor.io/api/"
+            "https://btc1.trezor.io/api/"
         }
     }
 

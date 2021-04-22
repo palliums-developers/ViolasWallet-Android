@@ -1,6 +1,9 @@
 package com.violas.wallet.repository.http.bitcoinChainApi.request;
 
 
+import com.violas.wallet.BuildConfig;
+import com.violas.wallet.repository.http.interceptor.RequestHeaderInterceptor;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -29,12 +32,20 @@ public abstract class BaseRequest<T> {
     }
 
     private Retrofit getRetrofit() {
+        final HttpLoggingInterceptor.Level logLevel;
+        if (BuildConfig.DEBUG) {
+            logLevel = HttpLoggingInterceptor.Level.BODY;
+        } else {
+            logLevel = HttpLoggingInterceptor.Level.NONE;
+        }
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .callTimeout(100, TimeUnit.SECONDS)
                 .connectTimeout(100, TimeUnit.SECONDS)
                 .readTimeout(100, TimeUnit.SECONDS)
 //                .addInterceptor(sChainInterceptor)
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addInterceptor(new RequestHeaderInterceptor())
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(logLevel))
                 .build();
 
         return new Retrofit.Builder()
