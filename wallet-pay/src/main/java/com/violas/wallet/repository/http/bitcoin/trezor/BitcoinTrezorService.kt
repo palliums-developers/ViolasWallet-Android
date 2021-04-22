@@ -52,12 +52,13 @@ class BitcoinTrezorService(
             val inputAddressesExcludeSelf = arrayListOf<String>()
             dto.vin.forEach { inputInfo ->
                 totalInputAmount += inputInfo.value.toLong()
-
-                inputInfo.addresses.forEach { address ->
-                    if (address == walletAddress) {
-                        transactionType = TransactionType.TRANSFER
-                    } else {
-                        inputAddressesExcludeSelf.add(address)
+                if (inputInfo.isAddress) {
+                    inputInfo.addresses.forEach { address ->
+                        if (address == walletAddress) {
+                            transactionType = TransactionType.TRANSFER
+                        } else {
+                            inputAddressesExcludeSelf.add(address)
+                        }
                     }
                 }
             }
@@ -65,17 +66,19 @@ class BitcoinTrezorService(
             var outputAmountToSelf = 0L
             val outputAddressesExcludeSelf = arrayListOf<String>()
             dto.vout.forEach { outputInfo ->
-                var self = false
-                outputInfo.addresses.forEach { address ->
-                    if (address == walletAddress) {
-                        self = true
-                    } else {
-                        outputAddressesExcludeSelf.add(address)
+                if (outputInfo.isAddress) {
+                    var self = false
+                    outputInfo.addresses.forEach { address ->
+                        if (address == walletAddress) {
+                            self = true
+                        } else {
+                            outputAddressesExcludeSelf.add(address)
+                        }
                     }
-                }
 
-                if (self) {
-                    outputAmountToSelf += outputInfo.value.toLong()
+                    if (self) {
+                        outputAmountToSelf += outputInfo.value.toLong()
+                    }
                 }
             }
 
@@ -89,7 +92,7 @@ class BitcoinTrezorService(
                     walletAddress
                 }
             val toAddress =
-                if (transactionType != TransactionType.COLLECTION
+                if (transactionType == TransactionType.TRANSFER
                     && outputAddressesExcludeSelf.isNotEmpty()
                 ) {
                     outputAddressesExcludeSelf[0]

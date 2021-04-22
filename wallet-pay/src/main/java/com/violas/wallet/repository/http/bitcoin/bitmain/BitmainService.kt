@@ -89,7 +89,7 @@ class BitmainService(
                     walletAddress
                 }
             val toAddress =
-                if (transactionType != TransactionType.COLLECTION
+                if (transactionType == TransactionType.TRANSFER
                     && outputAddressesExcludeSelf.isNotEmpty()
                 ) {
                     outputAddressesExcludeSelf[0]
