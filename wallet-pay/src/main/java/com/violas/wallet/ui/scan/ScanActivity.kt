@@ -22,6 +22,7 @@ import com.violas.wallet.biz.*
 import com.violas.wallet.common.KEY_ONE
 import com.violas.wallet.ui.transfer.TransferActivity
 import com.violas.wallet.ui.walletconnect.WalletConnectAuthorizationActivity
+import com.violas.wallet.viewModel.WalletAppViewModel
 import kotlinx.android.synthetic.main.activity_scan.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -138,20 +139,29 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
                 return@launch
             }
 
+            var tips = false
             when (qrCode) {
                 is TransferQRCode -> {
-                    TransferActivity.start(
-                        this@ScanActivity,
-                        qrCode.coinNumber,
-                        qrCode.tokenName,
-                        qrCode.address,
-                        qrCode.subAddress,
-                        qrCode.amount
-                    )
+                    if (WalletAppViewModel.getInstance().isExistsAccount()) {
+                        TransferActivity.start(
+                            this@ScanActivity,
+                            qrCode.coinNumber,
+                            qrCode.tokenName,
+                            qrCode.address,
+                            qrCode.subAddress,
+                            qrCode.amount
+                        )
+                    } else {
+                        tips = true
+                    }
                 }
 
                 is WalletConnectQRCode -> {
-                    WalletConnectAuthorizationActivity.start(this@ScanActivity, qrCode.content)
+                    if (WalletAppViewModel.getInstance().isExistsAccount()) {
+                        WalletConnectAuthorizationActivity.start(this@ScanActivity, qrCode.content)
+                    } else {
+                        tips = true
+                    }
                 }
 
                 is CommonQRCode -> {
@@ -163,6 +173,10 @@ class ScanActivity : BaseAppActivity(), EasyPermissions.PermissionCallbacks {
             delay(300)
             close()
             overridePendingTransition(R.anim.activity_none, R.anim.activity_none)
+
+            if(tips){
+                showToast(R.string.common_tips_account_empty)
+            }
         }
     }
 

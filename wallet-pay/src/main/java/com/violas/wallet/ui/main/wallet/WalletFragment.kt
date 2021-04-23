@@ -327,11 +327,7 @@ class WalletFragment : BaseFragment() {
 
             R.id.ivScan -> {
                 activity?.let { it1 ->
-                    if (mWalletAppViewModel.isExistsAccount()) {
-                        ScanActivity.start(it1)
-                    } else {
-                        showToast(R.string.common_tips_account_empty)
-                    }
+                    ScanActivity.start(it1)
                 }
             }
 
