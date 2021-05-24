@@ -1,6 +1,10 @@
 package com.violas.wallet.repository.http.bitcoin.trezor
 
 import com.palliums.utils.correctDateLength
+import com.violas.wallet.biz.btc.BitcoinBasicService
+import com.violas.wallet.biz.btc.bean.AccountState
+import com.violas.wallet.biz.btc.bean.Transaction
+import com.violas.wallet.biz.btc.bean.UTXO
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getBitcoinConfirmations
 import com.violas.wallet.common.getBitcoinTxnDetailsUrl
@@ -8,6 +12,7 @@ import com.violas.wallet.repository.http.TransactionRecordService
 import com.violas.wallet.ui.transactionRecord.TransactionRecordVO
 import com.violas.wallet.ui.transactionRecord.TransactionState
 import com.violas.wallet.ui.transactionRecord.TransactionType
+import java.math.BigInteger
 
 /**
  * Created by elephant on 2020/6/5 18:16.
@@ -17,7 +22,70 @@ import com.violas.wallet.ui.transactionRecord.TransactionType
  */
 class BitcoinTrezorService(
     private val repository: BitcoinTrezorRepository
-) : TransactionRecordService {
+) : BitcoinBasicService, TransactionRecordService {
+
+    override suspend fun getAccountState(address: String): AccountState {
+        val response = repository.getAccountState(address)
+
+        return AccountState(
+            address = response.address,
+            balance = response.balance.toBigIntegerOrNull() ?: BigInteger.ZERO,
+            unconfirmedBalance = response.unconfirmedBalance.toBigIntegerOrNull(),
+            received = response.totalReceived.toBigIntegerOrNull(),
+            sent = response.totalSent.toBigIntegerOrNull(),
+            txs = response.txs,
+            unconfirmedTxs = response.unconfirmedTxs
+        )
+    }
+
+    override suspend fun getUTXO(address: String): List<UTXO> {
+        val utxos = repository.getUTXO(address)
+
+        return utxos.map {
+            val tx = repository.getTransaction(it.txid)
+            UTXO(
+                txId = it.txid,
+                outputNo = it.vout,
+                scriptPubKey = tx.vout?.get(it.vout)?.hex!!,
+                amount = it.value.toBigIntegerOrNull() ?: BigInteger.ZERO,
+                confirmations = it.confirmations
+            )
+        }
+    }
+
+    override suspend fun getTransaction(txId: String): Transaction {
+        val response = repository.getTransaction(txId)
+
+        return Transaction(
+            txId = response.txid,
+            blockHash = response.blockHash,
+            blockTime = response.blockTime,
+            confirmations = response.confirmations,
+            txHex = response.hex,
+            blockHeight = response.blockHeight,
+            version = response.version,
+            inputs = response.vin?.map {
+                Transaction.Input(
+                    txId = it.txid,
+                    value = it.value?.toBigIntegerOrNull() ?: BigInteger.ZERO,
+                    scriptSig = Transaction.ScriptSig(hex = it.hex ?: it.coinbase),
+                    addresses = it.addresses,
+                    sequence = it.sequence
+                )
+            },
+            outputs = response.vout?.map {
+                Transaction.Output(
+                    value = it.value.toBigIntegerOrNull() ?: BigInteger.ZERO,
+                    scriptPubKey = Transaction.ScriptPubKey(hex = it.hex),
+                    addresses = it.addresses
+                )
+            }
+        )
+    }
+
+    override suspend fun pushTransaction(tx: String): String {
+        return repository.pushTransaction(tx)
+    }
 
     override suspend fun getTransactionRecords(
         walletAddress: String,
@@ -30,14 +98,14 @@ class BitcoinTrezorService(
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
         val response =
-            repository.getTransactionRecords(walletAddress, pageSize, pageNumber)
+            repository.getTransactions(walletAddress, pageSize, pageNumber)
 
-        if (response.data.isNullOrEmpty()) {
+        if (response.transactions.isNullOrEmpty()) {
             onSuccess.invoke(emptyList(), null)
             return
         }
 
-        val list = response.data!!.mapIndexed { index, dto ->
+        val list = response.transactions.mapIndexed { index, dto ->
 
             // 解析交易状态
             val transactionState = if (dto.confirmations >= getBitcoinConfirmations())
@@ -50,10 +118,10 @@ class BitcoinTrezorService(
 
             var totalInputAmount = 0L
             val inputAddressesExcludeSelf = arrayListOf<String>()
-            dto.vin.forEach { inputInfo ->
-                totalInputAmount += inputInfo.value.toLong()
+            dto.vin?.forEach { inputInfo ->
+                totalInputAmount += inputInfo.value
                 if (inputInfo.isAddress) {
-                    inputInfo.addresses.forEach { address ->
+                    inputInfo.addresses?.forEach { address ->
                         if (address == walletAddress) {
                             transactionType = TransactionType.TRANSFER
                         } else {
@@ -65,10 +133,10 @@ class BitcoinTrezorService(
 
             var outputAmountToSelf = 0L
             val outputAddressesExcludeSelf = arrayListOf<String>()
-            dto.vout.forEach { outputInfo ->
+            dto.vout?.forEach { outputInfo ->
                 if (outputInfo.isAddress) {
                     var self = false
-                    outputInfo.addresses.forEach { address ->
+                    outputInfo.addresses?.forEach { address ->
                         if (address == walletAddress) {
                             self = true
                         } else {
@@ -77,7 +145,7 @@ class BitcoinTrezorService(
                     }
 
                     if (self) {
-                        outputAmountToSelf += outputInfo.value.toLong()
+                        outputAmountToSelf += outputInfo.value
                     }
                 }
             }
@@ -121,7 +189,7 @@ class BitcoinTrezorService(
                 amount = showAmount.toString(),
                 tokenId = tokenId,
                 tokenDisplayName = tokenDisplayName,
-                gas = dto.fees,
+                gas = dto.fees.toString(),
                 gasTokenId = tokenId,
                 gasTokenDisplayName = tokenDisplayName,
                 transactionId = dto.txid,

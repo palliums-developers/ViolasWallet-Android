@@ -66,13 +66,13 @@ class SSORepository(private val ssoApi: IssuerApi) {
             if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
                 || it.applicationStatus > SSOApplicationState.GOVERNOR_MINTED
             ) {
-                throw RequestException.responseDataException(
+                throw RequestException.responseDataError(
                     "Unknown approval status ${it.applicationStatus}"
                 )
             } else if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
                 && it.tokenIdx == null
             ) {
-                throw RequestException.responseDataException("Token id cannot be null")
+                throw RequestException.responseDataError("Token id cannot be null")
             }
         }
 
@@ -93,19 +93,19 @@ class SSORepository(private val ssoApi: IssuerApi) {
             if (it.applicationStatus < SSOApplicationState.CHAIRMAN_UNAPPROVED
                 || it.applicationStatus > SSOApplicationState.GOVERNOR_MINTED
             ) {
-                throw RequestException.responseDataException(
+                throw RequestException.responseDataError(
                     "Unknown approval status ${it.applicationStatus}"
                 )
             } else if (it.applicationStatus >= SSOApplicationState.CHAIRMAN_APPROVED
                 && it.tokenIdx == null
             ) {
-                throw RequestException.responseDataException("Token id cannot be null")
+                throw RequestException.responseDataError("Token id cannot be null")
             } else if ((it.applicationStatus == SSOApplicationState.GOVERNOR_UNAPPROVED
                         || it.applicationStatus == SSOApplicationState.CHAIRMAN_UNAPPROVED)
                 && it.unapprovedReason.isNullOrEmpty()
                 && it.unapprovedRemarks.isNullOrEmpty()
             ) {
-                throw RequestException.responseDataException(
+                throw RequestException.responseDataError(
                     "Unapproved reasons and unapproved remarks cannot all be empty"
                 )
             }

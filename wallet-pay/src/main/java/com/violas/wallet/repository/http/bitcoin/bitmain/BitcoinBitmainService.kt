@@ -1,6 +1,10 @@
 package com.violas.wallet.repository.http.bitcoin.bitmain
 
 import com.palliums.utils.correctDateLength
+import com.violas.wallet.biz.btc.BitcoinBasicService
+import com.violas.wallet.biz.btc.bean.AccountState
+import com.violas.wallet.biz.btc.bean.Transaction
+import com.violas.wallet.biz.btc.bean.UTXO
 import com.violas.wallet.common.getBitcoinCoinType
 import com.violas.wallet.common.getBitcoinConfirmations
 import com.violas.wallet.common.getBitcoinTxnDetailsUrl
@@ -15,9 +19,90 @@ import com.violas.wallet.ui.transactionRecord.TransactionType
  * <p>
  * desc: 比特大陆 service
  */
-class BitmainService(
-    private val repository: BitmainRepository
-) : TransactionRecordService {
+class BitcoinBitmainService(
+    private val repository: BitcoinBitmainRepository
+) : BitcoinBasicService, TransactionRecordService {
+
+    override suspend fun getAccountState(address: String): AccountState {
+        val dto = repository.getAccountState(address)
+
+        return AccountState(
+            address = dto.address,
+            balance = dto.balance,
+            received = dto.received,
+            unconfirmedReceived = dto.unconfirmed_received,
+            sent = dto.sent,
+            unconfirmedSent = dto.unconfirmed_sent,
+            txs = dto.tx_count,
+            unconfirmedTxs = dto.unconfirmed_tx_count,
+            unspentTxs = dto.unspent_tx_count
+        )
+    }
+
+    override suspend fun getUTXO(address: String): List<UTXO> {
+        val dtos = repository.getUTXO(address)
+
+        return dtos.map {
+            val tx = repository.getTransaction(it.tx_hash)
+            UTXO(
+                txId = it.tx_hash,
+                outputNo = it.tx_output_n,
+                scriptPubKey = tx.outputs?.get(it.tx_output_n)?.script_hex!!,
+                amount = it.value,
+                confirmations = it.confirmations
+            )
+        }
+    }
+
+    override suspend fun getTransaction(txId: String): Transaction {
+        val dto = repository.getTransaction(txId)
+
+        return Transaction(
+            txId = dto.hash,
+            blockHash = dto.block_hash,
+            blockTime = dto.block_time,
+            confirmations = dto.confirmations,
+            blockHeight = dto.block_height,
+            lockTime = dto.lock_time,
+            size = dto.size,
+            vsize = dto.vsize,
+            version = dto.version,
+            inputs = dto.inputs?.map {
+                Transaction.Input(
+                    txId = it.prev_tx_hash,
+                    value = it.prev_value,
+                    scriptSig = Transaction.ScriptSig(
+                        hex = it.script_hex,
+                        asm = if (it.prev_type.equals("null", true))
+                            null
+                        else
+                            it.script_asm,
+                        type = if (it.prev_type.equals("NONSTANDARD", true))
+                            null
+                        else
+                            it.prev_type
+                    ),
+                    addresses = it.prev_addresses,
+                    sequence = it.sequence
+                )
+            },
+            outputs = dto.outputs?.map {
+                Transaction.Output(
+                    value = it.value,
+                    scriptPubKey = Transaction.ScriptPubKey(
+                        hex = it.script_hex,
+                        asm = it.script_asm,
+                        type = it.type
+                    ),
+                    addresses = it.addresses
+                )
+            }
+        )
+    }
+
+    override suspend fun pushTransaction(tx: String): String {
+        return repository.pushTransaction(tx)
+    }
 
     override suspend fun getTransactionRecords(
         walletAddress: String,
@@ -30,7 +115,7 @@ class BitmainService(
         onSuccess: (List<TransactionRecordVO>, Any?) -> Unit
     ) {
         val response =
-            repository.getTransactionRecords(walletAddress, pageSize, pageNumber)
+            repository.getTransactions(walletAddress, pageSize, pageNumber)
 
         if (response.data == null || response.data!!.list.isNullOrEmpty()) {
             onSuccess.invoke(emptyList(), null)

@@ -8,11 +8,15 @@ package com.palliums.net
  */
 interface ApiResponse {
 
-    fun getSuccessCode(): Any
-
-    fun getErrorCode(): Any
+    fun isSuccess(): Boolean
 
     fun getErrorMsg(): Any?
 
-    fun getResponseData(): Any?
+    fun getErrorCode(): Any? {
+        return null
+    }
+
+    fun getResponseData(): Any? {
+        return null
+    }
 }

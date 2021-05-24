@@ -62,11 +62,11 @@ public class TransactionManager {
     }
 
     public void transferIntent(double amount, String toAddress) {
-        transferIntent(amount, toAddress, 60);
+        transferIntent(amount, toAddress, mProgress);
     }
 
     public void transferAmountIntent(double amount) {
-        transferAmountIntent(amount, 60);
+        transferAmountIntent(amount, mProgress);
     }
 
     public void transferProgressIntent(int progress) {
@@ -74,15 +74,11 @@ public class TransactionManager {
     }
 
     public void transferAmountIntent(double amount, int progress) {
-        mAmount = amount;
-        mProgress = progress;
         obtainUTXO(amount, mToAddressCount, progress);
     }
 
     public void transferIntent(double amount, String toAddress, int progress) {
-        mAmount = amount;
         mToAddress = toAddress;
-        mProgress = progress;
         obtainUTXO(amount, mToAddressCount, progress);
     }
 
@@ -134,7 +130,7 @@ public class TransactionManager {
     }
 
     public boolean checkBalance(double amount, int toAddressCount) {
-        return obtainUTXO(amount, toAddressCount, 35);
+        return obtainUTXO(amount, toAddressCount, mProgress);
     }
 
     /**

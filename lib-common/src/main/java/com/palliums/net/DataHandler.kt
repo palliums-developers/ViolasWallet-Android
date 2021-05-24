@@ -29,7 +29,7 @@ suspend inline fun <T, R> T.checkResponse(
     }
 
     if (response !is ApiResponse) {
-        throw RequestException.responseDataException("Response is not ApiResponse")
+        throw RequestException.responseDataError("Response is not ApiResponse")
     }
 
     specialStatusCodes.forEach {
@@ -38,14 +38,14 @@ suspend inline fun <T, R> T.checkResponse(
         }
     }
 
-    if (response.getErrorCode() != response.getSuccessCode()) {
+    if (!response.isSuccess()) {
         if (checkError != null) {
             checkError.invoke(response)
         } else {
             throw RequestException(response)
         }
     } else if (!dataNullableOnSuccess && response.getResponseData() == null) {
-        throw RequestException.responseDataException("Data is null")
+        throw RequestException.responseDataError("Data is null")
     }
 
     return response
@@ -76,14 +76,14 @@ suspend inline fun <T> Observable<T>.await(
                         }
                     }
 
-                    if (response.getErrorCode() != response.getSuccessCode()) {
+                    if (!response.isSuccess()) {
                         if (customError != null) {
                             customError.invoke(response)
                         } else {
                             throw RequestException(response)
                         }
                     } else if (!dataNullableOnSuccess && response.getResponseData() == null) {
-                        throw RequestException.responseDataException("Data is null")
+                        throw RequestException.responseDataError("Data is null")
                     }
 
                     return@runCatching response

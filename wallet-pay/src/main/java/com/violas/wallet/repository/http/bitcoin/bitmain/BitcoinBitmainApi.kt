@@ -3,10 +3,8 @@ package com.violas.wallet.repository.http.bitcoin.bitmain
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URL_NAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_BITMAIN
 import io.reactivex.Observable
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Path
-import retrofit2.http.Query
+import okhttp3.RequestBody
+import retrofit2.http.*
 
 /**
  * Created by elephant on 2019-11-07 16:47.
@@ -15,7 +13,29 @@ import retrofit2.http.Query
  * desc: 比特大陆api
  * @see <a href="https://btc.com/api-doc">link</a>
  */
-interface BitmainApi {
+interface BitcoinBitmainApi {
+
+    @GET("address/{address}")
+    fun getAccountState(
+        @Path("address") address: String
+    ): Observable<Response<AccountStateDTO>>
+
+    @GET("address/{address}/unspent")
+    fun getUTXO(
+        @Path("address") address: String,
+        @Query("pagesize") pageSize: Int,
+        @Query("page") pageNumber: Int,
+    ): Observable<ListResponse<UTXODTO>>
+
+    @GET("tx/{txid}?verbose=3")
+    fun getTransaction(
+        @Path("txid") txId: String
+    ): Observable<Response<TransactionDTO>>
+
+    @POST("tools/tx-publish")
+    fun pushTransaction(
+        @Body tx: RequestBody
+    ): Observable<Response<String>>
 
     /**
      * 获取指定地址的交易记录，分页查询
@@ -29,7 +49,7 @@ interface BitmainApi {
      */
     @Headers(value = ["${HEADER_KEY_URL_NAME}:${HEADER_VALUE_BITMAIN}"])
     @GET("address/{address}/tx")
-    fun getTransactionRecords(
+    fun getTransactions(
         @Path("address") address: String,
         @Query("pagesize") pageSize: Int,
         @Query("page") pageNumber: Int,

@@ -1,11 +1,9 @@
 package com.violas.wallet.repository.http.bitcoin.trezor
 
-import androidx.annotation.Keep
-import com.google.gson.annotations.SerializedName
-import com.palliums.net.ApiResponse
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_KEY_URL_NAME
 import com.violas.wallet.repository.http.interceptor.BaseUrlInterceptor.Companion.HEADER_VALUE_TREZOR
 import io.reactivex.Observable
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 /**
@@ -17,100 +15,38 @@ import retrofit2.http.*
  */
 interface BitcoinTrezorApi {
 
+    @GET("v2/address/{address}?details=basic")
+    fun getAccountState(
+        @Path("address") address: String
+    ): Observable<AccountStateResponse>
+
+    @GET("v2/utxo/{address}")
+    fun getUTXO(
+        @Path("address") address: String
+    ): Observable<String>
+
+    @GET("v2/tx/{txid}")
+    fun getTransaction(
+        @Path("txid") txId: String
+    ): Observable<TransactionResponse>
+
+    @POST("v2/sendtx")
+    fun pushTransaction(
+        @Body tx: RequestBody
+    ): Observable<PushTransactionResponse>
+
     /**
      * 获取指定地址的交易记录，分页查询
      * @param address 地址
      * @param pageSize 分页大小
      * @param pageNumber 页码，从1开始
-     * @param details
      */
     @Headers(value = ["${HEADER_KEY_URL_NAME}:${HEADER_VALUE_TREZOR}"])
-    @GET("v2/address/{address}")
-    fun getTransactionRecords(
+    @GET("v2/address/{address}?details=txs")
+    fun getTransactions(
         @Path("address") address: String,
         @Query("pageSize") pageSize: Int,
-        @Query("page") pageNumber: Int,
-        @Query("details") details: String = "txs"
-    ): Observable<TransactionRecordResponse>
+        @Query("page") pageNumber: Int
+    ): Observable<TransactionsResponse>
 
 }
-
-@Keep
-open class Response<T> : ApiResponse {
-
-    @SerializedName(value = "err_no")
-    var errorCode: Int = 0
-
-    @SerializedName(value = "err_msg")
-    var errorMsg: String? = null
-
-    @SerializedName(value = "data", alternate = ["transactions"])
-    var data: T? = null
-
-    override fun getSuccessCode(): Any {
-        return 0
-    }
-
-    override fun getErrorMsg(): Any? {
-        return errorMsg
-    }
-
-    override fun getErrorCode(): Any {
-        return errorCode
-    }
-
-    override fun getResponseData(): Any? {
-        return data
-    }
-}
-
-@Keep
-class TransactionRecordResponse : Response<List<TransactionRecordDTO>>() {
-
-    var page: Int = Int.MIN_VALUE
-    var totalPages: Int = Int.MIN_VALUE
-    var itemsOnPage: Int = Int.MIN_VALUE
-    var address: String? = null
-    var balance: String? = null
-    var totalReceived: String? = null
-    var totalSent: String? = null
-    var unconfirmedBalance: String? = null
-    var unconfirmedTxs: Int = Int.MIN_VALUE
-    var txs: Int = Int.MIN_VALUE
-}
-
-data class TransactionRecordDTO(
-    val blockHash: String,
-    val blockHeight: Long,
-    val blockTime: Long,
-    val confirmations: Long,
-    val fees: String,
-    val hex: String,
-    val txid: String,
-    val value: String,
-    val valueIn: String,
-    val version: Long,
-    val vin: List<InputDTO>,
-    val vout: List<OutputDTO>
-) {
-    data class InputDTO(
-        val addresses: List<String>,
-        val hex: String,
-        val isAddress: Boolean,
-        val n: Long,
-        val sequence: Long,
-        val txid: String,
-        val value: String,
-        val vout: Long
-    )
-
-    data class OutputDTO(
-        val addresses: List<String>,
-        val hex: String,
-        val isAddress: Boolean,
-        val n: Long,
-        val value: String
-    )
-}
-
-

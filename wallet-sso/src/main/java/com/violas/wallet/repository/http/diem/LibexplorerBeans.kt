@@ -21,15 +21,15 @@ open class Response<T> : ApiResponse {
     @SerializedName(value = "result")
     var data: T? = null
 
-    override fun getSuccessCode(): Any {
-        return "1"
+    override fun isSuccess(): Boolean {
+        return errorCode == "1"
     }
 
     override fun getErrorMsg(): Any? {
         return errorMsg
     }
 
-    override fun getErrorCode(): Any {
+    override fun getErrorCode(): Any? {
         return errorCode
     }
 

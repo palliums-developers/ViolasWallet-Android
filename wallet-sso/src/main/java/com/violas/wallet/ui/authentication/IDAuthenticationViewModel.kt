@@ -118,7 +118,7 @@ class IDAuthenticationViewModel : BaseViewModel() {
             || userInfoDTO.idPhotoBackUrl.isNullOrEmpty()
             || userInfoDTO.countryCode.isNullOrEmpty()
         ) {
-            throw RequestException.responseDataException("User identity info is empty")
+            throw RequestException.responseDataError("User identity info is empty")
         }
 
         val idInfo = IDInfo(
